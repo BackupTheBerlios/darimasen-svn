@@ -17,7 +17,10 @@ Darimasen::Darimasen(Glib::ustring path)
   DoSomethingWithDaMenu = false;
   Gnome::Vfs::init();
   
-  
+    DaMenu.signal_size_allocate().connect (
+		sigc::mem_fun (*this, &Darimasen::DaMenu_size_allocate));
+    m_Controls.signal_size_allocate().connect (
+		sigc::mem_fun (*this, &Darimasen::Menubar_size_allocate));  
   add(m_Box);
 
   
@@ -55,8 +58,7 @@ Darimasen::Darimasen(Glib::ustring path)
   DaMenuBuilder(resolvePath(path));
   tb1.set_expand(true);
 
-    tb1.signal_size_allocate().connect (
-		sigc::mem_fun (*this, &Darimasen::DaMenu_size_allocate));
+
   tb1.add(DaMenu);
   m_Controls.add(tb1);
 
@@ -143,7 +145,7 @@ Darimasen::Darimasen(Glib::ustring path)
   MainScrollerHeight = 0;
   DaMenuAvailableWidth = 0;
 
-
+iconBuild();
   }
 
 
@@ -554,7 +556,7 @@ void Darimasen::DaMenuBuilder(const int v){
   
   iconBuild();
   }
-/**********************/
+/**********************
 
 
 bool Darimasen::on_configure_event(GdkEventConfigure* event){
@@ -582,24 +584,19 @@ bool Darimasen::on_configure_event(GdkEventConfigure* event){
 
 /**********************/
 
-void Darimasen::on_size_allocate(Gtk::Allocation& allocation){
-Gtk::Window::on_size_allocate(allocation);
-  if (activeCompact->get_active()){
-    DaMenuAvailableWidth = allocation.get_width() - 6
-                           - tb0.get_width()
+void Darimasen::Menubar_size_allocate(Gtk::Allocation& allocation){
+
+
+    DaMenuAvailableWidth = allocation.get_width()
+                           - tb0.get_width() - 5 // six extra for control padding
                            - separatortoolitem1.get_width() * 2
                            - BackButton->get_width() * 3;
 
-
+  if (activeCompact->get_active()){
 
   if(DoSomethingWithDaMenu){
-    std::cout << "This is the Window speaking... \n";
-    std::cout << DaMenuAvailableWidth << " < " << DaMenuRequestWidth << "\n";
-
-    if (DaMenuAvailableWidth < DaMenuRequestWidth)
+    if (DaMenuAvailableWidth <= DaMenuRequestWidth)
       std::cout << "too small!" << "\n";
-
-    
     }
     DoSomethingWithDaMenu = true;
 
@@ -610,15 +607,14 @@ Gtk::Window::on_size_allocate(allocation);
 /**********************/
 
 void Darimasen::DaMenu_size_allocate(Gtk::Allocation& allocation){
-
+DaMenuRequestWidth = allocation.get_width();
 
   if (activeCompact->get_active()){
-std::cout << "The Menu Happens." << "\n";
-DaMenuRequestWidth = allocation.get_width();
-DoSomethingWithDaMenu = false;
-    std::cout << "This is the allocator speaking... ";
+    std::cout << DaMenuAvailableWidth << " < " << DaMenuRequestWidth << "\n";
+
+DoSomethingWithDaMenu = true;
     if (DaMenuAvailableWidth < DaMenuRequestWidth)
-      std::cout << "too small!" << "\n";
+      std::cout << "(DaMenu) too small!" << "\n";
 
     }
   }

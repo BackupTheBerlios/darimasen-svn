@@ -13,24 +13,32 @@ DaIconModes::DaIconModes(
     int            MainScrollerHeight,
     bool           givehidden ) {                        
   //There really should be a more efficient way of doing this...
-  resize(atPath,atPath);
+  //resize(atPath,atPath);
   //double_buffered(); 
   fullPath = path;
   filesAtPath = atPath;
   iconmode = usingMode;
-  heightAvailable = MainScrollerHeight;
+  //heightAvailable = MainScrollerHeight;
   showHidden = givehidden;
 
-  x_pos = 0;
-  y_pos = 0;
+ // x_pos = 0;
+ // y_pos = 0;
 
 // 0 is sidecon view
 // 1 is detail view
-    
+    slotsUsed = 0;
+IconsHigh = 0;
+
+      sideconContainer = new Gtk::EventBox*[filesAtPath];
+      for(int c = 0; c < filesAtPath; c++){
+        sideconContainer[c] = new Gtk::EventBox;
+        }
+
 
   switch(iconmode){  
     case 0:
-      
+
+      //DisposableTable = new Gtk::Table(heightAvailable/56, filesAtPath/(heightAvailable/56)+1);
       try {
         // Call on_visit() for each file.
         // The options specify that we want to visit the files at input_uri_string,
@@ -46,6 +54,7 @@ Gnome::Vfs::FILE_INFO_FOLLOW_LINKS ,
       break;
 
     case 1:
+      //DisposableTable = new Gtk::Table(filesAtPath,1);
       try {
         // Call on_visit() for each file.
         // The options specify that we want to visit the files at input_uri_string,
@@ -57,7 +66,10 @@ Gnome::Vfs::FILE_INFO_FOLLOW_LINKS ,
         }
       catch(const Gnome::Vfs::exception& ex){/*this is required.*/}
       break;
-    } 
+    }
+set_visible_window(false);
+
+
   }
 
 /**********************/
@@ -69,30 +81,34 @@ bool DaIconModes::addSidecon(
     bool recursing_will_loop,
     bool& recurse) {
 
+
+
+
+
+//sideconContainer = new  Gtk::EventBox[filesAtPath];
+//new (Car*)[length];
+
+
   if (info->get_type() != Gnome::Vfs::FILE_TYPE_DIRECTORY){
     if ( (info->get_name().substr(0,1) != ".") || showHidden ) {
 
-      Gtk::EventBox * sideconContainer = Gtk::manage(new Gtk::EventBox);
-      sideconContainer->set_visible_window(false);
-      sideconContainer->show();
+      
+      sideconContainer[slotsUsed]->set_visible_window(false);
+      sideconContainer[slotsUsed]->show();
 
       Sidecon * tempPath = new Sidecon(fullPath, info);
       tempPath->show();
 
-      sideconContainer->add(*tempPath);
+      sideconContainer[slotsUsed]->add(*tempPath);
 
-      attach(*sideconContainer, x_pos, x_pos+1, y_pos, y_pos+1, Gtk::FILL, Gtk::FILL, 4, 4);
 
-      sideconContainer->set_events(Gdk::BUTTON_RELEASE_MASK);
-      sideconContainer->signal_button_press_event().connect(
+
+      sideconContainer[slotsUsed]->set_events(Gdk::BUTTON_RELEASE_MASK);
+      sideconContainer[slotsUsed]->signal_button_press_event().connect(
         sigc::bind<Glib::ustring >(
           sigc::mem_fun(*this, &DaIconModes::on_eventbox_button_press), info->get_name() ));
 
-      y_pos++; // positioning stuff. 
-      if ( y_pos + 1 > (heightAvailable / 58)){
-        y_pos = 0;
-        x_pos++;
-        }
+      std::cout << slotsUsed++ << "\n";
       }
     }
   
@@ -115,9 +131,9 @@ bool DaIconModes::addDetail(
     if ((info->get_name().substr(0,1) != ".") xor (showHidden == true)){
       Gtk::Label * tempPath = Gtk::manage(new Gtk::Label(info->get_name()));
       tempPath->set_alignment(0,0.5);
-      attach(*tempPath, 0, 1, y_pos, y_pos+1, Gtk::FILL, Gtk::FILL, 4, 4);
-      tempPath->show();
-      y_pos++;
+      //DisposableTable->attach(*tempPath, 0, 1, y_pos, y_pos+1, Gtk::FILL, Gtk::FILL, 4, 4);
+      //tempPath->show();
+      //y_pos++;
       }
     }
   recurse = false; // just this folder
@@ -511,6 +527,48 @@ menulist.push_back( Gtk::Menu_Helpers::MenuElem("Set Run Action"
     }
 
   return false;
+  }
+
+/**********************/
+
+void DaIconModes::on_size_allocate(Gtk::Allocation& allocation){
+
+  std::cout << allocation.get_height() << "\n";
+ int oldie = IconsHigh;
+ IconsHigh = allocation.get_height() / 58;
+  
+  if ( oldie != IconsHigh ){
+    if ( DisposableTable != NULL)
+      delete DisposableTable;
+
+    std::cout << "Inside ";
+    DisposableTable = new Gtk::Table(filesAtPath,filesAtPath);
+
+    add(*DisposableTable);
+
+    if (iconmode == 0){
+
+      int y_pos = 0;
+      int x_pos = 0;
+      for(int i = 0; i < filesAtPath; i++){
+
+
+        DisposableTable->attach( *sideconContainer[i], x_pos, x_pos+1, y_pos, y_pos+1, Gtk::FILL, Gtk::FILL, 4, 4);
+
+        sideconContainer[i]->show();
+
+        y_pos++; 
+
+        if ( y_pos + 1 > IconsHigh){
+          y_pos = 0;
+          x_pos++;
+          }
+
+        }
+      }
+    }
+    DisposableTable->show();
+  Gtk::EventBox::on_size_allocate(allocation);
   }
 
 /**********************/

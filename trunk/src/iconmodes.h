@@ -15,7 +15,7 @@
 
 /**********************/
 
-class DaIconModes : public Gtk::Table {
+class DaIconModes : public Gtk::EventBox {
 
 
   class Sidecon : public Gtk::Table{
@@ -34,10 +34,17 @@ class DaIconModes : public Gtk::Table {
   bool on_eventbox_button_press(GdkEventButton*, const Glib::ustring);
   Glib::ustring fullPath;
   int filesAtPath;
-  int heightAvailable;
+  //int heightAvailable;
   unsigned short iconmode;
   bool showHidden;
-  int x_pos, y_pos;
+ // int x_pos, y_pos;
+
+Gtk::Table * DisposableTable;
+  void on_size_allocate(Gtk::Allocation&);
+Gtk::EventBox ** sideconContainer;
+int slotsUsed;
+int IconsHigh;
+
 
   bool addSidecon(const Glib::ustring&, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, bool, bool&);
   bool addDetail(const Glib::ustring&, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, bool, bool&);
@@ -45,8 +52,9 @@ class DaIconModes : public Gtk::Table {
 Gtk::Menu m_Menu_Popup;
 
 public:
+
   DaIconModes(Glib::ustring, int, unsigned short, int, bool); //path, filesAtPath, mode 
-   
+  //void getNewTable(int);
   };
 
 /**********************/

@@ -91,9 +91,10 @@ protected:
   void iconBuild();
 
 void DaMenu_size_allocate(Gtk::Allocation&);
+void Menubar_size_allocate(Gtk::Allocation& );
   
-  bool on_configure_event(GdkEventConfigure*); // overwrite the virtual
-void on_size_allocate(Gtk::Allocation& );
+  //bool on_configure_event(GdkEventConfigure*); // overwrite the virtual
+
   int MainScrollerHeight;
   int DaMenuAvailableWidth;
   int DaMenuRequestWidth;
