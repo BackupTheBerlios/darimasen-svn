@@ -105,7 +105,7 @@ void on_size_request (Requisition* requisition){
     void offClick();
 
     Glib::ustring CountSubdir(const Glib::ustring&);
-    bool DaMenuSelect(GdkEventButton*, const Glib::ustring);
+    bool DaMenuSelect(GdkEventButton*, const Glib::ustring,guint);
  
 
  //    void on_popup_menu_position(int& x, int& y, bool& push_in);
@@ -117,7 +117,7 @@ void on_size_request (Requisition* requisition){
   public:
 short extended;
     void signal_deactivate ();
-    DarimasenMenu(const Glib::ustring, Darimasen&);
+    DarimasenMenu(const Glib::ustring&, Darimasen&, guint);
     ~DarimasenMenu();
     };
 
@@ -133,14 +133,14 @@ short extended;
   Gtk::Statusbar Info;
 
 
-  std::vector< std::stack<Glib::ustring> > history;
+
   Gtk::ToolButton * BackButton;
 
   void fNewTab();
   void newTab(Glib::ustring);
   void tabberSwitched(GtkNotebookPage*, guint);
   void addTab(guint);
-  void ChangeCurrentPath(Glib::ustring path);
+  void ChangeCurrentPath(Glib::ustring path, bool);
   void removeTab(guint);
   void fBack();
   void fQuit();
@@ -157,6 +157,7 @@ public:
   ~Darimasen();
   Gtk::CheckMenuItem * optShowHidden;
   void set_message(Glib::ustring);
+  std::vector< std::stack<Glib::ustring> > history;
   };
 
 /**********************/

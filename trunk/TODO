@@ -4,8 +4,6 @@ Must address:
 
 getting submenus to popup in the correct position
 resetting menus where subsubdirs have been used
-reduce iconmodes' ustring passing by using history.
-"begining of history" segfault.
 
 
 

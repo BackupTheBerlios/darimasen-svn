@@ -82,12 +82,11 @@ class DaIconModes : public Gtk::EventBox {
 
   class Darimasen * parent;
 
- int * hidden;
+
 
   void RunFile(const Glib::ustring);
   void SetRunAction(const Glib::ustring);
   void SetPermissions(const Glib::ustring);
-
   bool on_eventbox_button_press(GdkEventButton*, const Glib::ustring);
   void on_size_allocate(Gtk::Allocation&);
   void redraw();
@@ -95,21 +94,26 @@ class DaIconModes : public Gtk::EventBox {
   Glib::RefPtr<Gdk::Pixbuf> getIcon(Glib::ustring, guint);
 
 
-  Glib::ustring fullPath;
-  int filesAtPath;
-  unsigned short iconmode;
-  //bool showHidden;
+
   Gtk::EventBox ** sideconContainer;
-  int slotsUsed;
-  int IconsHigh;
+
   Gtk::Menu m_Menu_Popup;
-guint32 lastclick;
+
+
+  unsigned short iconmode;
+  guint32 lastclick;
+  guint slotsUsed;
+  guint IconsHigh;
+  guint position;
+  guint filesAtPath;
+  int * hidden;
+
 
 public:
   ~DaIconModes();
-  DaIconModes(Glib::ustring, Darimasen&);
+  DaIconModes(guint, Darimasen&);
 
-  void SwitchHidden();
+  void SwitchHidden(guint);
   };
 
 /**********************/

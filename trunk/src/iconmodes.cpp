@@ -5,12 +5,17 @@
 
 /**********************/
 
-DaIconModes::DaIconModes(Glib::ustring path,  Darimasen& myParent) {                        
+DaIconModes::DaIconModes(guint pos, Darimasen& myParent) {    
+
+  parent = &myParent;
+
+position = pos;
+
 lastclick = 0;
   filesAtPath = 0;
   try{
     Gnome::Vfs::DirectoryHandle handle;
-    handle.open(path, Gnome::Vfs::FILE_INFO_DEFAULT);
+    handle.open((parent->history[position].top()), Gnome::Vfs::FILE_INFO_DEFAULT);
     bool file_exists = true;
     while(file_exists){
       handle.read_next(file_exists);
@@ -19,9 +24,6 @@ lastclick = 0;
     }
   catch(const Gnome::Vfs::exception&){std::cout << "Miscount?\n";}
 
-parent = &myParent;
-
-  fullPath = path;
 
   iconmode = 0;
 
@@ -40,7 +42,7 @@ parent = &myParent;
         // Call on_visit() for each file.
         // The options specify that we want to visit the files at input_uri_string,
         // get the mime type the fast way and protect against loops.
-      Gnome::Vfs::DirectoryHandle::visit(fullPath, Gnome::Vfs::FILE_INFO_GET_MIME_TYPE |
+      Gnome::Vfs::DirectoryHandle::visit( parent->history[position].top(), Gnome::Vfs::FILE_INFO_GET_MIME_TYPE |
                                              Gnome::Vfs::FILE_INFO_FORCE_FAST_MIME_TYPE |
                                              Gnome::Vfs::FILE_INFO_FOLLOW_LINKS ,
                                              Gnome::Vfs::DIRECTORY_VISIT_LOOPCHECK,
@@ -88,7 +90,7 @@ hidden[slotsUsed] = (info->get_name().substr(0,1) == ".");
 
 switch(iconmode){
 case 0: {
-Sidecon * tempPathS = new Sidecon(fullPath, info, *this);
+Sidecon * tempPathS = new Sidecon( parent->history[position].top(), info, *this);
       tempPathS->show();
       sideconContainer[slotsUsed]->add(*tempPathS);
 	}
@@ -317,7 +319,7 @@ void DaIconModes::RunFile(const Glib::ustring file) {
   Glib::RefPtr<const Gnome::Vfs::FileInfo> info;
   
   try{
-    read_handle.open(fullPath + file, Gnome::Vfs::OPEN_READ);
+    read_handle.open( parent->history[position].top() + file, Gnome::Vfs::OPEN_READ);
     info = read_handle.get_file_info(
       Gnome::Vfs::FILE_INFO_GET_MIME_TYPE |
       Gnome::Vfs::FILE_INFO_FORCE_SLOW_MIME_TYPE );
@@ -334,7 +336,7 @@ void DaIconModes::RunFile(const Glib::ustring file) {
     exec += info->get_mime_type().replace(info->get_mime_type().find("/"),1,"_");
     exec_handle.open(exec, Gnome::Vfs::OPEN_READ);
 
-    exec += " \""  + fullPath + file + "\"";
+    exec += " \""  + parent->history[position].top() + file + "\"";
     Glib::spawn_command_line_async(exec);
 
     parent->set_message(exec + " was run.");
@@ -348,7 +350,7 @@ void DaIconModes::RunFile(const Glib::ustring file) {
   try{
     exec = exec.substr(0, exec.rfind("_"));
     exec_handle.open(exec, Gnome::Vfs::OPEN_READ);
-    exec += " \""  + fullPath + file + "\"";
+    exec += " \""  + parent->history[position].top() + file + "\"";
     Glib::spawn_command_line_async(exec);
 
     parent->set_message(exec + " was run.");
@@ -358,8 +360,8 @@ void DaIconModes::RunFile(const Glib::ustring file) {
     }
 
   if (Gnome::Vfs::Mime::can_be_executable(info->get_mime_type())){
-    parent->set_message( "Running " +fullPath + file);
-    Glib::spawn_command_line_async(fullPath + file);
+    parent->set_message( "Running " + parent->history[position].top()  + file);
+    Glib::spawn_command_line_async( parent->history[position].top()  + file);
     return;
     }
   else {
@@ -379,7 +381,7 @@ void DaIconModes::RunFile(const Glib::ustring file) {
     {
       Glib::ustring exec = getenv("HOME");
       exec += "/Choices/MIME-types/text_plain";
-      exec += " \""  + fullPath + file + "\"";
+      exec += " \""  + parent->history[position].top()  + file + "\"";
       Glib::spawn_command_line_async(exec);
     parent->set_message(exec + " was opened as a text file.");
       return;
@@ -406,7 +408,7 @@ void DaIconModes::SetRunAction(const Glib::ustring file) {
   Glib::ustring exec_mimetype;
 
   try {
-    read_handle.open(fullPath + file, Gnome::Vfs::OPEN_READ);
+    read_handle.open( parent->history[position].top() + file, Gnome::Vfs::OPEN_READ);
     info = read_handle.get_file_info(
         Gnome::Vfs::FILE_INFO_GET_MIME_TYPE |
         Gnome::Vfs::FILE_INFO_FORCE_SLOW_MIME_TYPE );
@@ -684,11 +686,11 @@ void DaIconModes::SetPermissions(const Glib::ustring file) {
   Glib::RefPtr<Gnome::Vfs::FileInfo> info;
 
   try {
-    read_handle.open(fullPath + file, Gnome::Vfs::OPEN_READ);
+    read_handle.open( parent->history[position].top() + file, Gnome::Vfs::OPEN_READ);
     info = read_handle.get_file_info(Gnome::Vfs::FILE_INFO_GET_ACCESS_RIGHTS);
 
     SetPermissionsDialogue * setPermissions;
-    setPermissions = new SetPermissionsDialogue(info,fullPath);
+    setPermissions = new SetPermissionsDialogue(info,parent->history[position].top());
     setPermissions->show();
     }
   catch(const Gnome::Vfs::exception& ex) {
@@ -873,9 +875,9 @@ Glib::RefPtr<Gdk::Pixbuf> DaIconModes::getIcon(Glib::ustring mimeGiven, guint si
 
 /**********************/
 
- void DaIconModes::SwitchHidden(){
+ void DaIconModes::SwitchHidden(guint pos){
 
-
+position = pos;
 if (parent->optShowHidden->get_active())
     parent->set_message("Showing Hidden Files");
 else
