@@ -56,66 +56,42 @@
 #include <gtkmm/layout.h>
 
 #include "iconmodes.h"
-//#include <gdkmm/rectangle.h>
+
+
 /**********************/
 
 class Darimasen : public Gtk::Window {
   class DarimasenMenu : public Gtk::MenuBar {
+
     class DirectoryMenu : public Gtk::Menu {
     public:
-
-      bool imExtended;
-      DirectoryMenu(DarimasenMenu&){
-imExtended = false;
+      DirectoryMenu(DarimasenMenu& in ){
         Gtk::Menu::Menu();
         }
-      DarimasenMenu * parent; 
+      };
 
-      void on_hide(){
 
-      std::cout << "on_hide()\n";
-    //  if (imExtended)
-      //   parent->offClick();
-        Gtk::Widget::on_hide();
-     }
 
-/*
-      void on_size_allocate(Gtk::Allocation&  allocation){
-        std::cout << allocation.get_x() << ", " << allocation.get_y() << ", " << allocation.get_width() << ", " << allocation.get_height() << "\n";
-allocation.set_x (allocation.get_x() - 20);
-        Gtk::Widget::on_size_allocate(allocation);
-        }
-void on_size_request (Requisition* requisition){
-        std::cout << "Req = " << &requisition.x() << ", " << requisition.y() << ", " << requisition.width() << ", " << requisition.height() << "\n";
-}*/
-
-    };
 
     Darimasen * parent;
 
     int depth;
 
-     DirectoryMenu ** MenuArray; 
+    DirectoryMenu ** MenuArray; 
     Gtk::MenuItem ** MenuItemArray;
     Glib::ustring * menulevel;
 
     void MenuForPath(int, Glib::ustring , Glib::ustring); //extension
-    void SpecialMenuForPath(int, Glib::ustring  , Glib::ustring); //extension
+    bool SpecialMenuForPath(GdkEventButton* , int, Glib::ustring  , Glib::ustring); //extension
 
     void offClick();
 
     Glib::ustring CountSubdir(const Glib::ustring&);
-    bool DaMenuSelect(GdkEventButton*, const Glib::ustring,guint);
+    bool DaMenuSelect(GdkEventButton*, const Glib::ustring,guint,bool);
  
-
- //    void on_popup_menu_position(int& x, int& y, bool& push_in);
-
-
-
-
-
   public:
-short extended;
+
+    short extended;
     void signal_deactivate ();
     DarimasenMenu(const Glib::ustring&, Darimasen&, guint);
     ~DarimasenMenu();
@@ -140,7 +116,7 @@ short extended;
   void newTab(Glib::ustring);
   void tabberSwitched(GtkNotebookPage*, guint);
   void addTab(guint);
-  void ChangeCurrentPath(Glib::ustring path, bool);
+  void ChangeCurrentPath(Glib::ustring path, bool, bool);
   void removeTab(guint);
   void fBack();
   void fQuit();
@@ -153,6 +129,7 @@ short extended;
 
 
 public:
+
   Darimasen(std::vector<Glib::ustring>);
   ~Darimasen();
   Gtk::CheckMenuItem * optShowHidden;

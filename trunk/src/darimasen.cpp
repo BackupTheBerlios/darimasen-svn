@@ -26,9 +26,9 @@ void Darimasen::DarimasenMenu::MenuForPath(
           subdir->set_events(Gdk::BUTTON_RELEASE_MASK);
 
           subdir->signal_button_press_event().connect(
-            sigc::bind<Glib::ustring,guint>(
+            sigc::bind<Glib::ustring,guint,bool>(
               sigc::mem_fun(*this, &Darimasen::DarimasenMenu::DaMenuSelect),
-                 (path + menulevel[position]).substr(0, (path + menulevel[position]).length() - 1),position));
+                 (path + menulevel[position]).substr(0, (path + menulevel[position]).length() - 1),position,true));
 
     Gtk::SeparatorMenuItem * sep = Gtk::manage( new Gtk::SeparatorMenuItem());
     MenuArray[position]->attach(*sep, 0 ,4, entry++, entry+1);
@@ -60,20 +60,20 @@ void Darimasen::DarimasenMenu::MenuForPath(
           subdir->set_events(Gdk::BUTTON_RELEASE_MASK);
 
           subdir->signal_button_press_event().connect(
-            sigc::bind<Glib::ustring,guint>(
+            sigc::bind<Glib::ustring,guint,bool>(
               sigc::mem_fun(*this, &Darimasen::DarimasenMenu::DaMenuSelect),
-                 (path + refFileInfo->get_name()), position));
+                 (path + refFileInfo->get_name()), position,false));
 
           SubSubCount = CountSubdir(path + refFileInfo->get_name());
           }
         else{
           subdir = Gtk::manage( new Gtk::MenuItem(ext + slash + refFileInfo->get_name() + slash + " "));
-          subdir->set_events(Gdk::BUTTON_RELEASE_MASK);
+
 
           subdir->signal_button_press_event().connect(
-            sigc::bind<Glib::ustring,guint>(
+            sigc::bind<Glib::ustring,guint,bool>(
               sigc::mem_fun(*this, &Darimasen::DarimasenMenu::DaMenuSelect),
-                (path + ext.substr(1) + slash + refFileInfo->get_name()), position));
+                (path + ext.substr(1) + slash + refFileInfo->get_name()), position,false));
 
           SubSubCount = CountSubdir(path + ext + slash + refFileInfo->get_name());
           }
@@ -84,7 +84,8 @@ void Darimasen::DarimasenMenu::MenuForPath(
           Gtk::MenuItem * subsubdir = Gtk::manage( new Gtk::MenuItem(*SubSubLabel));
           subsubdir->set_right_justified();
 
-          subsubdir->signal_activate().connect(
+
+          subsubdir->signal_button_release_event().connect(
             sigc::bind<int, Glib::ustring, Glib::ustring>(
               sigc::mem_fun(*this, &Darimasen::DarimasenMenu::SpecialMenuForPath),
                 position, path, ext+ slash + refFileInfo->get_name()));
@@ -102,59 +103,45 @@ void Darimasen::DarimasenMenu::MenuForPath(
       }
     }
   catch(const Gnome::Vfs::exception& ex){}
+
+
   }
 
 /**********************/
 
 // the function called for sub-sub-directories - when an arrow is selected in another menu. 
-void Darimasen::DarimasenMenu::SpecialMenuForPath(
+bool Darimasen::DarimasenMenu::SpecialMenuForPath(GdkEventButton* event,
        int position,
        Glib::ustring path,
        Glib::ustring ext){
 
-MenuArray[position]->imExtended = true;
-    extended = position; 
-  std::cout << extended << "/n";
+  extended = position; 
 
-  MenuItemArray[position]->remove_submenu();
-  delete MenuArray[position];
-  MenuArray[position] = Gtk::manage( new DirectoryMenu(*this));
-
-
+ MenuItemArray[position]->remove_submenu();
+ delete MenuArray[position];
+ MenuArray[position] =  new DirectoryMenu(*this);
 
   MenuItemArray[position]->set_submenu(*MenuArray[position]);
   MenuForPath(position, path, ext);
 
+  MenuItemArray[position]->select();
 
-
- // MenuArray[position]->signal_deactivate().connect(
- //   sigc::bind<guint, Glib::ustring>(sigc::mem_fun(*this, &Darimasen::DarimasenMenu::offClick),position, path) );
-
-
- // MenuArray[position]->popup( *this,  *MenuItemArray[position], sigc::mem_fun(*this,& Darimasen::DarimasenMenu::on_popup_menu_position), 1, gtk_get_current_event_time());
-  MenuArray[position]->popup( 1, gtk_get_current_event_time());
+  return true;
 
   }
-
-/**********************
-
-void Darimasen::DarimasenMenu::on_popup_menu_position(int& x, int& y, bool& push_in){
-x = 200;
-y = 200;
-push_in = true;
-}
-
 
 /**********************/
 
 void Darimasen::DarimasenMenu::offClick(){
-
+if( extended != -1 ){
+std::cout << extended << "\n";
   MenuItemArray[extended]->remove_submenu();
   delete MenuArray[extended];
-  MenuArray[extended] = Gtk::manage( new DirectoryMenu(*this));
+  MenuArray[extended] =  new DirectoryMenu(*this);
   MenuItemArray[extended]->set_submenu(*MenuArray[extended]);
   MenuForPath(extended, parent->history[extended].top() , "");
 extended = -1;
+}
 }
 
 /**********************/
@@ -162,7 +149,7 @@ extended = -1;
 //Decides the action of the menuItem, more sophisticated than the activate signal. 
 //its comment should always be somewhere.
 
-bool Darimasen::DarimasenMenu::DaMenuSelect(GdkEventButton* event, const Glib::ustring path, guint pos){
+bool Darimasen::DarimasenMenu::DaMenuSelect(GdkEventButton* event, const Glib::ustring path, guint pos, bool first){
 
   if ((event->type == GDK_BUTTON_PRESS) && (event->button == 2) ) //middle
   {
@@ -171,9 +158,7 @@ bool Darimasen::DarimasenMenu::DaMenuSelect(GdkEventButton* event, const Glib::u
   }
   if ((event->type == GDK_BUTTON_PRESS) && (event->button == 1) ) //left
   {
-
- // parent->history[pos].push(path);
-  parent->ChangeCurrentPath(path,true);
+  parent->ChangeCurrentPath(path,true,first);
   return true;
   }
   if ((event->type == GDK_BUTTON_PRESS) && (event->button == 3) ) //right
@@ -217,7 +202,7 @@ Glib::ustring Darimasen::DarimasenMenu::CountSubdir(const Glib::ustring& path){
 
 }
 
-/**********************/
+/**********************
 
 void  Darimasen::DarimasenMenu::signal_deactivate (){
 std::cout << "on_unmap_event(GdkEventAny* event)\n";
@@ -231,8 +216,7 @@ Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring & path, Darimasen& M
 
   depth = 0;
   extended = -1;
-//usingSpecial = false;
-  //showHidden = false;
+
   Glib::ustring shortpath = path; //home = getenv("HOME");
   parent = &Myparent;
   
@@ -303,9 +287,9 @@ Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring & path, Darimasen& M
           subdir->set_events(Gdk::BUTTON_RELEASE_MASK);
 
           subdir->signal_button_press_event().connect(
-            sigc::bind<Glib::ustring,guint>(
+            sigc::bind<Glib::ustring,guint,bool>(
               sigc::mem_fun(*this, &Darimasen::DarimasenMenu::DaMenuSelect),
-                 "/",pos));
+                 "/",pos,false));
 
 
 
@@ -316,9 +300,9 @@ Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring & path, Darimasen& M
           subdir2->set_events(Gdk::BUTTON_RELEASE_MASK);
 
           subdir2->signal_button_press_event().connect(
-            sigc::bind<Glib::ustring,guint>(
+            sigc::bind<Glib::ustring,guint,bool>(
               sigc::mem_fun(*this, &Darimasen::DarimasenMenu::DaMenuSelect),
-                getenv("HOME"),pos));
+                getenv("HOME"),pos,false));
 
     Gtk::SeparatorMenuItem * sep = Gtk::manage( new Gtk::SeparatorMenuItem());
     MenuArray[0]->attach(*sep, 0 ,1, 2, 3);
@@ -326,10 +310,12 @@ Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring & path, Darimasen& M
 
     Gtk::MenuItem * subdir3 = Gtk::manage( new Gtk::MenuItem("Add a location to this list"));
     MenuArray[0]->attach(*subdir3, 0 ,1, 3, 4);
-  subdir3->set_sensitive(false);
+    subdir3->set_sensitive(false);
     subdir3->show();
 
+
   show();
+
   }
 
 /**********************/
@@ -440,8 +426,6 @@ else
   DaIconModes * foo;
   foo = new DaIconModes(  pos, *this);
 
-
-
   if ( IconModeList.size() == pos ){
     IconModeList.push_back(foo);
     }
@@ -463,34 +447,26 @@ else
 /**********************/
 
 // changing directories actually is making a new tab to substitute for the old one.
-void Darimasen::ChangeCurrentPath(Glib::ustring pathin, bool addPath){
+void Darimasen::ChangeCurrentPath(Glib::ustring pathin, bool addPath, bool menuOnly){
   guint nth = Tabber->get_current_page();
 
-
-if (addPath){
+  if (addPath && !menuOnly){
     if (pathin.substr(pathin.length()-1) != "/")
       history[nth].push(pathin + slash);
     else
       history[nth].push(pathin); 
-}
+    }
 
-  //there is a circumstance that only the menu should be rebuilt...
-/*  if( pathin !=  history[nth].top()){
-    if (pathin.substr(pathin.length()-1) != "/")
-      history[nth].push(pathin + slash);
+  if  (!menuOnly){
+    if ( history[nth].size() > 1)
+      BackButton->set_sensitive(true);
     else
-      history[nth].push(pathin); */
+      BackButton->set_sensitive(false);
 
-if ( history[nth].size() > 1)
-    BackButton->set_sensitive(true);
-else
-    BackButton->set_sensitive(false);
-
-    Tabber->remove_page(nth);
-    addTab(nth);
-    Tabber->set_current_page(nth);
-  //  }
-
+      Tabber->remove_page(nth);
+      addTab(nth);
+      Tabber->set_current_page(nth);
+    }
 
   DarimasenMenuContainer->remove();
   DaMenu = Gtk::manage( new DarimasenMenu( history[nth].top(), *this,nth));
@@ -624,8 +600,6 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
 
     addTab(Tabber->get_n_pages());
     }
-
-
  }
 
 /**********************/
@@ -645,32 +619,22 @@ void Darimasen::fQuit(){
 
 void Darimasen::fAbout(){
 
-
-
   Glib::RefPtr<Gdk::Pixbuf> loader=  
     Gdk::Pixbuf::create_from_file( 
       ((Glib::ustring)DATADIR + (Glib::ustring)"/pixmaps/darimasenInfo.svg" ));
-
-
 
    Gtk::Dialog aboutDarimasen;
 
    Gtk::Button * closebutton1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-close")));
    Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(loader));
-
-
    aboutDarimasen.get_action_area()->property_layout_style().set_value(Gtk::BUTTONBOX_END);
-
-
    aboutDarimasen.get_vbox()->set_homogeneous(false);
    aboutDarimasen.get_vbox()->set_spacing(10);
    aboutDarimasen.get_vbox()->pack_start(*image1);
-
    aboutDarimasen.set_title("About Darimasen");
    aboutDarimasen.set_modal(true);
    aboutDarimasen.set_resizable(false);
    aboutDarimasen.add_action_widget(*closebutton1, -7);
-
   aboutDarimasen.show_all_children();
   aboutDarimasen.run();
   }
@@ -694,16 +658,13 @@ for( int i = 0; IconModeList.size() > i; i++)
 /**********************/
 
 void Darimasen::fBack(){
-  //history[Tabber->get_current_page()].pop();
-  //Glib::ustring tmp = history[Tabber->get_current_page()].top();
   history[Tabber->get_current_page()].pop();
 
-
-  ChangeCurrentPath(history[Tabber->get_current_page()].top(),false);
+  ChangeCurrentPath(history[Tabber->get_current_page()].top(),false,false);
 
   if (history[Tabber->get_current_page()].size() == 1)
     BackButton->set_sensitive(false);
- }
+  }
 
 /**********************/
 
