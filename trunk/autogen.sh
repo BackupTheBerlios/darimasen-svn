@@ -5,8 +5,8 @@
 if test ! -f install-sh ; then touch install-sh ; fi
 
 MAKE=`which gnumake`
-if test ! -x "$MAKE" ; then MAKE=`which gmake` ; fi
 if test ! -x "$MAKE" ; then MAKE=`which make` ; fi
+if test ! -x "$MAKE" ; then MAKE=`which gmake` ; fi
 HAVE_GNU_MAKE=`$MAKE --version|grep -c "Free Software Foundation"`
 
 if test "$HAVE_GNU_MAKE" != "1"; then 
@@ -23,7 +23,6 @@ then echo you need automake to generate the Makefile
 fi
 
 echo This script runs configure and make...
-echo You did remember necessary arguments for configure, right?
 
 # autoreconf$AC_POSTFIX -fim _might_ do the trick, too.
 #  chose to your taste
@@ -32,4 +31,3 @@ libtoolize --force --copy
 autoheader$AC_POSTFIX
 automake$AM_POSTFIX --add-missing --copy --gnu
 autoconf$AC_POSTFIX
-./configure $* && $MAKE
