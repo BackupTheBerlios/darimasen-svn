@@ -62,11 +62,15 @@ class Darimasen : public Gtk::Window {
     class DarimasenMenu : public Gtk::MenuBar {
       int depth;
       bool showHidden;
-      void MenuForPath(Gtk::Menu&, Glib::ustring&, Glib::ustring = "");
-      void SpecialMenuForPath(Gtk::Menu&, Glib::ustring&, Glib::ustring = "");
+      void MenuForPath(int, Glib::ustring, Glib::ustring = "", Glib::ustring = "");
+      void SpecialMenuForPath(int, Glib::ustring, Glib::ustring, Glib::ustring);
       Glib::ustring CountSubdir(const Glib::ustring&);
       void DaMenuSelect(Glib::ustring);
       Darimasen * parent;
+
+Gtk::Menu ** MenuArray; 
+Gtk::MenuItem ** MenuItemArray;
+ Glib::ustring * menulevel;
       public:
       DarimasenMenu(const Glib::ustring, Darimasen&);
       };
@@ -90,6 +94,10 @@ class Darimasen : public Gtk::Window {
     void tabberSwitched(GtkNotebookPage*, guint);
   void addTab(Glib::ustring, guint);
   void ChangeCurrentPath(Glib::ustring path);
+
+
+
+
 
   };
 

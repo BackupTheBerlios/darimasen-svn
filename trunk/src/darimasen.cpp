@@ -170,7 +170,7 @@ Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring path, Darimasen& Myp
     startPos = shortpath.find(slash,startPos) + 1; depth++;
     }
 
-  Glib::ustring menulevel[depth];
+  menulevel = new Glib::ustring[depth];
 
   startPos = 0;
   for(i = 0; shortpath.find(slash,startPos) !=  Glib::ustring::npos ; i++ ){
@@ -178,49 +178,71 @@ Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring path, Darimasen& Myp
     startPos = shortpath.find(slash,startPos) + 1;
     };
 
-  Gtk::Menu * MenuRay = Gtk::manage(new Gtk::Menu[depth+1]); // +1 for subfolder menu
+ // Gtk::Menu * MenuRay = Gtk::manage(new Gtk::Menu[depth+1]); // +1 for subfolder menu
+
+  MenuArray = new Gtk::Menu*[depth+1];
+  MenuItemArray = new Gtk::MenuItem*[depth+1];
+
+  for(int c = 0; c < depth+1; c++){
+    MenuArray[c] = new Gtk::Menu;
+    }
+
   
-  {
+  
     Glib::ustring subin = CountSubdir(path);
-    if ( subin != "0" )
-      items().push_front(Gtk::Menu_Helpers::MenuElem( subin + ">>", MenuRay[depth]));
-  }
+    if ( subin != "0" ){
+      MenuItemArray[depth] = new Gtk::MenuItem( subin + ">>" );
+      MenuItemArray[depth]->show();
+      MenuItemArray[depth]->set_submenu(*MenuArray[depth]);
+      prepend(*MenuItemArray[depth]);
+      MenuForPath(depth, path);
+      }
+  
+
+
 
   Glib::ustring crop = path;
 
 
   for(i = depth - 1; i>=0; i--){
-    //std::cout << menulevel[i] << "\n";
-    items().push_front(Gtk::Menu_Helpers::MenuElem( underscoreSafe(menulevel[i]), MenuRay[i]));
-    if(crop == path)
-      MenuForPath(MenuRay[i+1], crop);
-    else
-      MenuForPath(MenuRay[i+1], crop, menulevel[i+1]);
-    //std::cout << "!" << crop << "\n";
     crop = crop.substr(0, crop.rfind(slash,crop.length()-2)) + slash;
 
-    };
+    MenuItemArray[i] = new Gtk::MenuItem(underscoreSafe(menulevel[i]) );
+    MenuItemArray[i]->show();
+    MenuItemArray[i]->set_submenu(*MenuArray[i]);
+    prepend(*MenuItemArray[i]);
+    MenuForPath(i, crop, menulevel[i]);
+    }
 
   show();
-}
+  }
 
 /**********************/
 
 void Darimasen::DarimasenMenu::MenuForPath(
-       Gtk::Menu& tmp,
-       Glib::ustring& path,
-       Glib::ustring current){
+       int position,
+       Glib::ustring path,
+       Glib::ustring current,
+       Glib::ustring ext){
 
 //std::cout << path << current << "   " << current << "\n";
 
   int entry = 0;
 
-  if( current != ""){
-    Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem(current + " "));
-    tmp.attach(*subdir, 0 ,4, entry++, entry+1);
-    subdir->show();
+  if( current != "" ){
+
+   // if( ext != "" ){
+      Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem(current + " "));
+      MenuArray[position]->attach(*subdir, 0 ,4, entry++, entry+1);
+      subdir->show();
+  //    }
+  //  else {
+  //    Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem(ext + slash + current + " "));
+  //    MenuArray[position]->attach(*subdir, 0 ,4, entry++, entry+1);
+  //    subdir->show();
+  //    }
     Gtk::SeparatorMenuItem * sep = Gtk::manage( new Gtk::SeparatorMenuItem());
-    tmp.attach(*sep, 0 ,4, entry++, entry+1);
+    MenuArray[position]->attach(*sep, 0 ,4, entry++, entry+1);
     sep->show();
     }
 
@@ -236,8 +258,19 @@ void Darimasen::DarimasenMenu::MenuForPath(
         && refFileInfo->get_name() != "."
         && refFileInfo->get_name() != ".."
         ){ 
-std::cout << (refFileInfo->get_name() + slash + "\n");
-          Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem((refFileInfo->get_name() + slash + " ")));
+//std::cout << (refFileInfo->get_name() + slash + "\n");
+
+
+
+          Gtk::MenuItem * subdir;
+if(ext == ""){
+subdir = Gtk::manage( new Gtk::MenuItem((refFileInfo->get_name() + slash + " ")));
+}
+else{
+subdir = Gtk::manage( new Gtk::MenuItem((ext + slash + refFileInfo->get_name() + slash + " ")));
+}
+
+
           subdir->signal_activate().connect(
             sigc::bind<Glib::ustring>(
               sigc::mem_fun(*this, &Darimasen::DarimasenMenu::DaMenuSelect), (path + refFileInfo->get_name()) ));
@@ -257,26 +290,25 @@ std::cout << (refFileInfo->get_name() + slash + "\n");
             // the following has appearance considerations - esp.
             // pack_end and menu more than 2 wide.
             SubSubHbox->pack_end(*SubSubArrow, Gtk::PACK_SHRINK, 0);
-            SubSubHbox->pack_end(*SubSubLabel, Gtk::PACK_SHRINK, 0);
+            SubSubHbox->pack_end(*SubSubLabel, Gtk::PACK_SHRINK, 0); 
             Gtk::MenuItem * subsubdir = Gtk::manage( new Gtk::MenuItem(*SubSubHbox));
             subsubdir->set_right_justified();
 
            subsubdir->signal_activate().connect(
-             sigc::bind<Gtk::Menu&, Glib::ustring, Glib::ustring>(
+             sigc::bind<int, Glib::ustring, Glib::ustring, Glib::ustring>(
                sigc::mem_fun(*this, &Darimasen::DarimasenMenu::SpecialMenuForPath),
-                 tmp, path + refFileInfo->get_name(), refFileInfo->get_name() ));
+                 position, path, refFileInfo->get_name(), ext+current ));
 
 
             
-            tmp.attach(*subsubdir, 3 ,4, entry, entry+1);
+            MenuArray[position]->attach(*subsubdir, 3 ,4, entry, entry+1);
             subsubdir->show();
-            tmp.attach(*subdir, 0 ,3, entry++, entry+1);
+            MenuArray[position]->attach(*subdir, 0 ,3, entry++, entry+1);
 
-            subsubdir->set_sensitive(false);
             subdir->show();
             }
           else {
-            tmp.attach(*subdir, 0 ,4, entry++, entry+1);
+            MenuArray[position]->attach(*subdir, 0 ,4, entry++, entry+1);
             subdir->show();            
             }
           }
@@ -288,16 +320,22 @@ std::cout << (refFileInfo->get_name() + slash + "\n");
 /**********************/
 
 void Darimasen::DarimasenMenu::SpecialMenuForPath(
-       Gtk::Menu& tmp,
-       Glib::ustring& path,
-       Glib::ustring current){
+       int position,
+       Glib::ustring path,
+       Glib::ustring current,
+       Glib::ustring ext){
 
-      Glib::ustring C3 = path + slash;
-      tmp.hide_all();
-      tmp.items().clear();
-//std::cout << "C3 " << C3 << "\n";
-      MenuForPath(tmp, C3 );
-      tmp.show_all();
+  Glib::ustring C3 = path + current + slash;
+
+  MenuItemArray[position]->remove_submenu();
+  delete MenuArray[position];
+  MenuArray[position] = new Gtk::Menu;
+
+
+  MenuItemArray[position]->set_submenu(*MenuArray[position]);
+  MenuForPath(position, C3, current, current);
+
+  MenuItemArray[position]->select();
   }
 
 /**********************/
