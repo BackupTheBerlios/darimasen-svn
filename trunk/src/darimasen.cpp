@@ -114,6 +114,7 @@ void Darimasen::DarimasenMenu::SpecialMenuForPath(
        Glib::ustring ext){
 
 
+
   MenuItemArray[position]->remove_submenu();
   delete MenuArray[position];
   MenuArray[position] = Gtk::manage( new Gtk::Menu);
@@ -122,8 +123,28 @@ void Darimasen::DarimasenMenu::SpecialMenuForPath(
   MenuItemArray[position]->set_submenu(*MenuArray[position]);
   MenuForPath(position, path, ext);
 
-  MenuItemArray[position]->select(); // just using this seems buggy for bringing up the new menu. 
+
+
+  //closeButton->signal_clicked().connect(
+
+
+MenuArray[position]->signal_deactivate().connect(    sigc::bind<guint, Glib::ustring>(sigc::mem_fun(*this, &Darimasen::DarimasenMenu::offClick),position, path) );
+
+
+  MenuArray[position]->popup(1,gtk_get_current_event_time());
   }
+
+/**********************/
+
+    void Darimasen::DarimasenMenu::offClick(int position, Glib::ustring path){
+//void Darimasen::DarimasenMenu::on_popup_menu_position(int& x, int& y, bool& push_in){
+
+  MenuItemArray[position]->remove_submenu();
+  delete MenuArray[position];
+  MenuArray[position] = Gtk::manage( new Gtk::Menu);
+  MenuItemArray[position]->set_submenu(*MenuArray[position]);
+  MenuForPath(position, path, "");
+}
 
 /**********************/
 

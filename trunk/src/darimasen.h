@@ -68,11 +68,17 @@ class Darimasen : public Gtk::Window {
     void MenuForPath(int, Glib::ustring, Glib::ustring);
     void SpecialMenuForPath(int, Glib::ustring, Glib::ustring);
 
+    void offClick(int, Glib::ustring);
 
  //   void DaMenuSelect(Glib::ustring);
     Glib::ustring CountSubdir(const Glib::ustring&);
 //    bool PopupMenu(GdkEventButton*, const Glib::ustring);
    bool DaMenuSelect(GdkEventButton*, const Glib::ustring);
+
+
+
+//void on_popup_menu_position(int& x, int& y, bool& push_in);
+//typedef on_popup_menu_position Gtk::Menu::SlotPositionCalc;
 
   public:
     DarimasenMenu(const Glib::ustring, Darimasen&);

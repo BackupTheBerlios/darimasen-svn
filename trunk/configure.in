@@ -21,6 +21,5 @@ AC_SUBST([PKG_CFLAGS])
 AC_SUBST([PKG_LIBS])
 
 
-AC_CONFIG_FILES(Makefile src/Makefile pixmaps/Makefile)
 
-AC_OUTPUT()
+AC_OUTPUT([Makefile src/Makefile pixmaps/Makefile pixmaps/48x48/Makefile pixmaps/scalable/Makefile])

@@ -14,7 +14,7 @@ KEYWORDS="~x86"
 IUSE=""
 
 DEPEND=">=dev-libs/libsigc++-2.0.3
-        >=dev-cpp/gtkmm-2.4.0
+        >=dev-cpp/gtkmm-2.6.1
         >=dev-cpp/gnome-vfsmm-2.6.0
         x11-themes/gnome-icon-theme"
 RDEPEND="!x11-misc/darimasen"
@@ -91,10 +91,6 @@ subversion_svn_fetch() {
 
 }
 
-#src_unpack() {
-#	subversion_src_unpack
-#}
-
 src_compile() {
 	export WANT_AUTOCONF=2.5
 
@@ -108,7 +104,6 @@ src_compile() {
 
 src_install() {
 	einfo "Installing..."
-	#dodir /usr/share/fluxbox
 	make DESTDIR=${D} install || die "make install failed"
 	dodoc README* AUTHORS TODO* COPYING
 }
