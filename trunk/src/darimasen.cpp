@@ -372,7 +372,7 @@ void Darimasen::iconBuild(){
   Gtk::Widget * tmp = MainEventBox->get_child();
   if (tmp)
     delete tmp;
-  DaIconModes * Iconmodes = new class DaIconModes(fullPath,filesAtPath,iconmode,MainScrollerHeight,showHidden);
+  DaIconModes * Iconmodes = new class DaIconModes(fullPath,filesAtPath,iconmode,showHidden);
   MainEventBox->add(*Iconmodes);
   MainEventBox->get_child()->show();
   MainEventBox->show();
@@ -381,7 +381,7 @@ void Darimasen::iconBuild(){
 /**********************/
 
 void Darimasen::DaMenuBuilder(const int v){
-  
+  filesAtPath = 0;
   while( depth-- >= 0) //clean out if needed
   DaMenu.items().pop_back();
   
@@ -610,7 +610,7 @@ void Darimasen::DaMenu_size_allocate(Gtk::Allocation& allocation){
 DaMenuRequestWidth = allocation.get_width();
 
   if (activeCompact->get_active()){
-    std::cout << DaMenuAvailableWidth << " < " << DaMenuRequestWidth << "\n";
+  //  std::cout << DaMenuAvailableWidth << " < " << DaMenuRequestWidth << "\n";
 
 DoSomethingWithDaMenu = true;
     if (DaMenuAvailableWidth < DaMenuRequestWidth)

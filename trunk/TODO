@@ -1,12 +1,3 @@
-OK, I've separated the sidecon tables from the event boxes that actually activate them.
-
-This allows for generic menus.
-
-This also breaks a lot of other things. ^_^; However, it should also allow for a significant speedup of window resize, adding these separated event boxes to an array
-will a allow for a simple heightChange function to redistribute them on a table.
-
-
-
 --
 
 Ron <Rds> mentioned that Rox will be moving for ~/Choices to ~/.choices - should probably support that, or check both locations.
@@ -36,7 +27,7 @@ A: There are ways to do it with get_allocation(), but the redraw point needs to 
 
    
    
-   Generic detail view (Name, Size, Permissions, etc.) should be easy now with gnome_vfsmm; however, sorting them by this info is a bit more of a challenge. A ListView would probably be much better for this.
+   Generic detail view (Name, Size, Permissions, etc.) should be easy now with gnome_vfsmm; however, sorting them by this info is a bit more of a challenge. A ListView would probably be much better for this. This makes for some hey-my-scalp-is-bleeding type head-scratching problems, so a dummy label is in place for now.
 
 
 
