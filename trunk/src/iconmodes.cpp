@@ -565,7 +565,7 @@ DaIconModes::ChooseActionDialogue::ChooseActionDialogue(Glib::ustring mimeType){
  radiobutton2 = Gtk::manage(
       new class Gtk::RadioButton(_RadioBGroup_radiobutton1,
       "Set Mime For \"" + mimeType + "\"") ) ;
-https://www.fusemail.com/sq/src/webmail.php
+
   radiobutton2->signal_clicked().connect(
       sigc::bind<Glib::ustring >( sigc::mem_fun(*this,
       &DaIconModes::ChooseActionDialogue::GetCurrentAction), mimeType ));
@@ -833,16 +833,10 @@ Glib::RefPtr<Gdk::Pixbuf> DaIconModes::getIcon(Glib::ustring mimeGiven, guint si
   static std::vector <Glib::ustring> mimeList;
   static std::vector < Glib::RefPtr<Gdk::Pixbuf> > unsizedImg;
 
-//Glib::RefPtr<Gdk::Pixbuf> xe = Gdk::Pixbuf::create_from_file(ico);
-//Glib::RefPtr<Gdk::Pixbuf> xf = xe->scale_simple(48,48,Gdk::INTERP_TILES);
-
-
-//  Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(xf));
 
   for(i = 0; i< mimeList.size(); i++){
     if( mimeGiven == mimeList[i] ){
       Glib::RefPtr<Gdk::Pixbuf> scale = unsizedImg[i]->scale_simple(size,size,Gdk::INTERP_TILES);
-      //Gtk::Image * pic = Gtk::manage(new class Gtk::Image(scale));
       return scale;
       }
     }
@@ -857,30 +851,32 @@ Glib::RefPtr<Gdk::Pixbuf> DaIconModes::getIcon(Glib::ustring mimeGiven, guint si
     Glib::file_get_contents(ico);
     }
   catch(const Glib::Error) {
-    ico = "/usr/share/icons/gnome/48x48/mimetypes/gnome-mime-";
-    ico += mimeGiven.substr(0,mimeGiven.find("-"));
-    ico += ".png";
-
+    try{
+      ico = "/usr/share/icons/gnome/48x48/mimetypes/gnome-mime-";
+      ico += mimeGiven.substr(0,mimeGiven.find("-"));
+      ico += ".png";
+      Glib::file_get_contents(ico);
+      }
+    catch(const Glib::Error) {
+     ico = "/usr/share/icons/gnome/48x48/filesystems/gnome-fs-loading-icon.png";
+     }
     }
-//std::cout << mimeGiven << " " << mimeGiven.substr(0,mimeGiven.rfind("/")) << "\n";
-    mimeList.push_back(mimeGiven);
+
+  mimeList.push_back(mimeGiven);
 
   Glib::RefPtr<Gdk::Pixbuf> xe = Gdk::Pixbuf::create_from_file(ico);
 
   unsizedImg.push_back(xe);
 
-      Glib::RefPtr<Gdk::Pixbuf> scale = unsizedImg[i]->scale_simple(size,size,Gdk::INTERP_TILES);
-      //Gtk::Image * pic = Gtk::manage(new class Gtk::Image(scale));
-      return scale;
+  Glib::RefPtr<Gdk::Pixbuf> scale = unsizedImg[i]->scale_simple(size,size,Gdk::INTERP_TILES);
+  return scale; 
+  }
 
-  
-}
+/**********************
 
-/**********************/
-
-void DaIconModes::doShowHidden(bool newState){
+ void DaIconModes::doShowHidden(bool newState){
   showHidden = newState;
-  redraw();
+  *this.redraw();
   }
 
 

@@ -98,12 +98,14 @@ class Darimasen : public Gtk::Window {
   void ChangeCurrentPath(Glib::ustring path);
   void removeTab(guint);
   void fBack();
+  void fQuit();
+  void fShowHidden();
+  void fPrintHist();
 
 public:
   Darimasen(std::vector<Glib::ustring>);
   ~Darimasen();
-  void fQuit();
-  void fShowHidden();
+
   };
 
 /**********************/

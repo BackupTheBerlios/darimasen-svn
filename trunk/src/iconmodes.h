@@ -86,35 +86,27 @@ class DaIconModes : public Gtk::EventBox {
   void SetPermissions(const Glib::ustring);
 
   bool on_eventbox_button_press(GdkEventButton*, const Glib::ustring);
+  void on_size_allocate(Gtk::Allocation&);
+  void redraw();
+  bool addEntry(const Glib::ustring&, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, bool, bool&);
+  Glib::RefPtr<Gdk::Pixbuf> getIcon(Glib::ustring, guint);
+
+
   Glib::ustring fullPath;
   int filesAtPath;
   unsigned short iconmode;
   bool showHidden;
-
-
-
-  void on_size_allocate(Gtk::Allocation&);
-
-  void redraw();
   Gtk::EventBox ** sideconContainer;
   int slotsUsed;
   int IconsHigh;
-
-
-  bool addEntry(const Glib::ustring&, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, bool, bool&);
-
-
-Gtk::Menu m_Menu_Popup;
-
-
-Glib::RefPtr<Gdk::Pixbuf> getIcon(Glib::ustring, guint);
+  Gtk::Menu m_Menu_Popup;
 
 
 public:
-~DaIconModes();
-  DaIconModes(Glib::ustring, bool); //path, filesAtPath, mode 
-  //void getNewTable(int);
-  void doShowHidden(bool);
+  ~DaIconModes();
+  DaIconModes(Glib::ustring, bool);
+
+//  static void doShowHidden(bool);
   };
 
 /**********************/

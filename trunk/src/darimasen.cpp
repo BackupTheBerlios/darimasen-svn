@@ -230,33 +230,14 @@ Darimasen::DarimasenMenu::~DarimasenMenu(){
 
 // anything prefixed with 'f' corresponds with a button. 'nuff said.
 void Darimasen::fNewTab(){
-/*
-  //std::cout << path << "\n";
-  for(int i = 0; i < paths.size(); i++){
-
-
-    std::stack<Glib::ustring> empty;
-    history.push_back(empty);
-    history[i].push(paths[i]);
-
-    addTab(history[i].top(), Tabber->get_n_pages());
-    }
-    //std::cout << history[0][0] << history[0].size() << "!\n";
-
- }*/
     std::stack<Glib::ustring> empty;
     history.push_back(empty);
 
 #ifdef WIN32
-  //path.push_back(getenv("USERPROFILE") + slash);
-
-
+  history[history.size() -1].push(getenv("USERPROFILE") + slash);
   addTab(getenv("USERPROFILE") + slash, Tabber->get_n_pages());
 #else
-  //path.push_back(getenv("HOME") + slash);
-
-
-
+  history[history.size() -1].push(getenv("HOME") + slash);
   addTab(getenv("HOME") + slash, Tabber->get_n_pages());
 #endif
   }
@@ -267,8 +248,7 @@ void Darimasen::fNewTab(){
 void Darimasen::tabberSwitched(GtkNotebookPage* sig, guint n){
   DarimasenMenuContainer->remove();
 
- // DaMenu = Gtk::manage(new DarimasenMenu(path[n], *this));
-DaMenu = Gtk::manage(new DarimasenMenu(history[n].top(), *this));
+  DaMenu = Gtk::manage(new DarimasenMenu(history[n].top(), *this));
   DarimasenMenuContainer->add(*DaMenu);
 
   if (history[n].size() == 1)
@@ -287,12 +267,6 @@ void Darimasen::addTab(Glib::ustring path, guint pos){
     Tabber->set_show_tabs(false);
   else
     Tabber->set_show_tabs(true);
-
-
-    history[history.size() -1].push(path);
-
-
-
 
   Gtk::Image * xed = Gtk::manage(
     new Gtk::Image("/usr/share/icons/hicolor/16x16/stock/generic/stock_close.png"));
@@ -342,20 +316,20 @@ void Darimasen::ChangeCurrentPath(Glib::ustring pathin){
   guint nth = Tabber->get_current_page();
 
 
-if (pathin.substr(pathin.length()-1) != "/")
-  history[nth].push(pathin + slash);//path[nth] = pathin + slash;
-else
-  history[nth].push(pathin);//path[nth] = pathin + slash;
+  if (pathin.substr(pathin.length()-1) != "/")
+    history[nth].push(pathin + slash);
+  else
+    history[nth].push(pathin);
 
   BackButton->set_sensitive(true);
 
   DarimasenMenuContainer->remove();
-  DaMenu = Gtk::manage( new DarimasenMenu(history[nth].top(), *this));//DaMenu = Gtk::manage( new DarimasenMenu(path[nth], *this));
+  DaMenu = Gtk::manage( new DarimasenMenu(history[nth].top(), *this));
   DarimasenMenuContainer->add(*DaMenu);
 
   Tabber->remove_page(nth);
 
-  addTab(history[nth].top(), nth);//addTab(path[nth], nth);
+  addTab(history[nth].top(), nth);
   Tabber->set_current_page(nth);
   }
 
@@ -371,11 +345,8 @@ void Darimasen::removeTab(guint pos){
 
   guint tmp = pos;
   Tabber->remove_page(pos);
-  while( tmp < Tabber->get_n_pages()){
-    history.swap(tmp,tmp+1);//history[tmp] = history[tmp+1];//path[tmp] = path[tmp+1];
-    tmp++;
-    }
-  history.pop_back();//path.pop_back();
+
+  history.erase(history.begin()+pos,history.begin()+pos+1 );
   }
 
 
@@ -384,7 +355,6 @@ void Darimasen::removeTab(guint pos){
 Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   set_title("Darimasen");
   set_default_size(500, 330);
-  //path = paths;
 
   add(VerticalOrganizer);
   VerticalOrganizer.show();
@@ -408,11 +378,11 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
 
   // glade-- told me to do it....
   menulist.push_back(Gtk::Menu_Helpers::CheckMenuElem(
-    "Show Hidden Files",Gtk::AccelKey(GDK_H, Gdk::CONTROL_MASK), sigc::mem_fun(*this, &Darimasen::fShowHidden)));
+    "Show Hidden Directories",Gtk::AccelKey(GDK_H, Gdk::CONTROL_MASK), sigc::mem_fun(*this, &Darimasen::fShowHidden)));
   optShowHidden = (Gtk::CheckMenuItem *)&menulist.back();
 
-//optShowHidden->signal_toggled().connect(
-//  sigc::bind<bool>(sigc::mem_fun(*this, &DaIconModes::doShowHidden), showHidden) );
+  menulist.push_back(Gtk::Menu_Helpers::MenuElem(
+    "Print history to Terminal",Gtk::AccelKey(GDK_P, Gdk::CONTROL_MASK), sigc::mem_fun(*this, &Darimasen::fPrintHist)));
 
 
   if (optShowHidden->get_active()){
@@ -440,8 +410,6 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   TopBar.append(*DarimasenMenuContainer);
   DarimasenMenuContainer->set_expand(true);
   DarimasenMenuContainer->show();
-  //DaMenu = Gtk::manage(new DarimasenMenu(path[0]));
-  //DarimasenMenuContainer->add(*DaMenu);
 
   Gtk::SeparatorToolItem * sep2  = Gtk::manage(new Gtk::SeparatorToolItem);
   TopBar.append(*sep2);
@@ -488,17 +456,14 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
 
   show();
 
-  //std::cout << path << "\n";
   for(int i = 0; i < paths.size(); i++){
-
-
     std::stack<Glib::ustring> empty;
     history.push_back(empty);
     history[i].push(paths[i]);
 
     addTab(history[i].top(), Tabber->get_n_pages());
     }
-    //std::cout << history[0][0] << history[0].size() << "!\n";
+
 
  }
 
@@ -530,25 +495,34 @@ void Darimasen::fShowHidden(){
   DaMenu = Gtk::manage( new DarimasenMenu(history[Tabber->get_current_page()].top(), *this));
   DarimasenMenuContainer->add(*DaMenu);
 
-
-//Glib::RefPtr<DaIconModes> tpw =
- Tabber->get_nth_page(Tabber->get_current_page())->show();
-//->doShowHidden(optShowHidden->get_active());
-//child_notify("on_size_allocate");
+  Tabber->get_nth_page(Tabber->get_current_page())->show();
   }
 
 /**********************/
 
-  void Darimasen::fBack(){
+void Darimasen::fBack(){
+  history[Tabber->get_current_page()].pop();
+  Glib::ustring tmp = history[Tabber->get_current_page()].top();
+  history[Tabber->get_current_page()].pop();
+  ChangeCurrentPath(tmp);
+  //std::cout << tmp <<"\n";
 
-history[Tabber->get_current_page()].pop();
-Glib::ustring tmp = history[Tabber->get_current_page()].top();
-history[Tabber->get_current_page()].pop();
-ChangeCurrentPath(tmp);
-std::cout << tmp <<"\n";
-
-if (history[Tabber->get_current_page()].size() == 1)
-  BackButton->set_sensitive(false);
+  if (history[Tabber->get_current_page()].size() == 1)
+    BackButton->set_sensitive(false);
  }
+
+/**********************/
+
+void Darimasen::fPrintHist(){
+  std::vector< std::stack<Glib::ustring> > destroy = history;
+  
+  std::cout << "There are " << destroy.size() << " tabs here.\n";
+  
+  for (int i = 0; i < destroy.size(); i++){
+    for (; destroy[i].size() > 0; destroy[i].pop()){
+      std::cout << "history[" << i << "].top() = " << destroy[i].top() << "\n";
+      }
+    }
+  }
 
 /**********************/
