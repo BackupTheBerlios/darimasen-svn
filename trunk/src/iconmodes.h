@@ -94,6 +94,8 @@ class DaIconModes : public Gtk::EventBox {
 
 
   void on_size_allocate(Gtk::Allocation&);
+
+  void redraw();
   Gtk::EventBox ** sideconContainer;
   int slotsUsed;
   int IconsHigh;
@@ -101,15 +103,18 @@ class DaIconModes : public Gtk::EventBox {
 
   bool addEntry(const Glib::ustring&, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, bool, bool&);
 
+
 Gtk::Menu m_Menu_Popup;
 
 
 Glib::RefPtr<Gdk::Pixbuf> getIcon(Glib::ustring, guint);
 
+
 public:
 ~DaIconModes();
-  DaIconModes(Glib::ustring); //path, filesAtPath, mode 
+  DaIconModes(Glib::ustring, bool); //path, filesAtPath, mode 
   //void getNewTable(int);
+  void doShowHidden(bool);
   };
 
 /**********************/

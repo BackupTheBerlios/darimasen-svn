@@ -45,7 +45,7 @@ void Darimasen::DarimasenMenu::MenuForPath(
     while(file_exists) {
       Glib::RefPtr<Gnome::Vfs::FileInfo> refFileInfo = handle.read_next(file_exists);
       if (refFileInfo->get_type() == Gnome::Vfs::FILE_TYPE_DIRECTORY
-          && ( (refFileInfo->get_name().substr(0,1) != ".") || showHidden )
+          && ( (refFileInfo->get_name().substr(0,1) != ".") || parent->showHidden )
           && refFileInfo->get_name() != "."
           && refFileInfo->get_name() != ".."
           ){ 
@@ -137,7 +137,7 @@ Glib::ustring Darimasen::DarimasenMenu::CountSubdir(const Glib::ustring& path){
 
       Glib::RefPtr<Gnome::Vfs::FileInfo> refFileInfo = handle.read_next(file_exists);
       if (refFileInfo->get_type() == Gnome::Vfs::FILE_TYPE_DIRECTORY
-        && ( (refFileInfo->get_name().substr(0,1) != ".") || showHidden )
+        && ( (refFileInfo->get_name().substr(0,1) != ".") || parent->showHidden )
         && refFileInfo->get_name() != "."
         && refFileInfo->get_name() != ".."){
         j++;
@@ -154,7 +154,7 @@ Glib::ustring Darimasen::DarimasenMenu::CountSubdir(const Glib::ustring& path){
 // parses the path, builds the menu bar. 
 Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring path, Darimasen& Myparent){
   depth = 0;
-  showHidden = false;
+  //showHidden = false;
   Glib::ustring shortpath = path; //home = getenv("HOME");
   parent = &Myparent;
   
@@ -230,11 +230,33 @@ Darimasen::DarimasenMenu::~DarimasenMenu(){
 
 // anything prefixed with 'f' corresponds with a button. 'nuff said.
 void Darimasen::fNewTab(){
+/*
+  //std::cout << path << "\n";
+  for(int i = 0; i < paths.size(); i++){
+
+
+    std::stack<Glib::ustring> empty;
+    history.push_back(empty);
+    history[i].push(paths[i]);
+
+    addTab(history[i].top(), Tabber->get_n_pages());
+    }
+    //std::cout << history[0][0] << history[0].size() << "!\n";
+
+ }*/
+    std::stack<Glib::ustring> empty;
+    history.push_back(empty);
+
 #ifdef WIN32
-  path.push_back(getenv("USERPROFILE") + slash);
+  //path.push_back(getenv("USERPROFILE") + slash);
+
+
   addTab(getenv("USERPROFILE") + slash, Tabber->get_n_pages());
 #else
-  path.push_back(getenv("HOME") + slash);
+  //path.push_back(getenv("HOME") + slash);
+
+
+
   addTab(getenv("HOME") + slash, Tabber->get_n_pages());
 #endif
   }
@@ -245,8 +267,15 @@ void Darimasen::fNewTab(){
 void Darimasen::tabberSwitched(GtkNotebookPage* sig, guint n){
   DarimasenMenuContainer->remove();
 
-  DaMenu = Gtk::manage(new DarimasenMenu(path[n], *this));
+ // DaMenu = Gtk::manage(new DarimasenMenu(path[n], *this));
+DaMenu = Gtk::manage(new DarimasenMenu(history[n].top(), *this));
   DarimasenMenuContainer->add(*DaMenu);
+
+  if (history[n].size() == 1)
+    BackButton->set_sensitive(false);
+  else
+    BackButton->set_sensitive(true);
+
   }
 
 /**********************/
@@ -258,6 +287,12 @@ void Darimasen::addTab(Glib::ustring path, guint pos){
     Tabber->set_show_tabs(false);
   else
     Tabber->set_show_tabs(true);
+
+
+    history[history.size() -1].push(path);
+
+
+
 
   Gtk::Image * xed = Gtk::manage(
     new Gtk::Image("/usr/share/icons/hicolor/16x16/stock/generic/stock_close.png"));
@@ -289,7 +324,7 @@ void Darimasen::addTab(Glib::ustring path, guint pos){
   MainEventBox->show();
 
   DaIconModes * foo;
-  foo = new DaIconModes(path);
+  foo = new DaIconModes(path, showHidden);
   Gtk::ScrolledWindow * MainScroller = Gtk::manage(new Gtk::ScrolledWindow);
   MainScroller->show();
   MainScroller->set_shadow_type(Gtk::SHADOW_NONE);
@@ -306,15 +341,21 @@ void Darimasen::addTab(Glib::ustring path, guint pos){
 void Darimasen::ChangeCurrentPath(Glib::ustring pathin){
   guint nth = Tabber->get_current_page();
 
-  path[nth] = pathin + slash;
+
+if (pathin.substr(pathin.length()-1) != "/")
+  history[nth].push(pathin + slash);//path[nth] = pathin + slash;
+else
+  history[nth].push(pathin);//path[nth] = pathin + slash;
+
+  BackButton->set_sensitive(true);
 
   DarimasenMenuContainer->remove();
-  DaMenu = Gtk::manage( new DarimasenMenu(path[nth], *this));
+  DaMenu = Gtk::manage( new DarimasenMenu(history[nth].top(), *this));//DaMenu = Gtk::manage( new DarimasenMenu(path[nth], *this));
   DarimasenMenuContainer->add(*DaMenu);
 
   Tabber->remove_page(nth);
 
-  addTab(path[nth], nth);
+  addTab(history[nth].top(), nth);//addTab(path[nth], nth);
   Tabber->set_current_page(nth);
   }
 
@@ -331,10 +372,10 @@ void Darimasen::removeTab(guint pos){
   guint tmp = pos;
   Tabber->remove_page(pos);
   while( tmp < Tabber->get_n_pages()){
-    path[tmp] = path[tmp+1];
+    history.swap(tmp,tmp+1);//history[tmp] = history[tmp+1];//path[tmp] = path[tmp+1];
     tmp++;
     }
-  path.pop_back();
+  history.pop_back();//path.pop_back();
   }
 
 
@@ -343,7 +384,7 @@ void Darimasen::removeTab(guint pos){
 Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   set_title("Darimasen");
   set_default_size(500, 330);
-  path = paths;
+  //path = paths;
 
   add(VerticalOrganizer);
   VerticalOrganizer.show();
@@ -364,6 +405,27 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
 
   //Gtk::Widget * image1 = Gtk::manage(new class Gtk::Arrow(Gtk::ARROW_DOWN ,Gtk::SHADOW_NONE)); 
   CompactMenu->items().push_back( Gtk::Menu_Helpers::MenuElem("\342\226\274",*m_Menu_File) );
+
+  // glade-- told me to do it....
+  menulist.push_back(Gtk::Menu_Helpers::CheckMenuElem(
+    "Show Hidden Files",Gtk::AccelKey(GDK_H, Gdk::CONTROL_MASK), sigc::mem_fun(*this, &Darimasen::fShowHidden)));
+  optShowHidden = (Gtk::CheckMenuItem *)&menulist.back();
+
+//optShowHidden->signal_toggled().connect(
+//  sigc::bind<bool>(sigc::mem_fun(*this, &DaIconModes::doShowHidden), showHidden) );
+
+
+  if (optShowHidden->get_active()){
+    showHidden = true;
+    }
+  else{
+    showHidden = false;
+    }
+
+  menulist.push_back( Gtk::Menu_Helpers::SeparatorElem() ) ;
+
+  menulist.push_back( Gtk::Menu_Helpers::StockMenuElem(Gtk::Stock::QUIT,
+    sigc::mem_fun(*this, &Darimasen::fQuit) ) );
     
   TopBar.set_show_arrow(false);
   CompactMenuContainer->add(*CompactMenu); 
@@ -385,8 +447,8 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   TopBar.append(*sep2);
   sep2->show();
 
-  Gtk::ToolButton * BackButton = Gtk::manage(new Gtk::ToolButton(Gtk::StockID("gtk-go-back")));
-  //BackButton->signal_clicked().connect(sigc::mem_fun(*this, &Darimasen::fBackButton));
+  BackButton = Gtk::manage(new Gtk::ToolButton(Gtk::StockID("gtk-go-back")));
+  BackButton->signal_clicked().connect(sigc::mem_fun(*this, &Darimasen::fBack));
   TopBar.append(*BackButton);
   BackButton->set_sensitive(false);
   BackButton->show();
@@ -427,23 +489,66 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   show();
 
   //std::cout << path << "\n";
-  for(int i = 0; i < path.size(); i++)
-    addTab(path[i], Tabber->get_n_pages());
-  }
+  for(int i = 0; i < paths.size(); i++){
+
+
+    std::stack<Glib::ustring> empty;
+    history.push_back(empty);
+    history[i].push(paths[i]);
+
+    addTab(history[i].top(), Tabber->get_n_pages());
+    }
+    //std::cout << history[0][0] << history[0].size() << "!\n";
+
+ }
 
 /**********************/
 
 Darimasen::~Darimasen(){
-  // I'm getting a little 'free()' error when closing on the first run...
+  fQuit();
+  }
+
+/**********************/
+
+void Darimasen::fQuit(){
   DarimasenMenuContainer->remove();
   hide();
   }
 
 /**********************/
 
+void Darimasen::fShowHidden(){
+
+  if (optShowHidden->get_active()){
+    showHidden = true;
+    }
+  else{
+    showHidden = false;
+    }
+
+  DarimasenMenuContainer->remove();
+  DaMenu = Gtk::manage( new DarimasenMenu(history[Tabber->get_current_page()].top(), *this));
+  DarimasenMenuContainer->add(*DaMenu);
 
 
+//Glib::RefPtr<DaIconModes> tpw =
+ Tabber->get_nth_page(Tabber->get_current_page())->show();
+//->doShowHidden(optShowHidden->get_active());
+//child_notify("on_size_allocate");
+  }
 
 /**********************/
-/**********************/
+
+  void Darimasen::fBack(){
+
+history[Tabber->get_current_page()].pop();
+Glib::ustring tmp = history[Tabber->get_current_page()].top();
+history[Tabber->get_current_page()].pop();
+ChangeCurrentPath(tmp);
+std::cout << tmp <<"\n";
+
+if (history[Tabber->get_current_page()].size() == 1)
+  BackButton->set_sensitive(false);
+ }
+
 /**********************/

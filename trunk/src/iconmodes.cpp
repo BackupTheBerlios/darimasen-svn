@@ -5,7 +5,7 @@
 
 /**********************/
 
-DaIconModes::DaIconModes(Glib::ustring  path) {                        
+DaIconModes::DaIconModes(Glib::ustring path, bool toShowHidden) {                        
 
   filesAtPath = 0;
   try{
@@ -24,7 +24,7 @@ DaIconModes::DaIconModes(Glib::ustring  path) {
   fullPath = path;
 
   iconmode = 0;
-  showHidden = 0;
+  showHidden = toShowHidden;
   slotsUsed = 0;
   IconsHigh = 0;
   set_visible_window(false);
@@ -483,14 +483,40 @@ bool DaIconModes::on_eventbox_button_press(GdkEventButton* event, const Glib::us
 /**********************/
 
 void DaIconModes::on_size_allocate(Gtk::Allocation& allocation){
-  Gtk::Widget * tmp = get_child();
+
 
   if(iconmode == 0){
     int oldie = IconsHigh;
     IconsHigh = allocation.get_height() / 60;
   
-    if ( oldie != IconsHigh ){ // if resize is needed
-      if (tmp)
+    if ( oldie != IconsHigh ){
+
+redraw(); // if resize is needed
+     
+      }
+    }
+
+
+  if(iconmode == 1 ){
+   
+    Gtk::Widget * tmp = get_child();
+if (!tmp){
+    IconsHigh = 0;
+    if (tmp)
+      delete tmp; // actually DisposableTable, but segfaulted otherwise
+    Gtk::Label * x = new Gtk::Label("Details go here.");
+    x->show();
+    add(*x);
+    }}
+  Gtk::EventBox::on_size_allocate(allocation);
+  }
+
+/**********************/
+
+void DaIconModes::redraw(){
+    Gtk::Widget * tmp = get_child();
+  
+   if (tmp)
         delete tmp; // actually DisposableTable, but segfaulted otherwise
       Gtk::Table * DisposableTable = new Gtk::Table((filesAtPath)/IconsHigh+1,IconsHigh);
       add(*DisposableTable);
@@ -513,19 +539,7 @@ void DaIconModes::on_size_allocate(Gtk::Allocation& allocation){
           }
         }
       DisposableTable->show();
-      }
-    }
-
-
-  if(iconmode == 1 && !(tmp)){
-    IconsHigh = 0;
-    if (tmp)
-      delete tmp; // actually DisposableTable, but segfaulted otherwise
-    Gtk::Label * x = new Gtk::Label("Details go here.");
-    x->show();
-    add(*x);
-    }
-  Gtk::EventBox::on_size_allocate(allocation);
+  
   }
 
 /**********************/
@@ -862,6 +876,12 @@ Glib::RefPtr<Gdk::Pixbuf> DaIconModes::getIcon(Glib::ustring mimeGiven, guint si
   
 }
 
+/**********************/
+
+void DaIconModes::doShowHidden(bool newState){
+  showHidden = newState;
+  redraw();
+  }
 
 
 /**********************/
