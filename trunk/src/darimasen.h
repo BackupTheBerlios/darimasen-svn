@@ -61,8 +61,9 @@ class Darimasen : public Gtk::Window {
   private:
     class DarimasenMenu : public Gtk::MenuBar {
       int depth;
-      Gtk::Menu MenuForPath(Glib::ustring);
-      Glib::ustring CountSubdir(Glib::ustring);
+      bool showHidden;
+      int MenuForPath(Gtk::Menu&, Glib::ustring&, Glib::ustring = "");
+      Glib::ustring CountSubdir(const Glib::ustring&);
       public:
       DarimasenMenu(const Glib::ustring);
       };
@@ -77,13 +78,15 @@ class Darimasen : public Gtk::Window {
       Gtk::ScrolledWindow TreeScroller;
 
         Gtk::Notebook * Tabber;
-        Gtk::EventBox * MainEventBox;
     Gtk::Statusbar Info;
 
-
+  void fNewTab();
   int numOfTabs;
-
+  std::vector<Glib::ustring> path;
+    guint CurrentPath;
+    void tabberSwitched(GtkNotebookPage*, guint);
   void addTab(Glib::ustring);
+
 
   };
 

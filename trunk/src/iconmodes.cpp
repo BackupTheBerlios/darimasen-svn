@@ -471,7 +471,7 @@ void DaIconModes::on_size_allocate(Gtk::Allocation& allocation){
     int oldie = IconsHigh;
     IconsHigh = allocation.get_height() / 60;
   
-    if ( (oldie != IconsHigh) ){ // if resize is needed
+    if ( oldie != IconsHigh ){ // if resize is needed
       if (tmp)
         delete tmp; // actually DisposableTable, but segfaulted otherwise
       Gtk::Table * DisposableTable = new Gtk::Table((filesAtPath)/IconsHigh+1,IconsHigh);

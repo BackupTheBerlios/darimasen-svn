@@ -51,13 +51,13 @@ int main(int argc, char *argv[])
 
   if(path.empty())
 #ifdef WIN32
-  path.push_back(getenv("USERPROFILE") + slash));
+  path.push_back(getenv("USERPROFILE") + slash);
 #else
   path.push_back(getenv("HOME") + slash);
 #endif
 
   std::cout << "Tabs opened should be for:\n";
-  for(int i =0; i<path.size();i++)
+  for(int i =0; i< path.size();i++)
       std::cout << path[i]
                 << /*" " 
                 << path[i].substr(path[i].rfind(slash, path[i].length() -2)+1)
