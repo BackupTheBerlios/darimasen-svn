@@ -41,7 +41,7 @@
 #include <gtkmm/eventbox.h>
 
 #include <gtkmm/menuitem.h>
-#include <libgnomevfsmm.h>
+
 
 #include "supplimental.h"
 #include <iostream>
@@ -55,7 +55,7 @@
 
 class Darimasen : public Gtk::Window {
   public:
-    Darimasen(Glib::ustring);
+    Darimasen(std::vector<Glib::ustring>);
     ~Darimasen();
 
   private:

@@ -7,10 +7,9 @@
 
 /**********************/
 
-Darimasen::Darimasen(Glib::ustring path){
+Darimasen::Darimasen(std::vector<Glib::ustring> path){
   set_title("Darimasen");
   set_default_size(500, 330);
-  Gnome::Vfs::init();
   numOfTabs = 0;
 
   add(VerticalOrganizer);
@@ -46,7 +45,7 @@ Darimasen::Darimasen(Glib::ustring path){
   TopBar.append(*DarimasenMenuContainer);
   DarimasenMenuContainer->set_expand(true);
   DarimasenMenuContainer->show();
-  DaMenu = Gtk::manage(new DarimasenMenu(path));
+  DaMenu = Gtk::manage(new DarimasenMenu(path[0]));
   DarimasenMenuContainer->add(*DaMenu);
 
   Gtk::SeparatorToolItem * sep2  = Gtk::manage(new Gtk::SeparatorToolItem);
@@ -85,7 +84,8 @@ Darimasen::Darimasen(Glib::ustring path){
   show();
 
   //std::cout << path << "\n";
-  addTab(path);
+  for(int i = 0; i < path.size(); i++)
+    addTab(path[i]);
   }
 
 /**********************/
@@ -104,7 +104,7 @@ void Darimasen::addTab(Glib::ustring path){
     Tabber->set_show_tabs(true);
   numOfTabs++;
 
-  Gtk::Label * tabNum = Gtk::manage(new Gtk::Label(int2ustr(numOfTabs)));
+  Gtk::Label * tabNum = Gtk::manage(new Gtk::Label(path.substr(path.rfind(slash, path.length() -2)+1)));
 
   Gtk::EventBox * MainEventBox = Gtk::manage(new class Gtk::EventBox);
 
