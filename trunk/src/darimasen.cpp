@@ -13,6 +13,8 @@ Darimasen::Darimasen(Glib::ustring path)
   set_default_size(500, 320);
   iconmode = 0;
   depth = 0;
+  filesAtPath = 0;
+  DoSomethingWithDaMenu = false;
   Gnome::Vfs::init();
   
   
@@ -53,8 +55,12 @@ Darimasen::Darimasen(Glib::ustring path)
   DaMenuBuilder(resolvePath(path));
   tb1.set_expand(true);
 
+    tb1.signal_size_allocate().connect (
+		sigc::mem_fun (*this, &Darimasen::DaMenu_size_allocate));
   tb1.add(DaMenu);
   m_Controls.add(tb1);
+
+  
   DaMenu.show();
   tb1.show();
   
@@ -135,6 +141,8 @@ Darimasen::Darimasen(Glib::ustring path)
   
 
   MainScrollerHeight = 0;
+  DaMenuAvailableWidth = 0;
+
 
   }
 
@@ -349,37 +357,14 @@ int Darimasen::changePath(Glib::ustring givenPath, bool back){
 void Darimasen::fActiveCompaction(){
   if (activeCompact->get_active()){
     m_Controls.set_show_arrow(true);
-    DaMenuWidth = tb1.get_width();
     }
   else{
-    m_Controls.set_show_arrow(false);
-    DaMenuWidth = -1;
+    m_Controls.set_show_arrow(false);  
     }
   }
 
 /**********************/
 
-bool Darimasen::on_configure_event(GdkEventConfigure* event){
-
-  int oldHeight = MainScrollerHeight;
-  MainScrollerHeight = event->height
-                         - m_Controls.get_height()
-                         - m_Statusbar.get_height()
-                         - MainScroller.get_hscrollbar()->get_height();
-
-  Gtk::Widget * tmp = MainEventBox->get_child();
-
-  // Are you sure?
-  if (!tmp || MainScrollerHeight != oldHeight){
-    // Are you really sure? (this saves a lot on the constant-redraw front)
-    if ((MainScrollerHeight/58) != (oldHeight/58))
-    iconBuild();
-    }
-    
-  return Gtk::Widget::on_configure_event(event);
-  }
-
-/**********************/
  
 void Darimasen::iconBuild(){  
   Gtk::Widget * tmp = MainEventBox->get_child();
@@ -491,7 +476,7 @@ void Darimasen::DaMenuBuilder(const int v){
       } 
     
 
-  int pos = 0;
+  int pos = 0;// filesAtPath = 0;
   try{
     Gnome::Vfs::DirectoryHandle handle;
     handle.open(curdir, Gnome::Vfs::FILE_INFO_DEFAULT | Gnome::Vfs::FILE_INFO_FOLLOW_LINKS);
@@ -550,11 +535,7 @@ void Darimasen::DaMenuBuilder(const int v){
         }     
       curdir = curdir.substr(0, curdir.rfind(slash, curdir.length()-2)) + slash;     
       i--;
-
-
     }         
-
- 
   }
 
 /**********************/
@@ -572,6 +553,74 @@ void Darimasen::DaMenuBuilder(const int v){
   DaMenuBuilder(changePath(fullPath,1));
   
   iconBuild();
+  }
+/**********************/
+
+
+bool Darimasen::on_configure_event(GdkEventConfigure* event){
+  //std::cout << "The Window happens." << "\n";
+  int oldHeight = MainScrollerHeight;
+  MainScrollerHeight = event->height
+                         - m_Controls.get_height()
+                         - m_Statusbar.get_height()
+                         - MainScroller.get_hscrollbar()->get_height();
+
+  Gtk::Widget * tmp = MainEventBox->get_child();
+
+  // Are you sure?
+  if (!tmp || MainScrollerHeight != oldHeight){
+    // Are you really sure? (this saves a lot on the constant-redraw front)
+    if ((MainScrollerHeight/58) != (oldHeight/58))
+    iconBuild();
+    }
+
+
+
+    
+  return Gtk::Widget::on_configure_event(event);
+  }
+
+/**********************/
+
+void Darimasen::on_size_allocate(Gtk::Allocation& allocation){
+Gtk::Window::on_size_allocate(allocation);
+  if (activeCompact->get_active()){
+    DaMenuAvailableWidth = allocation.get_width() - 6
+                           - tb0.get_width()
+                           - separatortoolitem1.get_width() * 2
+                           - BackButton->get_width() * 3;
+
+
+
+  if(DoSomethingWithDaMenu){
+    std::cout << "This is the Window speaking... \n";
+    std::cout << DaMenuAvailableWidth << " < " << DaMenuRequestWidth << "\n";
+
+    if (DaMenuAvailableWidth < DaMenuRequestWidth)
+      std::cout << "too small!" << "\n";
+
+    
+    }
+    DoSomethingWithDaMenu = true;
+
+}
+
+}
+
+/**********************/
+
+void Darimasen::DaMenu_size_allocate(Gtk::Allocation& allocation){
+
+
+  if (activeCompact->get_active()){
+std::cout << "The Menu Happens." << "\n";
+DaMenuRequestWidth = allocation.get_width();
+DoSomethingWithDaMenu = false;
+    std::cout << "This is the allocator speaking... ";
+    if (DaMenuAvailableWidth < DaMenuRequestWidth)
+      std::cout << "too small!" << "\n";
+
+    }
   }
 
 /**********************/

@@ -11,11 +11,10 @@ DaIconModes::DaIconModes(
     int            atPath,
     unsigned short usingMode,
     int            MainScrollerHeight,
-    bool           givehidden ) {
-                                  
+    bool           givehidden ) {                        
+  //There really should be a more efficient way of doing this...
   resize(atPath,atPath);
-  double_buffered();
-    
+  //double_buffered(); 
   fullPath = path;
   filesAtPath = atPath;
   iconmode = usingMode;
@@ -28,7 +27,7 @@ DaIconModes::DaIconModes(
 // 0 is sidecon view
 // 1 is detail view
     
-  
+
   switch(iconmode){  
     case 0:
       

@@ -72,7 +72,6 @@ protected:
   Glib::ustring pathTruncator; //$HOME and equivelent
   std::stack<Glib::ustring> history;
   int filesAtPath;
-  int DaMenuWidth;
   Gdk::Color m_Color;
   unsigned short iconmode;
 
@@ -91,8 +90,14 @@ protected:
   void DaMenuSelect(Glib::ustring);
   void iconBuild();
 
+void DaMenu_size_allocate(Gtk::Allocation&);
   
   bool on_configure_event(GdkEventConfigure*); // overwrite the virtual
+void on_size_allocate(Gtk::Allocation& );
+  int MainScrollerHeight;
+  int DaMenuAvailableWidth;
+  int DaMenuRequestWidth;
+  bool DoSomethingWithDaMenu;
   
   //Child widgets:
   Gtk::VBox m_Box;
@@ -112,7 +117,7 @@ protected:
       Gtk::ScrolledWindow FileTreeScroller;
 
       Gtk::ScrolledWindow MainScroller;
-        int MainScrollerHeight;
+
         Gtk::EventBox * MainEventBox;   
     Gtk::Statusbar m_Statusbar;
 };
