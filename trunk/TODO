@@ -1,0 +1,75 @@
+
+--version 0.0.6
+
+   limit DaMenu expansion. (preserve window width for long paths)
+   Hung up on the fact that new width is calculated *after*
+   The signal is complete, need a way to move up size calculation,
+   preferably without displaying on screen. There's an enum for
+   Immediate redraw. Use it on the toolbar?
+   
+   "If you want to force an area of a window to be redrawn,
+   use gdk_window_invalidate_rect() or gdk_window_invalidate_region().
+   To cause the redraw to be done immediately, follow that call with
+   a call to gdk_window_process_updates()."
+   
+   --! Actually, it seems that the way this might be done is in
+       the on_configure_event, which  has immediate sizes. 
+   
+   
+   Generic detail view (Name, Size, Permissions, etc.)
+
+   De-activate menu items so signals can get through to event boxes.
+   
+   --! this requires Gtk::Menu::attach() and a lot of menuitems.
+
+
+
+
+--version 0.0.7++ and onwards
+
+   Icon Context menus that do somthing
+
+
+
+ The Generated becomes a class that returns a Gtk::Menubar&
+ Makefiles XOR ./autogen.sh
+ ROX or Gnome-compatible mimetypes and execution, some standard
+ standard tree navigation
+ all the folder context menus...
+
+ CVS @ sf, other repository?
+>
+--version 0.1.0
+
+public release ^_^;
+
+--version 0.1.0++
+
+File search?
+
+
+
+--Questions 
+
+3. window_layout.cpp
+   C:\Documents and Settings\-----------\My Documents\Projects\Darimasen-0.0.4\window_layout.o
+   (.text$_ZN3Gtk14TreeViewColumnC1IN4Glib7ustringEEERKS3_RKNS_15TreeModelColumnIT_EE+0x116)
+   variable 'vtable for Gtk::TreeViewColumn' can't be auto-imported.
+   Please read the documentation for ld's --enable-auto-import for details.
+   
+   A: This seems to be a Win32-specific error, looking at alternate means.
+      Using table instead, although this would probably be more easily sorted.
+
+
+4. Is there a generic empty container to put things in, to switch the contents
+   between the file listing and Find window?
+
+   A: it seems an HBox could do it, switching between showing the different
+      windows. Simply don't show() it.
+      
+6. How would you determine if an toolbox overflow menu is displayed?
+  (not just available, but currently in use)
+
+   A: There are ways to do it with get_allocation(), but the redraw point needs to
+      be somehow moved up. 
+*/

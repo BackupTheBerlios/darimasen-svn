@@ -1,0 +1,58 @@
+Darimasen File Manager - 0.0.6 Alpha
+
+Readme.txt - 08 January 2005
+
+
+--
+
+Darimasen is based on one main idea: never say 'folder'; at least,
+not if you can't actually hold a folder. 
+
+Programming-wise, this means that there are not only folder icons,
+but you simply can't navigate the directory structure via the
+file view. There is (or will be) a directory tree, but even this is
+not displayed by default.
+
+Darimasen has menu-based directory navigation. It might be remind
+you of the Gnome 2.8 file chooser's buttons, or of the website
+navigation technique - but it has two major differences:
+
+1. They are all menus,
+
+2. Those menus show sibling directories, not child directories.
+
+For example, say you are in your home directory, which 
+has three subdirectories; work/, play/, and hack/. Two menus would be
+generated; the first, "~/", would switch you between home and
+other important areas, like your mounted drives. THe second, in this case,
+would be a "3>>"; the current folder has three subdirectories,
+and you access them through that menu. And look! "hack/" has a "2"
+beside it, meaning it has two subdirectories itself. So clicking
+"hack/", the menus change.
+
+
+~/  hack/  2>>
+
+
+The "~/" menu is the same, but the new "hack/" menu contains "work/"
+ and "play/"... it's sibling directories.
+
+
+It's not the first thing people expect. Why do it then?
+
+Say that hack's subdirectories are live/ and die/. And that you want to
+go to live.
+
+
+~/  hack/  2>>
+           die/
+           live/
+
+
+
+Hey! you can read that left-to-right!
+
+
+Any suggestions can be sent to me at fusemail.com
+
+- Sudrien
