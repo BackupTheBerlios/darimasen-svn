@@ -10,7 +10,7 @@
 #include "main.h"
 #include <libgnomevfsmm.h>
 #include <gtkmm/entry.h>
-
+#include <gdkmm/pixbuf.h>
 #include "iconmodes.h"
 
 /**********************/
