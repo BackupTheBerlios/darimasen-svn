@@ -108,67 +108,6 @@ break;
   return true;
   }
 
-/**********************
-
-bool DaIconModes::addDetail(
-    const Glib::ustring& rel_path,
-    const Glib::RefPtr<const Gnome::Vfs::FileInfo>& info,
-    bool recursing_will_loop,
-    bool& recurse) {
-
-  if (info->get_type() != Gnome::Vfs::FILE_TYPE_DIRECTORY){
-      sideconContainer[slotsUsed]->set_visible_window(false);
-      sideconContainer[slotsUsed]->show();
-      Detail * tempPath = new Detail(fullPath, info);
-      tempPath->show();
-      sideconContainer[slotsUsed]->add(*tempPath);
-      sideconContainer[slotsUsed]->set_events(Gdk::BUTTON_RELEASE_MASK);
-      sideconContainer[slotsUsed]->signal_button_press_event().connect(
-        sigc::bind<Glib::ustring >(
-          sigc::mem_fun(*this, &DaIconModes::on_eventbox_button_press), info->get_name() ));
-      slotsUsed++;
-    }
-  recurse = false; 
-  return true;
-  }
-
-/**********************
-
-
-bool DaIconModes::addDetail(
-    const Glib::ustring& rel_path,
-    const Glib::RefPtr<const Gnome::Vfs::FileInfo>& info,
-    bool recursing_will_loop,
-    bool& recurse) {
-
-
-  if (info->get_type() != Gnome::Vfs::FILE_TYPE_DIRECTORY){
-    //if ( (info->get_name().substr(0,1) != ".") || showHidden ) {
-
-      sideconContainer[slotsUsed]->set_visible_window(false);
-      sideconContainer[slotsUsed]->show();
-
-      Gtk::Label * tempPath = new Gtk::Label(info->get_name());
-std::cout << info->get_name() << "\n";
-      //tempPath->set_alignment(0,0.5);
-      tempPath->show();
-
-      sideconContainer[slotsUsed]->add(*tempPath);
-      sideconContainer[slotsUsed]->set_events(Gdk::BUTTON_RELEASE_MASK);
-      sideconContainer[slotsUsed]->signal_button_press_event().connect(
-        sigc::bind<Glib::ustring >(
-          sigc::mem_fun(*this, &DaIconModes::on_eventbox_button_press), info->get_name() ));
-
-       slotsUsed++;
-      //}
-    }
-
-
-  recurse = false; // just this folder
-  return true;
-
-}
-
 /**********************/
 
 DaIconModes::Sidecon::Sidecon(
@@ -406,7 +345,7 @@ void DaIconModes::SetRunAction(const Glib::ustring file) {
 
    /* XXX: These should all be initalized to NULL to keep our arse out of the */
    /* proverbial fire. Mmmm proverbial fire *drool*                           */
-   /* Widgets *************************************************************** */
+   /* Widgets *************************************************************** *
    Gtk::RadioButton::Group _RadioBGroup_radiobutton1;
    Gtk::Dialog      * dialog1;
    Gtk::Button      * cancelbutton1;
@@ -418,6 +357,10 @@ void DaIconModes::SetRunAction(const Glib::ustring file) {
    Gtk::VBox        * vbox1;
    /* *********************************************************************** */
 
+   ChooseActionDialogue * chooseAction;
+   chooseAction = new ChooseActionDialogue("image_jpeg");
+   chooseAction->show();
+/*
    dialog1       = new Gtk::Dialog;
    cancelbutton1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-close")));
    okbutton1     = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-apply")));
@@ -500,7 +443,7 @@ void DaIconModes::SetRunAction(const Glib::ustring file) {
 	entry1->show();
 	vbox1->show();
 
-	/* XXX: Check for mimetype handler. Currently only looks for sub */
+	/* XXX: Check for mimetype handler. Currently only looks for sub *
 	Glib::ustring contents, exec1 = getenv("HOME");
 	exec1 += (Glib::ustring)("/Choices/MIME-types/");
 	exec1 += exec_subtype;
@@ -554,6 +497,7 @@ void DaIconModes::SetRunAction(const Glib::ustring file) {
 	} catch(const Gnome::Vfs::exception& ex) {
 		std::cout << "Err... Setting error?\n";
     }
+*/
 }
 
 /**********************/
@@ -652,4 +596,110 @@ Gtk::Widget * tmp = get_child();
   Gtk::EventBox::on_size_allocate(allocation);
   }
 
+/**********************/
+
+DaIconModes::ChooseActionDialogue::ChooseActionDialogue(Glib::ustring mimeType){
+   cancelbutton1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-close")));
+   okbutton1     = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-apply")));
+   label1 = Gtk::manage(new class Gtk::Label("Enter a Shell command:"));
+   entry1 = Gtk::manage(new class Gtk::Entry());
+   vbox1  = Gtk::manage(new class Gtk::VBox(false, 0));
+
+
+	radiobutton1 = Gtk::manage(
+		new class Gtk::RadioButton(_RadioBGroup_radiobutton1, 
+			"Set Mime For \"" + mimeType.substr(0, mimeType.find("_")) + "\"") );
+
+
+
+
+      radiobutton1->signal_clicked().connect(
+        sigc::bind<Glib::ustring >( sigc::mem_fun(*this,
+          &DaIconModes::ChooseActionDialogue::GetCurrentAction), mimeType.substr(0, mimeType.find("_")) ));
+
+	radiobutton2 = Gtk::manage(
+		new class Gtk::RadioButton(_RadioBGroup_radiobutton1,
+			"Set Mime For \"" + mimeType + "\"") ) ;
+
+      radiobutton2->signal_clicked().connect(
+        sigc::bind<Glib::ustring >( sigc::mem_fun(*this,
+          &DaIconModes::ChooseActionDialogue::GetCurrentAction), mimeType ));
+
+	cancelbutton1->set_flags(Gtk::CAN_FOCUS);
+	cancelbutton1->set_flags(Gtk::CAN_DEFAULT);
+	cancelbutton1->set_relief(Gtk::RELIEF_NORMAL);
+	okbutton1->set_flags(Gtk::CAN_FOCUS);
+	okbutton1->set_flags(Gtk::CAN_DEFAULT);
+	okbutton1->set_relief(Gtk::RELIEF_NORMAL);
+	get_action_area()->property_layout_style().set_value(Gtk::BUTTONBOX_END);
+	radiobutton1->set_flags(Gtk::CAN_FOCUS);
+	radiobutton1->set_relief(Gtk::RELIEF_NORMAL);
+	radiobutton1->set_mode(true);
+	radiobutton1->set_active(false);
+	radiobutton2->set_flags(Gtk::CAN_FOCUS);
+	radiobutton2->set_relief(Gtk::RELIEF_NORMAL);
+	radiobutton2->set_mode(true);
+	radiobutton2->set_active(true);
+	label1->set_alignment(0,0.48);
+	label1->set_padding(2,4);
+	label1->set_justify(Gtk::JUSTIFY_LEFT);
+	label1->set_line_wrap(false);
+	label1->set_use_markup(false);
+	label1->set_selectable(false);
+	entry1->set_flags(Gtk::CAN_FOCUS);
+	entry1->set_visibility(true);
+	entry1->set_editable(true);
+	entry1->set_max_length(0);
+
+	entry1->set_has_frame(true);
+	entry1->set_activates_default(false);
+	vbox1->pack_start(*radiobutton1, Gtk::PACK_SHRINK, 0);
+	vbox1->pack_start(*radiobutton2, Gtk::PACK_SHRINK, 0);
+	vbox1->pack_start(*label1, Gtk::PACK_SHRINK, 0);
+	vbox1->pack_start(*entry1, Gtk::PACK_SHRINK, 0);
+	get_vbox()->set_homogeneous(false);
+	get_vbox()->set_spacing(5);
+	get_vbox()->set_border_width(6);
+	get_vbox()->pack_start(*vbox1);
+	set_border_width(6);
+	set_title("Set Run Action");
+	set_modal(false);
+	property_window_position().set_value(Gtk::WIN_POS_CENTER_ON_PARENT);
+	set_resizable(true);
+	property_destroy_with_parent().set_value(false);
+	set_has_separator(false);
+	add_action_widget(*cancelbutton1, Gtk::RESPONSE_CANCEL);
+	add_action_widget(*okbutton1, Gtk::RESPONSE_OK);
+	set_default_response(Gtk::RESPONSE_OK);
+	cancelbutton1->show();
+	okbutton1->show();
+	radiobutton1->show();
+	radiobutton2->show();
+	label1->show();
+	entry1->show();
+	vbox1->show();
+
+show();
+}
+
+/**********************/
+void DaIconModes::ChooseActionDialogue::GetCurrentAction(Glib::ustring mimeType){
+
+	/* XXX: Check for mimetype handler. Currently only looks for sub */
+	Glib::ustring contents, exec1 = getenv("HOME");
+	exec1 += (Glib::ustring)("/Choices/MIME-types/");
+	exec1 += mimeType;
+std::cout << exec1 << "\n";
+	try {
+		contents = Glib::file_get_contents(exec1);
+		contents = contents.substr(contents.find("exec ") + 5);
+		contents = contents.substr(0,contents.find("\n"));
+	} catch(const Glib::Error) {
+		std::cout << "The frellin mime file doesn't exist. Use an empty one.\n";
+		contents = "* \"$@\"" ;
+	}
+
+	entry1->set_text(contents);
+
+}
 /**********************/

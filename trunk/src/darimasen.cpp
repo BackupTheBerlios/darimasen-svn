@@ -27,7 +27,7 @@ Darimasen::Darimasen(Glib::ustring path)
   Gtk::Menu * m_Menu_File = new Gtk::Menu;
   Gtk::Menu::MenuList& menulist = m_Menu_File->items();
 
-  activeCompact = Gtk::manage(new class Gtk::CheckMenuItem("Active Menu Compaction"));
+  activeCompact = Gtk::manage(new class Gtk::CheckMenuItem("Preserve Window Width"));
   activeCompact->set_active(false);
   activeCompact->show();
   activeCompact->signal_toggled().connect(sigc::mem_fun(*this, &Darimasen::fActiveCompaction));

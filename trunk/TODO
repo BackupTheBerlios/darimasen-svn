@@ -6,22 +6,8 @@ Ron <Rds> mentioned that Rox will be moving for ~/Choices to ~/.choices - should
 
 
    limit DaMenu expansion. (preserve window width for long paths)
-   Hung up on the fact that new width is calculated *after*
-   The signal is complete, need a way to move up size calculation,
-   preferably without displaying on screen. There's an enum for
-   Immediate redraw. Use it on the toolbar?
-   
-   "If you want to force an area of a window to be redrawn,
-   use gdk_window_invalidate_rect() or gdk_window_invalidate_region().
-   To cause the redraw to be done immediately, follow that call with
-   a call to gdk_window_process_updates()."
-   
-   --! Actually, it seems that the way this might be done is in
-       the on_configure_event, which  has immediate sizes. 
 
-How would you determine if an toolbox overflow menu is displayed? (not just available, but currently in use)
-
-A: There are ways to do it with get_allocation(), but the redraw point needs to be somehow moved up. 
+There are two ways to do the actual shrinkage - shorten the names up top, or make another menu wih dirs a menus.
 
 --
 

@@ -18,16 +18,34 @@
 class DaIconModes : public Gtk::EventBox {
 
 
-  class Sidecon : public Gtk::Table{
+  class Sidecon : public Gtk::Table {
     Glib::ustring filePath, mimeInfo;
     public:
     Sidecon(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>& );
     };
 
-  class Detail : public Gtk::Table{
+  class Detail : public Gtk::Table {
     public:
     Glib::ustring filePath, mimeInfo;
     Detail(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>& );
+    };
+
+  class ChooseActionDialogue : public Gtk::Dialog {
+
+   Gtk::RadioButton::Group _RadioBGroup_radiobutton1;
+//   Gtk::Dialog      * dialog1;
+   Gtk::Button      * cancelbutton1;
+   Gtk::Button      * okbutton1;
+   Gtk::RadioButton * radiobutton1;
+   Gtk::RadioButton * radiobutton2;
+   Gtk::Label       * label1;
+   Gtk::Entry       * entry1;
+   Gtk::VBox        * vbox1;
+
+void GetCurrentAction(Glib::ustring);
+
+    public:
+    ChooseActionDialogue(Glib::ustring);
     };
 
   int * hidden;
