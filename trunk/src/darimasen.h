@@ -41,6 +41,7 @@
 #include <gtkmm/eventbox.h>
 #include <dirent.h>
 #include <gtkmm/menuitem.h>
+#include <libgnomevfsmm.h>
 
 #include "supplimental.h"
 #include <iostream>

@@ -6,26 +6,37 @@
 /**********************/
 
 #include <gtkmm/table.h>
-#include <dirent.h>
-#include <sys/types.h>
-#include "sidecon.h"
 #include "main.h"
+#include <libgnomevfsmm.h>
 
 /**********************/
 
 class DaIconModes : public Gtk::Table {
+
+
+  class Sidecon : public Gtk::EventBox{
+    Glib::ustring filePath;
+    Gtk::Menu m_Menu_Popup;   
+  public:
+    Sidecon(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>& );
+  bool on_eventbox_button_press(GdkEventButton*);
+    ~Sidecon();
+  };
+
 
   Glib::ustring fullPath;
   int filesAtPath;
   int heightAvailable;
   unsigned short iconmode;
   bool showHidden;
-  
-  void DaSideconLister();
-  void DaDetailLister();
+  int x_pos, y_pos;
+
+  bool addSidecon(const Glib::ustring&, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, bool, bool&);
+  bool addDetail(const Glib::ustring&, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, bool, bool&);
+
+
 
 public:
-
   DaIconModes(Glib::ustring, int, unsigned short, int, bool); //path, filesAtPath, mode 
    
   };

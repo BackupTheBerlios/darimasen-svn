@@ -3,11 +3,13 @@
 
 CPP  = g++
 CC   = gcc
-OBJ  = src/main.o src/sidecon.o src/supplimental.o src/darimasen.o src/iconmodes.o src/dirtree.o
-LINKOBJ  = src/main.o src/sidecon.o src/supplimental.o src/darimasen.o src/iconmodes.o src/dirtree.o
+OBJ  = src/main.o src/supplimental.o src/darimasen.o src/iconmodes.o src/dirtree.o
+LINKOBJ  = src/main.o src/supplimental.o src/darimasen.o src/iconmodes.o src/dirtree.o
 BIN  = darimasen
-LIBS = `pkg-config gtkmm-2.4 --libs`
-CFLAGS = `pkg-config gtkmm-2.4 --cflags`
+#LIBS = `pkg-config gtkmm-2.4 --libs`
+#CFLAGS = `pkg-config gtkmm-2.4 --cflags`
+LIBS = `pkg-config gtkmm-2.4 gnome-vfsmm-2.6 --libs`
+CFLAGS = `pkg-config gtkmm-2.4 gnome-vfsmm-2.6 --cflags`
 
 .PHONY: all all-before all-after clean clean-custom
 
@@ -21,9 +23,6 @@ $(BIN): $(OBJ)
 
 src/main.o: src/main.cpp
 	$(CPP) -c src/main.cpp -o src/main.o $(CFLAGS)
-
-src/sidecon.o: src/sidecon.cpp
-	$(CPP) -c src/sidecon.cpp -o src/sidecon.o $(CFLAGS)
 
 src/supplimental.o: src/supplimental.cpp
 	$(CPP) -c src/supplimental.cpp -o src/supplimental.o $(CFLAGS)

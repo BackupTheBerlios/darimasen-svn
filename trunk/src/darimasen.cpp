@@ -12,6 +12,8 @@ Darimasen::Darimasen(Glib::ustring path)
   set_title("Darimasen");
   set_default_size(500, 320);
   iconmode = 0;
+  depth = 0;
+  Gnome::Vfs::init();
   
   
   add(m_Box);
@@ -362,7 +364,11 @@ bool Darimasen::on_configure_event(GdkEventConfigure* event){
                          - MainScroller.get_hscrollbar()->get_height();
 
   Gtk::Widget * tmp = MainEventBox->get_child();
-  if (!tmp || MainScrollerHeight != oldHeight){ // Are you sure?
+
+  // Are you sure?
+  if (!tmp || MainScrollerHeight != oldHeight){
+    // Are you really sure? (this saves a lot on the constant-redraw front)
+    if ((MainScrollerHeight/58) != (oldHeight/58))
     iconBuild();
     }
     
@@ -480,7 +486,7 @@ void Darimasen::DaMenuBuilder(const int v){
         if ( (chdir( (curdir + d_name).c_str()) != -1)  ){
           if((d_name != ".") && (d_name != "..")){ // tmp[i]?
             
-            Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem((d_name + slash)));
+            Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem((d_name + slash + " ")));
             subdir->signal_activate().connect( sigc::bind<Glib::ustring>(
               sigc::mem_fun(*this, &Darimasen::DaMenuSelect), curdir + d_name ));
        
@@ -505,6 +511,8 @@ void Darimasen::DaMenuBuilder(const int v){
               MenuRay[i].attach(*subsubdir, 3 ,4, pos, pos+1);
               subsubdir->show();
               MenuRay[i].attach(*subdir, 0 ,3, pos, pos+1);
+
+  subsubdir->set_sensitive(false);
               subdir->show();
               }
             else {
