@@ -629,23 +629,23 @@ Darimasen::dirtree::dirtree(Glib::ustring path){
 
   //Fill the TreeView's model
   Gtk::TreeModel::Row row = *(m_refTreeModel->append());
-  row[m_Columns.m_col_name] = "Billy Bob";
+  row[m_Columns.m_col_name] = "Dir1";
 
   Gtk::TreeModel::Row childrow = *(m_refTreeModel->append(row.children()));
-  childrow[m_Columns.m_col_name] = "Billy Bob Junior";
+  childrow[m_Columns.m_col_name] = "Dir2";
 
   childrow = *(m_refTreeModel->append(row.children()));
-  childrow[m_Columns.m_col_name] = "Sue Bob";
+  childrow[m_Columns.m_col_name] = "Dir3";
 
   row = *(m_refTreeModel->append());
-  row[m_Columns.m_col_name] = "Joey Jojo";
+  row[m_Columns.m_col_name] = "Dir4";
 
 
   row = *(m_refTreeModel->append());
-  row[m_Columns.m_col_name] = "Rob McRoberts";
+  row[m_Columns.m_col_name] = "Dir5";
 
   childrow = *(m_refTreeModel->append(row.children()));
-  childrow[m_Columns.m_col_name] = "Xavier McRoberts";
+  childrow[m_Columns.m_col_name] = "Dir6";
 
   //Add the TreeView's view columns:
   append_column("Directory Tree", m_Columns.m_col_name);

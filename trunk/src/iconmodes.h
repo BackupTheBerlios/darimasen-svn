@@ -24,23 +24,26 @@ class DaIconModes : public Gtk::EventBox {
     Sidecon(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>& );
     };
 
+/*
   class Detail : public Gtk::Table {
     public:
     Glib::ustring filePath, mimeInfo;
     Detail(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>& );
     };
+*/
 
   class ChooseActionDialogue : public Gtk::Dialog {
 
    Gtk::RadioButton::Group _RadioBGroup_radiobutton1;
-//   Gtk::Dialog      * dialog1;
-   Gtk::Button      * cancelbutton1;
-   Gtk::Button      * okbutton1;
-   Gtk::RadioButton * radiobutton1;
-   Gtk::RadioButton * radiobutton2;
+   Gtk::Button *cancelbutton1, *okbutton1;
+   Gtk::RadioButton *radiobutton1, *radiobutton2;
    Gtk::Label       * label1;
    Gtk::Entry       * entry1;
    Gtk::VBox        * vbox1;
+
+   Glib::ustring mime;
+   void cancled();
+   void modifyAction();
 
 void GetCurrentAction(Glib::ustring);
 
@@ -56,10 +59,9 @@ void GetCurrentAction(Glib::ustring);
   bool on_eventbox_button_press(GdkEventButton*, const Glib::ustring);
   Glib::ustring fullPath;
   int filesAtPath;
-  //int heightAvailable;
   unsigned short iconmode;
   bool showHidden;
- // int x_pos, y_pos;
+
 
 
   void on_size_allocate(Gtk::Allocation&);
