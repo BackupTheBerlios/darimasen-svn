@@ -9,6 +9,7 @@
 #include <gtkmm/messagedialog.h>
 #include "main.h"
 #include <libgnomevfsmm.h>
+#include <gtkmm/entry.h>
 
 #include "iconmodes.h"
 
@@ -18,18 +19,19 @@ class DaIconModes : public Gtk::Table {
 
 
   class Sidecon : public Gtk::Table{
-  Glib::ustring filePath,
-                  mimeInfo;
+    Glib::ustring filePath, mimeInfo;
        
-  public:
+    public:
     Sidecon(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>& );
   
     ~Sidecon();
     //void DaIconModes::Sidecon::RunFile();
-  };
+    };
 
-void RunFile(const Glib::ustring);
-bool on_eventbox_button_press(GdkEventButton*, const Glib::ustring);
+  void RunFile(const Glib::ustring);
+  void SetRunAction(const Glib::ustring);
+
+  bool on_eventbox_button_press(GdkEventButton*, const Glib::ustring);
   Glib::ustring fullPath;
   int filesAtPath;
   int heightAvailable;

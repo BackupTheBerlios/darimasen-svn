@@ -6,9 +6,6 @@ This also breaks a lot of other things. ^_^; However, it should also allow for a
 will a allow for a simple heightChange function to redistribute them on a table.
 
 
---
-
-Now that we can open files "a la mode du ROX", there should probably be a way to associate files too.
 
 --
 
