@@ -16,11 +16,8 @@ DEPEND=">=dev-libs/libsigc++-2.0.3
 RDEPEND="!x11-misc/darimasen-svn"
 
 src_compile() {
-	export WANT_AUTOCONF=2.5
 
-	cd ${S}
-        ./autogen.sh
-	econf ${myconf} || die
+	./configure ${myconf} || die
 	emake || die
 }
 
@@ -29,7 +26,6 @@ src_compile() {
 
 src_install() {
 	einfo "Installing..."
-	#dodir /usr/share/fluxbox
 	make DESTDIR=${D} install || die "make install failed"
 	dodoc README* AUTHORS TODO* COPYING
 }

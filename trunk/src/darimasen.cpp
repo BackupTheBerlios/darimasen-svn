@@ -127,9 +127,24 @@ usingSpecial = true;
   MenuArray[position]->signal_deactivate().connect(
     sigc::bind<guint, Glib::ustring>(sigc::mem_fun(*this, &Darimasen::DarimasenMenu::offClick),position, path) );
 
+int  x, y;
+bool  push_in;
 
+  //MenuArray[position]->popup(1,gtk_get_current_event_time());
   MenuArray[position]->popup(1,gtk_get_current_event_time());
+
+
+//void Gtk::Menu::popup(const sigc::slot<void, int&, int&, bool&, sigc::nil, sigc::nil, sigc::nil, sigc::nil>&, guint, guint32)
+
   }
+
+/**********************
+
+void Darimasen::DarimasenMenu::on_popup_menu_position(int& x, int& y, bool& push_in){
+x = 0;
+y = 0;
+push_in = true;
+}
 
 
 /**********************/
@@ -266,6 +281,45 @@ usingSpecial = false;
   prepend(*MenuItemArray[i]);
 
 
+
+// root stuff
+    MenuItemArray[0]->set_submenu(*MenuArray[0]);
+    MenuItemArray[0]->show();
+    MenuArray[0]->show();
+
+    Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem("/ (root)"));
+    MenuArray[0]->attach(*subdir, 0 ,1, 0, 1);
+    subdir->show();
+
+          subdir->set_events(Gdk::BUTTON_RELEASE_MASK);
+
+          subdir->signal_button_press_event().connect(
+            sigc::bind<Glib::ustring>(
+              sigc::mem_fun(*this, &Darimasen::DarimasenMenu::DaMenuSelect),
+                 "/"));
+
+
+
+    Gtk::MenuItem * subdir2 = Gtk::manage( new Gtk::MenuItem("~ (home)"));
+    MenuArray[0]->attach(*subdir2, 0 ,1, 1, 2);
+    subdir2->show();
+
+          subdir2->set_events(Gdk::BUTTON_RELEASE_MASK);
+
+          subdir2->signal_button_press_event().connect(
+            sigc::bind<Glib::ustring>(
+              sigc::mem_fun(*this, &Darimasen::DarimasenMenu::DaMenuSelect),
+                getenv("HOME")));
+
+    Gtk::SeparatorMenuItem * sep = Gtk::manage( new Gtk::SeparatorMenuItem());
+    MenuArray[0]->attach(*sep, 0 ,1, 2, 3);
+    sep->show();
+
+    Gtk::MenuItem * subdir3 = Gtk::manage( new Gtk::MenuItem("Add a location to this list"));
+    MenuArray[0]->attach(*subdir3, 0 ,1, 3, 4);
+  subdir3->set_sensitive(false);
+    subdir3->show();
+
   show();
   }
 
@@ -288,13 +342,9 @@ void Darimasen::fNewTab(){
     std::stack<Glib::ustring> empty;
     history.push_back(empty);
 
-#ifdef WIN32
-  history[history.size() -1].push(getenv("USERPROFILE") + slash);
-  addTab(getenv("USERPROFILE") + slash, Tabber->get_n_pages());
-#else
   history[history.size() -1].push(getenv("HOME") + slash);
-  addTab(getenv("HOME") + slash, Tabber->get_n_pages());
-#endif
+  addTab(Tabber->get_n_pages());
+
   }
 
 /**********************/
@@ -304,9 +354,11 @@ void Darimasen::newTab(Glib::ustring newpath){
     std::stack<Glib::ustring> empty;
     history.push_back(empty);
 
+if( newpath.substr(newpath.length() - 1) != slash)
+   newpath += slash;
 
-  history[history.size() -1].push(newpath + slash);
-  addTab(newpath + slash, Tabber->get_n_pages());
+  history[history.size() -1].push(newpath);
+  addTab(Tabber->get_n_pages());
 
   }
 
@@ -329,7 +381,7 @@ void Darimasen::tabberSwitched(GtkNotebookPage* sig, guint n){
 /**********************/
 
 // all the stuff for a well rounded tab
-void Darimasen::addTab(Glib::ustring path, guint pos){
+void Darimasen::addTab(guint pos){
 
   if( Tabber->get_n_pages() == 0 )
     Tabber->set_show_tabs(false);
@@ -340,7 +392,11 @@ void Darimasen::addTab(Glib::ustring path, guint pos){
     new Gtk::Image("/usr/share/icons/hicolor/16x16/stock/generic/stock_close.png"));
   xed->show();
 
-  Gtk::Label * tabNum = Gtk::manage(new Gtk::Label(path.substr(path.rfind(slash, path.length() -2)+1) + "  "));
+  Gtk::Label * tabNum = Gtk::manage(new Gtk::Label(
+
+  history[pos].top()
+//path.substr(path.rfind(slash, path.length() -2)+1) + "  "
+));
   Gtk::HBox * arrangement= Gtk::manage(new Gtk::HBox()) ;
   Gtk::Button * closeButton = Gtk::manage( new Gtk::Button());
 
@@ -366,26 +422,17 @@ void Darimasen::addTab(Glib::ustring path, guint pos){
   MainEventBox->show();
 
   DaIconModes * foo;
-  foo = new DaIconModes(path, *this);
-
-
-    hackishUnhide[pos] = foo;
+  foo = new DaIconModes(  history[pos].top(), *this);
 
 
 
-
-  //IconModeList.push(*foo);
-//if the current tab number is greater than those that actually exist,
-//push_back. Otherwise, change the one at pos. 
- /* if (IconModeList.size() == pos){
-    std::cout << "push modelist\n";
-    IconModeList.push_back(*foo);
+  if ( IconModeList.size() == pos ){
+    IconModeList.push_back(foo);
     }
-  else{
-    IconModeList.erase
-      history.erase(history.begin()+pos,history.begin()+pos+1 );
-    
-    }*/
+  else {
+    delete IconModeList[pos];
+    IconModeList[pos] = foo;
+    }
 
   Gtk::ScrolledWindow * MainScroller = Gtk::manage(new Gtk::ScrolledWindow);
   MainScroller->show();
@@ -417,7 +464,7 @@ void Darimasen::ChangeCurrentPath(Glib::ustring pathin){
 
   Tabber->remove_page(nth);
 
-  addTab(history[nth].top(), nth);
+  addTab(nth);
   Tabber->set_current_page(nth);
   }
 
@@ -435,12 +482,8 @@ void Darimasen::removeTab(guint pos){
   Tabber->remove_page(pos);
 
   history.erase(history.begin()+pos,history.begin()+pos+1 );
-
-  delete hackishUnhide[pos];
-
-  for( int i = 0; (i + pos) < (Tabber->get_n_pages()); i++)
-    hackishUnhide[pos+i] = hackishUnhide[pos+i+1];
-
+  delete IconModeList[pos];
+  IconModeList.erase(IconModeList.begin()+pos,IconModeList.begin()+pos+1 );
   }
 
 
@@ -449,10 +492,6 @@ void Darimasen::removeTab(guint pos){
 Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   set_title("Darimasen");
   set_default_size(500, 330);
-
-hackishUnhide = new DaIconModes*[20];
-
-
 
   add(VerticalOrganizer);
   VerticalOrganizer.show();
@@ -471,7 +510,6 @@ hackishUnhide = new DaIconModes*[20];
   Gtk::Menu * m_Menu_File = Gtk::manage(new Gtk::Menu);
   Gtk::Menu::MenuList& menulist = m_Menu_File->items();
 
-  //Gtk::Widget * image1 = Gtk::manage(new class Gtk::Arrow(Gtk::ARROW_DOWN ,Gtk::SHADOW_NONE)); 
   CompactMenu->items().push_back( Gtk::Menu_Helpers::MenuElem("\342\226\274",*m_Menu_File) );
 
   // glade-- told me to do it....
@@ -484,9 +522,6 @@ hackishUnhide = new DaIconModes*[20];
 
   menulist.push_back( Gtk::Menu_Helpers::MenuElem("About...",
     sigc::mem_fun(*this, &Darimasen::fAbout) ) );
-
-   // showHidden = optShowHidden->get_active();
-//std:: cout << optShowHidden->get_active() << "!\n";
 
   menulist.push_back( Gtk::Menu_Helpers::SeparatorElem() ) ;
 
@@ -557,7 +592,7 @@ hackishUnhide = new DaIconModes*[20];
     history.push_back(empty);
     history[i].push(paths[i]);
 
-    addTab(history[i].top(), Tabber->get_n_pages());
+    addTab(Tabber->get_n_pages());
     }
 
 
@@ -621,21 +656,8 @@ void Darimasen::fShowHidden(){
 
 
 
-  for (int i = 0; i < Tabber->get_n_pages(); i++){
-    hackishUnhide[i]->SwitchHidden();
-
-/*    Gtk::ScrolledWindow *  tmp1 = (Gtk::ScrolledWindow *)Tabber->get_nth_page(i);
-std::cout << tmp1->get_vscrollbar_visible () << "\n";
-
-
-Gtk::Layout * tmp2 = (Gtk::Layout*)tmp1->get_child();
-Gtk::EventBox * tmp3 = (Gtk::EventBox*)tmp2->get_children().data();
-DaIconModes * tmp4 = (DaIconModes*)tmp3->get_child();
-tmp4->SwitchHidden();
-//DaIconModes
-//    tmp2->SwitchHidden();*/
-
-    }
+for( int i = 0; IconModeList.size() > i; i++)
+  IconModeList[i]->SwitchHidden();
 
   }
 
@@ -646,7 +668,6 @@ void Darimasen::fBack(){
   Glib::ustring tmp = history[Tabber->get_current_page()].top();
   history[Tabber->get_current_page()].pop();
   ChangeCurrentPath(tmp);
-  //std::cout << tmp <<"\n";
 
   if (history[Tabber->get_current_page()].size() == 1)
     BackButton->set_sensitive(false);

@@ -34,8 +34,8 @@
 #include <gtkmm/statusbar.h>
 #include <gtkmm/menu.h>
 #include <gtkmm/stock.h>
-//#include <gtkmm/arrow.h>
-#include "iconmodes.h"
+
+
 #include "main.h"
 #include <sys/types.h>
 #include <gtkmm/eventbox.h>
@@ -54,6 +54,8 @@
 #include <gdkmm/pixbufloader.h>
 
 #include <gtkmm/layout.h>
+
+#include "iconmodes.h"
 /**********************/
 
 class Darimasen : public Gtk::Window {
@@ -74,7 +76,14 @@ class Darimasen : public Gtk::Window {
 
     Glib::ustring CountSubdir(const Glib::ustring&);
     bool DaMenuSelect(GdkEventButton*, const Glib::ustring);
+ 
+//sigc::slot<void, int&, int&, bool&, sigc::nil, sigc::nil, sigc::nil, sigc::nil>
 
+  //  Glib::SignalProxy3<void, int&, int&, bool&>signal_popup_menu_position();
+
+
+//sigc::slot<void, int&, int&, bool&, sigc::nil, sigc::nil, sigc::nil, sigc::nil> (void on_popup_menu_position(int&, int&, bool&));
+  //  void on_popup_menu_position(int&, int&, bool&);
     bool usingSpecial;
 //void on_popup_menu_position(int& x, int& y, bool& push_in);
 //typedef on_popup_menu_position Gtk::Menu::SlotPositionCalc;
@@ -102,7 +111,7 @@ class Darimasen : public Gtk::Window {
   void fNewTab();
   void newTab(Glib::ustring);
   void tabberSwitched(GtkNotebookPage*, guint);
-  void addTab(Glib::ustring, guint);
+  void addTab(guint);
   void ChangeCurrentPath(Glib::ustring path);
   void removeTab(guint);
   void fBack();
@@ -111,7 +120,8 @@ class Darimasen : public Gtk::Window {
   void fShowHidden();
   void fPrintHist();
 
-  class DaIconModes ** hackishUnhide;
+
+  std::vector< class DaIconModes* > IconModeList;
 
 
 public:
