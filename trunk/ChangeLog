@@ -1,11 +1,15 @@
 Darimasen 0.0.7 - ??
 
-  Sudirectory Navigation
+  Sudirectory Navigation *MENU ALWAYS ONLY ONE LEVEL DEEP*
   Tab support:
     multiple directories from command line
     open and close tabs
-    
-
+    History per tab (back button)
+    Showing hidden files effects everything at once
+  Relocatable with BinReloc (autopackage.org)  
+  Icon Cacheing
+  Blew away useless directory tree junk
+  Stausbar actually shows messages
   
 Darimasen 0.0.6 - 20051802
   
