@@ -142,17 +142,10 @@ DaIconModes::Sidecon::Sidecon(
 
 Glib::ustring ico;
 
-
-
-ico = "/usr/share/icons/gnome/48x48/mimetypes/gnome-mime-";
-ico += info->get_mime_type().replace(info->get_mime_type().find("/"), 1, "-");
-ico += ".png";
-
 /*
 
   try {
-
-/*if(info->get_mime_type() == "image/jpeg"
+  if(info->get_mime_type() == "image/jpeg"
     || info->get_mime_type() == "image/gif"
     || info->get_mime_type() == "image/png"){
 
@@ -162,7 +155,7 @@ else{
   ico = "/usr/share/icons/Lila/scalable/mimetypes/mime-";
   ico += info->get_mime_type().replace(info->get_mime_type().find("/"), 1, ":");
   ico += ".svg";
- // }
+   }
 
     Glib::file_get_contents(ico);
     }
@@ -171,17 +164,27 @@ ico = "/usr/share/icons/Lila/scalable/mimetypes/mime-";
 ico += info->get_mime_type().substr(0,info->get_mime_type().find("/"));
 ico += ".svg";
     }
-
-
-
-
-
 Glib::RefPtr<Gdk::Pixbuf> xe = Gdk::Pixbuf::create_from_file(ico);
 Glib::RefPtr<Gdk::Pixbuf> xf = xe->scale_simple(48,48,Gdk::INTERP_TILES);
 
 
   Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(xf));
 */
+
+
+  try{
+    ico = "/usr/share/icons/gnome/48x48/mimetypes/gnome-mime-";
+    ico += info->get_mime_type().replace(info->get_mime_type().find("/"), 1, "-");
+    ico += ".png";
+    Glib::file_get_contents(ico);
+    }
+  catch(const Glib::Error) {
+    ico = "/usr/share/icons/gnome/48x48/mimetypes/gnome-mime-";
+    ico += info->get_mime_type().substr(0,info->get_mime_type().find("/"));
+    ico += ".png";
+
+    }
+
   Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(ico));
 
 

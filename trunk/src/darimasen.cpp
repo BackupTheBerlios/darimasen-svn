@@ -206,15 +206,17 @@ Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring path, Darimasen& Myp
 
 /**********************/
 
-int Darimasen::DarimasenMenu::MenuForPath(
+void Darimasen::DarimasenMenu::MenuForPath(
        Gtk::Menu& tmp,
        Glib::ustring& path,
        Glib::ustring current){
 
+//std::cout << path << current << "   " << current << "\n";
+
   int entry = 0;
 
   if( current != ""){
-    Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem(path + current + " "));
+    Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem(current + " "));
     tmp.attach(*subdir, 0 ,4, entry++, entry+1);
     subdir->show();
     Gtk::SeparatorMenuItem * sep = Gtk::manage( new Gtk::SeparatorMenuItem());
@@ -234,6 +236,7 @@ int Darimasen::DarimasenMenu::MenuForPath(
         && refFileInfo->get_name() != "."
         && refFileInfo->get_name() != ".."
         ){ 
+std::cout << (refFileInfo->get_name() + slash + "\n");
           Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem((refFileInfo->get_name() + slash + " ")));
           subdir->signal_activate().connect(
             sigc::bind<Glib::ustring>(
@@ -258,8 +261,10 @@ int Darimasen::DarimasenMenu::MenuForPath(
             Gtk::MenuItem * subsubdir = Gtk::manage( new Gtk::MenuItem(*SubSubHbox));
             subsubdir->set_right_justified();
 
-           // subsubdir->signal_activate().connect( sigc::bind<Glib::ustring>(
-           // sigc::mem_fun(*this, &Darimasen::DaMenuSelect), path + refFileInfo->get_name() ));
+           subsubdir->signal_activate().connect(
+             sigc::bind<Gtk::Menu&, Glib::ustring, Glib::ustring>(
+               sigc::mem_fun(*this, &Darimasen::DarimasenMenu::SpecialMenuForPath),
+                 tmp, path + refFileInfo->get_name(), refFileInfo->get_name() ));
 
 
             
@@ -278,8 +283,21 @@ int Darimasen::DarimasenMenu::MenuForPath(
         }
       }
   catch(const Gnome::Vfs::exception& ex){}
+  }
 
-    return 0;
+/**********************/
+
+void Darimasen::DarimasenMenu::SpecialMenuForPath(
+       Gtk::Menu& tmp,
+       Glib::ustring& path,
+       Glib::ustring current){
+
+      Glib::ustring C3 = path + slash;
+      tmp.hide_all();
+      tmp.items().clear();
+//std::cout << "C3 " << C3 << "\n";
+      MenuForPath(tmp, C3 );
+      tmp.show_all();
   }
 
 /**********************/

@@ -62,7 +62,8 @@ class Darimasen : public Gtk::Window {
     class DarimasenMenu : public Gtk::MenuBar {
       int depth;
       bool showHidden;
-      int MenuForPath(Gtk::Menu&, Glib::ustring&, Glib::ustring = "");
+      void MenuForPath(Gtk::Menu&, Glib::ustring&, Glib::ustring = "");
+      void SpecialMenuForPath(Gtk::Menu&, Glib::ustring&, Glib::ustring = "");
       Glib::ustring CountSubdir(const Glib::ustring&);
       void DaMenuSelect(Glib::ustring);
       Darimasen * parent;
