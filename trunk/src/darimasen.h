@@ -34,7 +34,7 @@
 #include <gtkmm/statusbar.h>
 #include <gtkmm/menu.h>
 #include <gtkmm/stock.h>
-#include <gtkmm/arrow.h>
+//#include <gtkmm/arrow.h>
 #include "iconmodes.h"
 #include "main.h"
 #include <sys/types.h>
@@ -62,15 +62,15 @@ class Darimasen : public Gtk::Window {
     class DarimasenMenu : public Gtk::MenuBar {
       int depth;
       bool showHidden;
-      void MenuForPath(int, Glib::ustring, Glib::ustring = "", Glib::ustring = "");
-      void SpecialMenuForPath(int, Glib::ustring, Glib::ustring, Glib::ustring);
+      void MenuForPath(int, Glib::ustring, Glib::ustring);
+      void SpecialMenuForPath(int, Glib::ustring, Glib::ustring);
       Glib::ustring CountSubdir(const Glib::ustring&);
       void DaMenuSelect(Glib::ustring);
       Darimasen * parent;
 
-Gtk::Menu ** MenuArray; 
-Gtk::MenuItem ** MenuItemArray;
- Glib::ustring * menulevel;
+      Gtk::Menu ** MenuArray; 
+      Gtk::MenuItem ** MenuItemArray;
+      Glib::ustring * menulevel;
       public:
       DarimasenMenu(const Glib::ustring, Darimasen&);
       };
@@ -88,10 +88,8 @@ Gtk::MenuItem ** MenuItemArray;
     Gtk::Statusbar Info;
 
   void fNewTab();
-  //int numOfTabs;
   std::vector<Glib::ustring> path;
-   // guint CurrentPath;
-    void tabberSwitched(GtkNotebookPage*, guint);
+  void tabberSwitched(GtkNotebookPage*, guint);
   void addTab(Glib::ustring, guint);
   void ChangeCurrentPath(Glib::ustring path);
 
