@@ -5,7 +5,7 @@
 
 /**********************/
 
-DaIconModes::DaIconModes(Glib::ustring path, bool toShowHidden) {                        
+DaIconModes::DaIconModes(Glib::ustring path,  Darimasen& myParent) {                        
 
   filesAtPath = 0;
   try{
@@ -19,16 +19,16 @@ DaIconModes::DaIconModes(Glib::ustring path, bool toShowHidden) {
     }
   catch(const Gnome::Vfs::exception&){std::cout << "Miscount?\n";}
 
-
+parent = &myParent;
 
   fullPath = path;
 
   iconmode = 0;
-  showHidden = toShowHidden;
+
   slotsUsed = 0;
   IconsHigh = 0;
   set_visible_window(false);
-  hidden = new int[filesAtPath];
+  //hidden = new int[filesAtPath];
 
   if(iconmode == 0){
     sideconContainer = new Gtk::EventBox*[filesAtPath];
@@ -84,9 +84,7 @@ bool DaIconModes::addEntry(
       sideconContainer[slotsUsed]->set_visible_window(false);
       sideconContainer[slotsUsed]->show();
 
-hidden[slotsUsed] = (info->get_name().substr(0,1) == ".");
-
-//std::cout << (info->get_name().substr(0,1) == ".") << " " << info->get_name() << "\n";
+//hidden[slotsUsed] = (info->get_name().substr(0,1) == ".");
 
 switch(iconmode){
 case 0: {
@@ -487,7 +485,7 @@ void DaIconModes::on_size_allocate(Gtk::Allocation& allocation){
 
   if(iconmode == 0){
     int oldie = IconsHigh;
-    IconsHigh = allocation.get_height() / 60;
+    IconsHigh = allocation.get_height() / 58;
   
     if ( oldie != IconsHigh ){
 
@@ -524,7 +522,7 @@ void DaIconModes::redraw(){
       int x_pos = 0;
 
       for(int i = 0; i < slotsUsed; i++){
-        if( !hidden[i] || showHidden){
+        if(  true || parent->optShowHidden->get_active()){
           DisposableTable->attach( *sideconContainer[i],
               x_pos, x_pos+1, y_pos, y_pos+1,
               Gtk::FILL, Gtk::FILL, 4, 4);
@@ -872,11 +870,15 @@ Glib::RefPtr<Gdk::Pixbuf> DaIconModes::getIcon(Glib::ustring mimeGiven, guint si
   return scale; 
   }
 
-/**********************
+/**********************/
 
- void DaIconModes::doShowHidden(bool newState){
-  showHidden = newState;
-  *this.redraw();
+ void DaIconModes::SwitchHidden(){
+
+std::cout << "!" << fullPath << "\n";
+    //std::cout << "newstate is" << parent->optShowHidden->get_active() << "\n";
+
+ // std::cout << showHidden << "\n";
+  //redraw();
   }
 
 

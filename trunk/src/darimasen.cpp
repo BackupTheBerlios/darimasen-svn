@@ -45,7 +45,7 @@ void Darimasen::DarimasenMenu::MenuForPath(
     while(file_exists) {
       Glib::RefPtr<Gnome::Vfs::FileInfo> refFileInfo = handle.read_next(file_exists);
       if (refFileInfo->get_type() == Gnome::Vfs::FILE_TYPE_DIRECTORY
-          && ( (refFileInfo->get_name().substr(0,1) != ".") || parent->showHidden )
+          && ( (refFileInfo->get_name().substr(0,1) != ".") || parent->optShowHidden->get_active() )
           && refFileInfo->get_name() != "."
           && refFileInfo->get_name() != ".."
           ){ 
@@ -137,7 +137,7 @@ Glib::ustring Darimasen::DarimasenMenu::CountSubdir(const Glib::ustring& path){
 
       Glib::RefPtr<Gnome::Vfs::FileInfo> refFileInfo = handle.read_next(file_exists);
       if (refFileInfo->get_type() == Gnome::Vfs::FILE_TYPE_DIRECTORY
-        && ( (refFileInfo->get_name().substr(0,1) != ".") || parent->showHidden )
+        && ( (refFileInfo->get_name().substr(0,1) != ".") || parent->optShowHidden->get_active())
         && refFileInfo->get_name() != "."
         && refFileInfo->get_name() != ".."){
         j++;
@@ -298,7 +298,20 @@ void Darimasen::addTab(Glib::ustring path, guint pos){
   MainEventBox->show();
 
   DaIconModes * foo;
-  foo = new DaIconModes(path, showHidden);
+  foo = new DaIconModes(path, *this);
+  //IconModeList.push(*foo);
+//if the current tab number is greater than those that actually exist,
+//push_back. Otherwise, change the one at pos. 
+ /* if (IconModeList.size() == pos){
+    std::cout << "push modelist\n";
+    IconModeList.push_back(*foo);
+    }
+  else{
+    IconModeList.erase
+      history.erase(history.begin()+pos,history.begin()+pos+1 );
+    
+    }*/
+
   Gtk::ScrolledWindow * MainScroller = Gtk::manage(new Gtk::ScrolledWindow);
   MainScroller->show();
   MainScroller->set_shadow_type(Gtk::SHADOW_NONE);
@@ -385,12 +398,8 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
     "Print history to Terminal",Gtk::AccelKey(GDK_P, Gdk::CONTROL_MASK), sigc::mem_fun(*this, &Darimasen::fPrintHist)));
 
 
-  if (optShowHidden->get_active()){
-    showHidden = true;
-    }
-  else{
-    showHidden = false;
-    }
+   // showHidden = optShowHidden->get_active();
+//std:: cout << optShowHidden->get_active() << "!\n";
 
   menulist.push_back( Gtk::Menu_Helpers::SeparatorElem() ) ;
 
@@ -484,18 +493,17 @@ void Darimasen::fQuit(){
 
 void Darimasen::fShowHidden(){
 
-  if (optShowHidden->get_active()){
-    showHidden = true;
-    }
-  else{
-    showHidden = false;
-    }
 
   DarimasenMenuContainer->remove();
   DaMenu = Gtk::manage( new DarimasenMenu(history[Tabber->get_current_page()].top(), *this));
   DarimasenMenuContainer->add(*DaMenu);
 
-  Tabber->get_nth_page(Tabber->get_current_page())->show();
+  for (int i = 0; i < Tabber->get_n_pages(); i++){
+    DaIconModes *  tmp = (DaIconModes *)Tabber->get_nth_page(i);
+    tmp->SwitchHidden();
+    }
+std::cout << "\n";
+
   }
 
 /**********************/

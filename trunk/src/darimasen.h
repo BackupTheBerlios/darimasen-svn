@@ -59,7 +59,6 @@ class Darimasen : public Gtk::Window {
     Darimasen * parent;
 
     int depth;
-    //bool showHidden;
 
     Gtk::Menu ** MenuArray; 
     Gtk::MenuItem ** MenuItemArray;
@@ -86,11 +85,12 @@ class Darimasen : public Gtk::Window {
   Gtk::Notebook * Tabber;
   Gtk::Statusbar Info;
 
-  //std::vector<Glib::ustring> path;
+
   std::vector< std::stack<Glib::ustring> > history;
-  Gtk::CheckMenuItem * optShowHidden;
+ // std::vector<DaIconModes> IconModeList;
+
   Gtk::ToolButton * BackButton;
-  bool showHidden;
+ // bool showHidden;
 
   void fNewTab();
   void tabberSwitched(GtkNotebookPage*, guint);
@@ -105,7 +105,7 @@ class Darimasen : public Gtk::Window {
 public:
   Darimasen(std::vector<Glib::ustring>);
   ~Darimasen();
-
+  Gtk::CheckMenuItem * optShowHidden;
   };
 
 /**********************/

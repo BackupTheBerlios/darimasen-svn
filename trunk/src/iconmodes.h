@@ -12,6 +12,7 @@
 #include <gtkmm/entry.h>
 #include <gdkmm/pixbuf.h>
 #include "iconmodes.h"
+#include "darimasen.h"
 #include <gtkmm/separator.h>
 
 /**********************/
@@ -79,7 +80,9 @@ class DaIconModes : public Gtk::EventBox {
     SetPermissionsDialogue(Glib::RefPtr<Gnome::Vfs::FileInfo> , Glib::ustring);
     };
 
-  int * hidden;
+  class Darimasen * parent;
+
+ // int * hidden;
 
   void RunFile(const Glib::ustring);
   void SetRunAction(const Glib::ustring);
@@ -95,7 +98,7 @@ class DaIconModes : public Gtk::EventBox {
   Glib::ustring fullPath;
   int filesAtPath;
   unsigned short iconmode;
-  bool showHidden;
+  //bool showHidden;
   Gtk::EventBox ** sideconContainer;
   int slotsUsed;
   int IconsHigh;
@@ -104,9 +107,9 @@ class DaIconModes : public Gtk::EventBox {
 
 public:
   ~DaIconModes();
-  DaIconModes(Glib::ustring, bool);
+  DaIconModes(Glib::ustring, Darimasen&);
 
-//  static void doShowHidden(bool);
+  void SwitchHidden();
   };
 
 /**********************/
