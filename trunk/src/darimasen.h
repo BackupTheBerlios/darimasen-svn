@@ -102,6 +102,8 @@ class Darimasen : public Gtk::Window {
   void fShowHidden();
   void fPrintHist();
 
+ class DaIconModes ** hackishUnhide;
+
 public:
   Darimasen(std::vector<Glib::ustring>);
   ~Darimasen();

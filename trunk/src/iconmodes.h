@@ -82,7 +82,7 @@ class DaIconModes : public Gtk::EventBox {
 
   class Darimasen * parent;
 
- // int * hidden;
+ int * hidden;
 
   void RunFile(const Glib::ustring);
   void SetRunAction(const Glib::ustring);

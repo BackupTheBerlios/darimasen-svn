@@ -16,6 +16,8 @@ void Darimasen::DarimasenMenu::MenuForPath(
 
   int entry = 0;
 
+
+
   if( position < depth ){
 
     Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem(menulevel[position] + " "));
@@ -299,6 +301,8 @@ void Darimasen::addTab(Glib::ustring path, guint pos){
 
   DaIconModes * foo;
   foo = new DaIconModes(path, *this);
+
+hackishUnhide[pos] = foo;
   //IconModeList.push(*foo);
 //if the current tab number is greater than those that actually exist,
 //push_back. Otherwise, change the one at pos. 
@@ -360,6 +364,7 @@ void Darimasen::removeTab(guint pos){
   Tabber->remove_page(pos);
 
   history.erase(history.begin()+pos,history.begin()+pos+1 );
+delete hackishUnhide[pos];
   }
 
 
@@ -368,6 +373,8 @@ void Darimasen::removeTab(guint pos){
 Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   set_title("Darimasen");
   set_default_size(500, 330);
+
+hackishUnhide = new DaIconModes*[20];
 
   add(VerticalOrganizer);
   VerticalOrganizer.show();
@@ -391,7 +398,7 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
 
   // glade-- told me to do it....
   menulist.push_back(Gtk::Menu_Helpers::CheckMenuElem(
-    "Show Hidden Directories",Gtk::AccelKey(GDK_H, Gdk::CONTROL_MASK), sigc::mem_fun(*this, &Darimasen::fShowHidden)));
+    "Show Hidden",Gtk::AccelKey(GDK_H, Gdk::CONTROL_MASK), sigc::mem_fun(*this, &Darimasen::fShowHidden)));
   optShowHidden = (Gtk::CheckMenuItem *)&menulist.back();
 
   menulist.push_back(Gtk::Menu_Helpers::MenuElem(
@@ -498,9 +505,10 @@ void Darimasen::fShowHidden(){
   DaMenu = Gtk::manage( new DarimasenMenu(history[Tabber->get_current_page()].top(), *this));
   DarimasenMenuContainer->add(*DaMenu);
 
+
+
   for (int i = 0; i < Tabber->get_n_pages(); i++){
-    DaIconModes *  tmp = (DaIconModes *)Tabber->get_nth_page(i);
-    tmp->SwitchHidden();
+hackishUnhide[i]->SwitchHidden();
     }
 std::cout << "\n";
 

@@ -28,7 +28,7 @@ parent = &myParent;
   slotsUsed = 0;
   IconsHigh = 0;
   set_visible_window(false);
-  //hidden = new int[filesAtPath];
+  hidden = new int[filesAtPath];
 
   if(iconmode == 0){
     sideconContainer = new Gtk::EventBox*[filesAtPath];
@@ -84,7 +84,7 @@ bool DaIconModes::addEntry(
       sideconContainer[slotsUsed]->set_visible_window(false);
       sideconContainer[slotsUsed]->show();
 
-//hidden[slotsUsed] = (info->get_name().substr(0,1) == ".");
+hidden[slotsUsed] = (info->get_name().substr(0,1) == ".");
 
 switch(iconmode){
 case 0: {
@@ -522,7 +522,7 @@ void DaIconModes::redraw(){
       int x_pos = 0;
 
       for(int i = 0; i < slotsUsed; i++){
-        if(  true || parent->optShowHidden->get_active()){
+        if(  !hidden[i] || parent->optShowHidden->get_active()){
           DisposableTable->attach( *sideconContainer[i],
               x_pos, x_pos+1, y_pos, y_pos+1,
               Gtk::FILL, Gtk::FILL, 4, 4);
@@ -874,11 +874,11 @@ Glib::RefPtr<Gdk::Pixbuf> DaIconModes::getIcon(Glib::ustring mimeGiven, guint si
 
  void DaIconModes::SwitchHidden(){
 
-std::cout << "!" << fullPath << "\n";
-    //std::cout << "newstate is" << parent->optShowHidden->get_active() << "\n";
+//std::cout << "!" << fullPath << "\n";
+    std::cout << "newstate is" << parent->optShowHidden->get_active() << "\n";
 
  // std::cout << showHidden << "\n";
-  //redraw();
+  redraw();
   }
 
 
