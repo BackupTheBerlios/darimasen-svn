@@ -3,7 +3,6 @@
 #include "iconmodes.h"
 #include <iostream>
 
-
 /**********************/
 
 DaIconModes::DaIconModes(
@@ -643,16 +642,10 @@ void DaIconModes::SetPermissions(const Glib::ustring file) {
 
   Gnome::Vfs::Handle read_handle;
   Glib::RefPtr<Gnome::Vfs::FileInfo> info;
-  //Glib::ustring exec_subtype;
-  //Glib::ustring exec_mimetype;
 
   try {
     read_handle.open(fullPath + file, Gnome::Vfs::OPEN_READ);
     info = read_handle.get_file_info(Gnome::Vfs::FILE_INFO_GET_ACCESS_RIGHTS);
-
-   // exec_subtype  = info->get_mime_type();
-   // exec_subtype  = exec_subtype.replace( exec_subtype.find("/"), 1, "_" );
-   // exec_mimetype = exec_subtype.substr( 0, exec_subtype.rfind("_") );
 
     SetPermissionsDialogue * setPermissions;
     setPermissions = new SetPermissionsDialogue(info,fullPath);
@@ -732,11 +725,6 @@ fullPath = path;
       sigc::mem_fun(*this, &DaIconModes::SetPermissionsDialogue::apply), info ));
 
 
-     // sideconContainer[slotsUsed]->signal_button_press_event().connect(
-     //   sigc::bind<Glib::ustring >(
-     //     sigc::mem_fun(*this, &DaIconModes::on_eventbox_button_press), info->get_name() ));
-
-
   get_action_area()->property_layout_style().set_value(Gtk::BUTTONBOX_END);
   add_action_widget(*button1, -6);
   add_action_widget(*button2, -10);
@@ -757,82 +745,22 @@ void DaIconModes::SetPermissionsDialogue::cancled(){hide();}
 
 void DaIconModes::SetPermissionsDialogue::apply(Glib::RefPtr<Gnome::Vfs::FileInfo> info){
 
+  // *nix and *BSD only, blah blah blah.
+  int permissions = 0;
 
-  Gnome::Vfs::FilePermissions permissions;
-  //make sure I've got the stuff that doesn't change
-  permissions = info->get_permissions();
+  if(u_r->get_active()) permissions += 256;
+  if(u_w->get_active()) permissions += 128;
+  if(u_x->get_active()) permissions += 64;
+  if(g_r->get_active()) permissions += 32;
+  if(g_w->get_active()) permissions += 16;
+  if(g_x->get_active()) permissions += 8;
+  if(o_r->get_active()) permissions += 4;
+  if(o_w->get_active()) permissions += 2;
+  if(o_x->get_active()) permissions += 1;
 
+  chmod((fullPath + info->get_name()).c_str(), permissions);
 
-  if(u_r->get_active()){
-    std::cout << "+u_r ";
-  }else{
-    std::cout << "-u_r ";
-  }
-  if(u_w->get_active()){
-    std::cout << "+u_w ";
-  }else{
-    std::cout << "-u_w ";
-  }
-  if(u_x->get_active()){
-    std::cout << "+u_x ";
-  }else{
-    std::cout << "-u_x ";
-  }
-    std::cout << "\n";
-  if(g_r->get_active()){
-    std::cout << "+g_r ";
-  }else{
-    std::cout << "-g_r ";
-  }
-  if(g_w->get_active()){
-    std::cout << "+g_w ";
-  }else{
-    std::cout << "-g_w ";
-  }
-  if(g_x->get_active()){
-    std::cout << "+g_x ";
-  }else{
-    std::cout << "-g_x ";
-  }
-    std::cout << "\n";
-  if(o_r->get_active()){
-(permissions & Gnome::Vfs::PERM_OTHER_READ) == 1;
-    std::cout << "+o_r ";
-  }else{
-(permissions & Gnome::Vfs::PERM_OTHER_READ) == 0;
-    std::cout << "-o_r ";
-  }
-  if(o_w->get_active()){
-(permissions & Gnome::Vfs::PERM_OTHER_WRITE) == 1;
-    std::cout << "+o_w ";
-  }else{
-(permissions & Gnome::Vfs::PERM_OTHER_WRITE) == 0;
-    std::cout << "-o_w ";
-  }
-  if(o_x->get_active()){
-(permissions & Gnome::Vfs::PERM_OTHER_EXEC) == 1;
-    std::cout << "+o_x ";
-  }else{
-(permissions & Gnome::Vfs::PERM_OTHER_EXEC) == 0;
-    std::cout << "-o_x ";
-  }
-    std::cout << "\n\n";
-
-//permissions
-Glib::RefPtr<Gnome::Vfs::FileInfo> perm2 = permissions;
-
-std::cout << fullPath << info->get_name() << "\n\n";
-
-/*
-try{
-Gnome::Vfs::Handle::set_file_info(fullPath + info->get_name(), perm2, Gnome::Vfs::SET_FILE_INFO_PERMISSIONS);
-}
-  catch(const Gnome::Vfs::exception& ex){
-std::cout << "Could not change permissions.\n";
-}
-*/
-
-hide();
+  hide();
   }
 
 /**********************/
