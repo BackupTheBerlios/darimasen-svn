@@ -94,7 +94,7 @@ subversion_svn_fetch() {
 src_compile() {
 	export WANT_AUTOCONF=2.5
 
-	./configure ${myconf} || die
+	./configure --prefix=/usr ${myconf} || die
 	emake || die
 }
 

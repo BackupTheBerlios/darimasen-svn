@@ -15,10 +15,11 @@ void Darimasen::DarimasenMenu::MenuForPath(
        Glib::ustring ext){
 
   int entry = 0;
-usingSpecial = false;
+
+  
 
 
-  if( position < depth ){
+  if( position < depth || ext != ""){
 
     Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem(menulevel[position] + " "));
     MenuArray[position]->attach(*subdir, 0 ,4, entry++, entry+1);
@@ -113,10 +114,14 @@ void Darimasen::DarimasenMenu::SpecialMenuForPath(
        Glib::ustring path,
        Glib::ustring ext){
 
-usingSpecial = true;
+MenuArray[position]->imExtended = true;
+    extended = position; 
+  std::cout << extended << "/n";
+
   MenuItemArray[position]->remove_submenu();
   delete MenuArray[position];
-  MenuArray[position] = Gtk::manage( new Gtk::Menu);
+  MenuArray[position] = Gtk::manage( new DirectoryMenu(*this));
+
 
 
   MenuItemArray[position]->set_submenu(*MenuArray[position]);
@@ -124,40 +129,34 @@ usingSpecial = true;
 
 
 
-  MenuArray[position]->signal_deactivate().connect(
-    sigc::bind<guint, Glib::ustring>(sigc::mem_fun(*this, &Darimasen::DarimasenMenu::offClick),position, path) );
-
-int  x, y;
-bool  push_in;
-
-  //MenuArray[position]->popup(1,gtk_get_current_event_time());
-  MenuArray[position]->popup(1,gtk_get_current_event_time());
+ // MenuArray[position]->signal_deactivate().connect(
+ //   sigc::bind<guint, Glib::ustring>(sigc::mem_fun(*this, &Darimasen::DarimasenMenu::offClick),position, path) );
 
 
-//void Gtk::Menu::popup(const sigc::slot<void, int&, int&, bool&, sigc::nil, sigc::nil, sigc::nil, sigc::nil>&, guint, guint32)
+ // MenuArray[position]->popup( *this,  *MenuItemArray[position], sigc::mem_fun(*this,& Darimasen::DarimasenMenu::on_popup_menu_position), 1, gtk_get_current_event_time());
+  MenuArray[position]->popup( 1, gtk_get_current_event_time());
 
   }
 
 /**********************
 
 void Darimasen::DarimasenMenu::on_popup_menu_position(int& x, int& y, bool& push_in){
-x = 0;
-y = 0;
+x = 200;
+y = 200;
 push_in = true;
 }
 
 
 /**********************/
 
-void Darimasen::DarimasenMenu::offClick(int position, Glib::ustring path){
+void Darimasen::DarimasenMenu::offClick(){
 
-if (usingSpecial == true){
-  MenuItemArray[position]->remove_submenu();
-  delete MenuArray[position];
-  MenuArray[position] = Gtk::manage( new Gtk::Menu);
-  MenuItemArray[position]->set_submenu(*MenuArray[position]);
-  MenuForPath(position, path, "");
-  }
+  MenuItemArray[extended]->remove_submenu();
+  delete MenuArray[extended];
+  MenuArray[extended] = Gtk::manage( new DirectoryMenu(*this));
+  MenuItemArray[extended]->set_submenu(*MenuArray[extended]);
+  MenuForPath(extended, parent->history[extended].top() , "");
+extended = -1;
 }
 
 /**********************/
@@ -220,10 +219,18 @@ Glib::ustring Darimasen::DarimasenMenu::CountSubdir(const Glib::ustring& path){
 
 /**********************/
 
+void  Darimasen::DarimasenMenu::signal_deactivate (){
+std::cout << "on_unmap_event(GdkEventAny* event)\n";
+
+}
+
+/**********************/
+
 // parses the path, builds the menu bar. 
 Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring path, Darimasen& Myparent){
   depth = 0;
-usingSpecial = false;
+  extended = -1;
+//usingSpecial = false;
   //showHidden = false;
   Glib::ustring shortpath = path; //home = getenv("HOME");
   parent = &Myparent;
@@ -239,19 +246,20 @@ usingSpecial = false;
     startPos = shortpath.find(slash,startPos) + 1; depth++;
     }
 
-  menulevel =  new Glib::ustring[depth];
+  menulevel =  new Glib::ustring[depth+1];
 
   startPos = 0;
   for(i = 0; shortpath.find(slash,startPos) !=  Glib::ustring::npos ; i++ ){
     menulevel[i] = shortpath.substr(startPos,shortpath.find(slash,startPos) - startPos + 1 );
     startPos = shortpath.find(slash,startPos) + 1;
     };
+  menulevel[depth] = ".";
 
-  MenuArray = new Gtk::Menu*[depth+1];
+  MenuArray = new DirectoryMenu*[depth+1];
   MenuItemArray = new Gtk::MenuItem*[depth+1];
 
   for(int c = 0; c < depth+1; c++){
-    MenuArray[c] =  new Gtk::Menu;
+    MenuArray[c] =  new DirectoryMenu(*this);
     }
  
     Glib::ustring subin = CountSubdir(path);
@@ -451,21 +459,24 @@ void Darimasen::ChangeCurrentPath(Glib::ustring pathin){
   guint nth = Tabber->get_current_page();
 
 
-  if (pathin.substr(pathin.length()-1) != "/")
-    history[nth].push(pathin + slash);
-  else
-    history[nth].push(pathin);
+  //there is a circumstance that only the menu should be rebuilt...
+  if( pathin !=  history[nth].top()){
+    if (pathin.substr(pathin.length()-1) != "/")
+      history[nth].push(pathin + slash);
+    else
+      history[nth].push(pathin);
+    BackButton->set_sensitive(true);
 
-  BackButton->set_sensitive(true);
+    Tabber->remove_page(nth);
+    addTab(nth);
+    Tabber->set_current_page(nth);
+    }
+
 
   DarimasenMenuContainer->remove();
   DaMenu = Gtk::manage( new DarimasenMenu(history[nth].top(), *this));
   DarimasenMenuContainer->add(*DaMenu);
 
-  Tabber->remove_page(nth);
-
-  addTab(nth);
-  Tabber->set_current_page(nth);
   }
 
 /**********************/
@@ -510,7 +521,7 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   Gtk::Menu * m_Menu_File = Gtk::manage(new Gtk::Menu);
   Gtk::Menu::MenuList& menulist = m_Menu_File->items();
 
-  CompactMenu->items().push_back( Gtk::Menu_Helpers::MenuElem("\342\226\274",*m_Menu_File) );
+  CompactMenu->items().push_back( Gtk::Menu_Helpers::MenuElem("\342\226\274", *m_Menu_File) );
 
   // glade-- told me to do it....
   menulist.push_back(Gtk::Menu_Helpers::CheckMenuElem(

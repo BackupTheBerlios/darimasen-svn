@@ -56,45 +56,73 @@
 #include <gtkmm/layout.h>
 
 #include "iconmodes.h"
+//#include <gdkmm/rectangle.h>
 /**********************/
 
 class Darimasen : public Gtk::Window {
   class DarimasenMenu : public Gtk::MenuBar {
+    class DirectoryMenu : public Gtk::Menu {
+    public:
+
+      bool imExtended;
+      DirectoryMenu(DarimasenMenu&){
+imExtended = false;
+        Gtk::Menu::Menu();
+        }
+      DarimasenMenu * parent; 
+
+      void on_hide(){
+
+      std::cout << "on_hide()\n";
+    //  if (imExtended)
+      //   parent->offClick();
+        Gtk::Widget::on_hide();
+     }
+
+/*
+      void on_size_allocate(Gtk::Allocation&  allocation){
+        std::cout << allocation.get_x() << ", " << allocation.get_y() << ", " << allocation.get_width() << ", " << allocation.get_height() << "\n";
+allocation.set_x (allocation.get_x() - 20);
+        Gtk::Widget::on_size_allocate(allocation);
+        }
+void on_size_request (Requisition* requisition){
+        std::cout << "Req = " << &requisition.x() << ", " << requisition.y() << ", " << requisition.width() << ", " << requisition.height() << "\n";
+}*/
+
+    };
 
     Darimasen * parent;
 
     int depth;
 
-    Gtk::Menu ** MenuArray; 
+     DirectoryMenu ** MenuArray; 
     Gtk::MenuItem ** MenuItemArray;
     Glib::ustring * menulevel;
 
-    void MenuForPath(int, Glib::ustring, Glib::ustring);
-    void SpecialMenuForPath(int, Glib::ustring, Glib::ustring);
+    void MenuForPath(int, Glib::ustring , Glib::ustring); //extension
+    void SpecialMenuForPath(int, Glib::ustring  , Glib::ustring); //extension
 
-    void offClick(int, Glib::ustring);
+    void offClick();
 
     Glib::ustring CountSubdir(const Glib::ustring&);
     bool DaMenuSelect(GdkEventButton*, const Glib::ustring);
  
-//sigc::slot<void, int&, int&, bool&, sigc::nil, sigc::nil, sigc::nil, sigc::nil>
 
-  //  Glib::SignalProxy3<void, int&, int&, bool&>signal_popup_menu_position();
+ //    void on_popup_menu_position(int& x, int& y, bool& push_in);
 
 
-//sigc::slot<void, int&, int&, bool&, sigc::nil, sigc::nil, sigc::nil, sigc::nil> (void on_popup_menu_position(int&, int&, bool&));
-  //  void on_popup_menu_position(int&, int&, bool&);
-    bool usingSpecial;
-//void on_popup_menu_position(int& x, int& y, bool& push_in);
-//typedef on_popup_menu_position Gtk::Menu::SlotPositionCalc;
+
+
 
   public:
+short extended;
+    void signal_deactivate ();
     DarimasenMenu(const Glib::ustring, Darimasen&);
     ~DarimasenMenu();
     };
 
 
-
+  
   Gtk::VBox VerticalOrganizer;
   Gtk::Toolbar TopBar;
   Gtk::ToolItem * DarimasenMenuContainer;
