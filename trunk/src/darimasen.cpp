@@ -280,7 +280,7 @@ int Darimasen::submenuCount(Glib::ustring path){
   int j=0;
   try{
     Gnome::Vfs::DirectoryHandle handle;
-    handle.open(path, Gnome::Vfs::FILE_INFO_DEFAULT );
+    handle.open(path, Gnome::Vfs::FILE_INFO_DEFAULT | Gnome::Vfs::FILE_INFO_FOLLOW_LINKS);
 
     bool file_exists = true;
     while(file_exists){
@@ -483,7 +483,7 @@ void Darimasen::DaMenuBuilder(const int v){
   int pos = 0;
   try{
     Gnome::Vfs::DirectoryHandle handle;
-    handle.open(curdir, Gnome::Vfs::FILE_INFO_DEFAULT);
+    handle.open(curdir, Gnome::Vfs::FILE_INFO_DEFAULT | Gnome::Vfs::FILE_INFO_FOLLOW_LINKS);
 
     bool file_exists = true;
     while(file_exists) {
@@ -527,7 +527,7 @@ void Darimasen::DaMenuBuilder(const int v){
             subdir->show();            
             }
           pos++;
-          }
+          } else if (i == depth) filesAtPath++;
         }
       }
   catch(const Gnome::Vfs::exception& ex){}

@@ -13,7 +13,7 @@ DaIconModes::DaIconModes(
     int            MainScrollerHeight,
     bool           givehidden ) {
                                   
-  resize(filesAtPath,filesAtPath);
+  resize(atPath,atPath);
   double_buffered();
     
   fullPath = path;
@@ -70,9 +70,37 @@ bool DaIconModes::addSidecon(
 
   if (info->get_type() != Gnome::Vfs::FILE_TYPE_DIRECTORY){
     if ( (info->get_name().substr(0,1) != ".") || showHidden ) {
+
+      Gtk::EventBox * sideconContainer = Gtk::manage(new Gtk::EventBox);
+      //sideconContainer->set_visible_window(false);
+      sideconContainer->show();
+
       Sidecon * tempPath = new Sidecon(fullPath, info);
-      attach(*tempPath, x_pos, x_pos+1, y_pos, y_pos+1, Gtk::FILL, Gtk::FILL, 4, 4);
       tempPath->show();
+
+      sideconContainer->add(*tempPath);
+
+
+      attach(*sideconContainer, x_pos, x_pos+1, y_pos, y_pos+1, Gtk::FILL, Gtk::FILL, 4, 4);
+      
+
+  
+  sideconContainer->set_events(Gdk::BUTTON_RELEASE_MASK);
+  signal_button_press_event().connect(
+sigc::bind<Glib::RefPtr<const Gnome::Vfs::FileInfo> >(
+    sigc::mem_fun(*this, &DaIconModes::on_eventbox_button_press), info ));
+  
+
+
+//, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&
+
+
+
+
+
+
+
+
 
       y_pos++; // positioning stuff. 
       if ( y_pos + 1 > (heightAvailable / 58)){
@@ -139,9 +167,9 @@ DaIconModes::Sidecon::Sidecon(
 
     }
                    
-    
+    resize(3,2);
   
-  Gtk::Table * IconArangementTable = Gtk::manage(new class Gtk::Table(3,2));
+  //Gtk::Table * IconArangementTable = *this;
   Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(Gtk::StockID("gtk-dnd"), Gtk::IconSize(6)));
   Gtk::Label * FileName = Gtk::manage(new class Gtk::Label(shortnom));
 
@@ -152,10 +180,6 @@ DaIconModes::Sidecon::Sidecon(
 // this is where the mimetype info goes
   mimeInfo = info->get_mime_type();
   Gtk::Label * FilePermissions = Gtk::manage( new class Gtk::Label(mimeInfo));
-
-
-  //struct stat buf;
-  //stat(path.c_str(), &buf);
 
   // THis is simply file size - images an video could have more. Much later.
   Glib::ustring size;
@@ -179,67 +203,35 @@ DaIconModes::Sidecon::Sidecon(
   FileSizeInfo->set_alignment(0,0.5);
   FileSizeInfo->set_justify(Gtk::JUSTIFY_LEFT);
   
-  IconArangementTable->attach(*image1, 0, 1, 0, 3, Gtk::FILL, Gtk::FILL, 0, 0);
-  IconArangementTable->attach(*FileName, 1, 2, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-  IconArangementTable->attach(*FilePermissions, 1, 2, 1, 2, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-  IconArangementTable->attach(*FileSizeInfo, 1, 2, 2, 3, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
+  attach(*image1, 0, 1, 0, 3, Gtk::FILL, Gtk::FILL, 0, 0);
+  attach(*FileName, 1, 2, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
+  attach(*FilePermissions, 1, 2, 1, 2, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
+  attach(*FileSizeInfo, 1, 2, 2, 3, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
   
-  set_visible_window(false);
-  add(*IconArangementTable);
+
+  
   image1->show();
   FileName->show();
   FilePermissions->show();
   FileSizeInfo->show();
-  IconArangementTable->show();
-  
-  set_events(Gdk::BUTTON_RELEASE_MASK);
-  signal_button_press_event().connect(
-    sigc::mem_fun(*this, &Sidecon::on_eventbox_button_press) );
-    
-  
-  Gtk::Menu::MenuList& menulist = m_Menu_Popup.items();
-  
-    // following is needed so underscores show correctly
-    Gtk::MenuItem * op = Gtk::manage( new Gtk::MenuItem("Open \"" + info->get_name() + "\""));
-    //op->signal_activate().connect( sigc::mem_fun(*this, &DaIconModes::Sidecon::RunFile) );
-op->signal_activate().connect( sigc::mem_fun(*this, &DaIconModes::Sidecon::RunFile) );
-    op->show();
-    menulist.push_back( Gtk::Menu_Helpers::MenuElem(*op));
-  menulist.push_back( Gtk::Menu_Helpers::MenuElem("Rename"));
-  menulist.push_back( Gtk::Menu_Helpers::MenuElem("Delete "));
-  menulist.push_back( Gtk::Menu_Helpers::SeparatorElem());
-  menulist.push_back( Gtk::Menu_Helpers::MenuElem("Copy"));
-  menulist.push_back( Gtk::Menu_Helpers::MenuElem("Move"));
-  menulist.push_back( Gtk::Menu_Helpers::MenuElem("Link"));
-  menulist.push_back( Gtk::Menu_Helpers::SeparatorElem());
-  menulist.push_back( Gtk::Menu_Helpers::MenuElem("Properties... "));
-  
-  
-  m_Menu_Popup.accelerate(*this);
-      show_all_children();
-  }
+  show();  }
 
 
 
 DaIconModes::Sidecon::~Sidecon(){
   }
 
-/**********************/
- 
-void DaIconModes::Sidecon::RunFile() {
-#ifdef WIN32
-  if (! (int) ( ShellExecute( NULL, "Open", filePath.c_str(), "",
-                              getenv("USERPROFILE"),SW_SHOWNORMAL) ) > 32 ) {
-      /* XXX: handle error
-       * send some sort of message to the status bar that no app is associated
-       * should be in statusbar */
-      //std::cerr << "Could not open file, probably no program associated.\n";                  
-  }
-#else
-  /** see if the file is executable **/
+/**********************
+ // this will have to be changed to take file information,
+// since it is no longer a member of the icon.
 
 
-  std::cout << mimeInfo;
+void DaIconModes::RunFile() {
+
+  // see if the file is executable 
+
+
+  //std::cout << mimeInfo;
 
 struct stat   buff;
 
@@ -256,13 +248,13 @@ struct stat   buff;
     return;
   }
 
-  /** not executable **/
+  // not executable 
   
   const std::string& openString = "gnome-open ";
   const std::string& commandString = openString + filePath.c_str();
   std::cout << "Opening file " << filePath << " as MIME-Type " << mimeInfo << std::endl;
   Glib::spawn_command_line_async(commandString);
-#endif
+
 }
 
 
@@ -270,26 +262,30 @@ struct stat   buff;
 /**********************/
 
 // make a generic icon action
-bool DaIconModes::Sidecon::on_eventbox_button_press(GdkEventButton* event){
+bool DaIconModes::on_eventbox_button_press(GdkEventButton* event, const Glib::RefPtr<const Gnome::Vfs::FileInfo>& Icon){
   if ((event->type == GDK_2BUTTON_PRESS) && (event->button == 1)){
-     this->RunFile();
-/*
-#ifdef WIN32
-    if ( (int)(ShellExecute( NULL, "Open", filePath.c_str(), "", getenv("USERPROFILE"),SW_SHOWNORMAL)) > 32)
-      return true;
-    // send some sort of message to the status bar that no app is associated
-    // should be in statusbar 
-    //std::cerr << "Could not open file, probably no program associated.\n";                  
-    return false;
-#else
-
-
-
-#endif*/
+     //this->RunFile();
+     static int x = 0;
+     return true;
     }
 
   if ((event->type == GDK_BUTTON_PRESS) && (event->button == 3)){
-    m_Menu_Popup.popup(event->button, event->time);
+
+
+
+
+
+    Gtk::Menu::MenuList& menulist = m_Menu_Popup.items();
+
+m_Menu_Popup.items().pop_back();
+m_Menu_Popup.items().pop_back();
+m_Menu_Popup.items().pop_back();
+std::cout << Icon->get_name() << "!\n";
+    menulist.push_back( Gtk::Menu_Helpers::MenuElem("_Edit"  ) );
+    menulist.push_back( Gtk::Menu_Helpers::MenuElem("_Process" ) );
+    menulist.push_back( Gtk::Menu_Helpers::MenuElem("_Remove" ) );
+
+   m_Menu_Popup.popup(event->button, event->time);
     return true;
 
 

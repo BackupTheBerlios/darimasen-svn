@@ -14,6 +14,9 @@
    
    --! Actually, it seems that the way this might be done is in
        the on_configure_event, which  has immediate sizes. 
+
+
+Gdk::VISIBILITY_NOTIFY_MASK has somthing to do with progressive menu building.
    
    
    Generic detail view (Name, Size, Permissions, etc.)

@@ -17,18 +17,19 @@
 class DaIconModes : public Gtk::Table {
 
 
-  class Sidecon : public Gtk::EventBox{
+  class Sidecon : public Gtk::Table{
   Glib::ustring filePath,
                   mimeInfo;
-    Gtk::Menu m_Menu_Popup;   
+       
   public:
     Sidecon(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>& );
-  bool on_eventbox_button_press(GdkEventButton*);
+  
     ~Sidecon();
     void DaIconModes::Sidecon::RunFile();
   };
 
-
+void RunFile();
+bool on_eventbox_button_press(GdkEventButton*, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&);
   Glib::ustring fullPath;
   int filesAtPath;
   int heightAvailable;
@@ -39,7 +40,7 @@ class DaIconModes : public Gtk::Table {
   bool addSidecon(const Glib::ustring&, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, bool, bool&);
   bool addDetail(const Glib::ustring&, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, bool, bool&);
 
-
+Gtk::Menu m_Menu_Popup;
 
 public:
   DaIconModes(Glib::ustring, int, unsigned short, int, bool); //path, filesAtPath, mode 
