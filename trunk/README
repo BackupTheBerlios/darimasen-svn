@@ -1,7 +1,28 @@
-Darimasen File Manager - 0.0.6 Alpha
+Darimasen File Manager - 0.0.6 [Feature Incomplete - Only for Experimental Use]
 
-Readme.txt - 08 January 2005
+Readme.txt - 18 Feb. 2005
 
+--
+
+0.0.6 was released on the policy of, "Hey- I'm going to do some
+major breakage. Time for a tarball". This breakage is reimplementing
+for tab support, or at least this is what I would like you to believe.
+
+This tarball corresponds with SVN commit 25. There will be no branch, as
+this software shoukld not yet be considered stable enough for anything
+but seeing where I might be going with it, and even then it is only in a
+"works for me" state. If your files get eaten, this is probably a gnome-vfsmm
+issue. If they get chmod'ed to the great /dev/null in the sky, don't say you
+remained unwarned.
+
+There is no documentation.
+
+There is no support, unless you have the most current SVN checkout (> 25).
+
+That said, I do not regularly get segfaults on tests - though ROX is still
+my regular file manager.
+
+-Sud.
 
 --
 

@@ -1,3 +1,8 @@
+
+-----------------------------------------------
+version 0.0.7 and onwards
+-----------------------------------------------
+
 --
 
 Ron <Rds> mentioned that Rox will be moving for ~/Choices to ~/.choices - should probably support that, or check both locations.
@@ -16,16 +21,6 @@ the other method - make another menu wih dirs a menus - well, am I going to do i
    
    Generic detail view (Name, Size, Permissions, etc.) should be easy now with gnome_vfsmm; however, sorting them by this info is a bit more of a challenge. A ListView would probably be much better for this. This makes for some hey-my-scalp-is-bleeding type head-scratching problems, so a dummy label is in place for now.
 
-
-
-
-
-
------------------------------------------------
-version 0.0.7 and onwards
------------------------------------------------
-
-
 mime-type dependant icons, a la ROX.
 
 ---
@@ -34,12 +29,7 @@ mime-type dependant icons, a la ROX.
 
 ---
 
-   Icon Context menus that do somthing mopre than open
-
----
-
  standard tree navigation
-Gdk::VISIBILITY_NOTIFY_MASK has somthing to do with progressive menu building.
 
 ---
 
@@ -51,12 +41,3 @@ all the folder context menus...
 --version 0.1.0
 
 public release ^_^;
-
---version 0.1.0++
-
-File search?
-
-
-
-
-*/
