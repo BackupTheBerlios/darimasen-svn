@@ -9,6 +9,9 @@
 #include "main.h"
 #include <libgnomevfsmm.h>
 
+#include "iconmodes.h"
+#include "mimehandler.h"
+
 /**********************/
 
 class DaIconModes : public Gtk::Table {

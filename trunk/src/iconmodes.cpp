@@ -69,7 +69,7 @@ bool DaIconModes::addSidecon(
     bool& recurse) {
 
   if (info->get_type() != Gnome::Vfs::FILE_TYPE_DIRECTORY){
-    if ((info->get_name().substr(0,1) != ".") xor (showHidden == true)){
+    if ( (info->get_name().substr(0,1) != ".") || showHidden ) {
       Sidecon * tempPath = new Sidecon(fullPath, info);
       attach(*tempPath, x_pos, x_pos+1, y_pos, y_pos+1, Gtk::FILL, Gtk::FILL, 4, 4);
       tempPath->show();
@@ -201,7 +201,8 @@ DaIconModes::Sidecon::Sidecon(
   
     // following is needed so underscores show correctly
     Gtk::MenuItem * op = Gtk::manage( new Gtk::MenuItem("Open \"" + info->get_name() + "\""));
-    op->signal_activate().connect( sigc::mem_fun(*this, &DaIconModes::Sidecon::RunFile) );
+    //op->signal_activate().connect( sigc::mem_fun(*this, &DaIconModes::Sidecon::RunFile) );
+op->signal_activate().connect( sigc::mem_fun(*this, &DaIconModes::Sidecon::RunFile) );
     op->show();
     menulist.push_back( Gtk::Menu_Helpers::MenuElem(*op));
   menulist.push_back( Gtk::Menu_Helpers::MenuElem("Rename"));
@@ -236,9 +237,11 @@ void DaIconModes::Sidecon::RunFile() {
   }
 #else
   /** see if the file is executable **/
-  struct stat buff;
+
 
   std::cout << mimeInfo;
+
+struct stat   buff;
 
   if( stat(filePath.c_str(), &buff) ) {
     std::cerr << "Path \"" + filePath + "\" no longer exists";

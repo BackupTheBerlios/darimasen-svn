@@ -3,8 +3,9 @@
 
 CPP  = g++
 CC   = gcc
-OBJ  = src/main.o src/supplimental.o src/darimasen.o src/iconmodes.o src/dirtree.o
-LINKOBJ  = src/main.o src/supplimental.o src/darimasen.o src/iconmodes.o src/dirtree.o
+OBJ  = src/main.o src/supplimental.o src/darimasen.o src/iconmodes.o src/dirtree.o src/mimehandler.o src/safestring.o 
+LINKOBJ = $(OBJ)
+
 BIN  = darimasen
 #LIBS = `pkg-config gtkmm-2.4 --libs`
 #CFLAGS = `pkg-config gtkmm-2.4 --cflags`
@@ -21,17 +22,11 @@ clean: clean-custom
 $(BIN): $(OBJ)
 	$(CPP) $(LINKOBJ) -o "darimasen" $(LIBS) 
 
-src/main.o: src/main.cpp
-	$(CPP) -c src/main.cpp -o src/main.o $(CFLAGS)
 
-src/supplimental.o: src/supplimental.cpp
-	$(CPP) -c src/supplimental.cpp -o src/supplimental.o $(CFLAGS)
+.c.o:
+	$(CPP) -c $< -o $@ $(CFLAGS)
 
-src/darimasen.o: src/darimasen.cpp
-	$(CPP) -c src/darimasen.cpp -o src/darimasen.o $(CFLAGS)
 
-src/iconmodes.o: src/iconmodes.cpp
-	$(CPP) -c src/iconmodes.cpp -o src/iconmodes.o $(CFLAGS)
+.cpp.o: 
+	$(CPP) -c $< -o $@ $(CFLAGS)
 
-src/dirtree.o: src/dirtree.cpp
-	$(CPP) -c src/dirtree.cpp -o src/dirtree.o $(CFLAGS)

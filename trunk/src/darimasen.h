@@ -39,7 +39,7 @@
 #include "main.h"
 #include <sys/types.h>
 #include <gtkmm/eventbox.h>
-#include <dirent.h>
+
 #include <gtkmm/menuitem.h>
 #include <libgnomevfsmm.h>
 

@@ -158,9 +158,6 @@ void Darimasen::on_menu_file_quit(){
 
 int Darimasen::resolvePath(Glib::ustring givenPath){
 
- 
- 
-
 #ifdef WIN32
   pathTruncator = getenv("USERPROFILE");
 
@@ -279,18 +276,25 @@ void Darimasen::fViewTree(){
 /**********************/
 
 int Darimasen::submenuCount(Glib::ustring path){
+
   int j=0;
-  DIR *d;
-  struct dirent *dir;
-  d = opendir(path.c_str());
-   
-  while ( (dir = readdir(d)) ) {
-    Glib::ustring tmp3 = dir->d_name;
-    if ( (chdir( (path + slash + tmp3 ).c_str()) != -1) && tmp3 != "." && tmp3 != ".." ){
-      j++;
+  try{
+    Gnome::Vfs::DirectoryHandle handle;
+    handle.open(path, Gnome::Vfs::FILE_INFO_DEFAULT );
+
+    bool file_exists = true;
+    while(file_exists){
+
+      Glib::RefPtr<Gnome::Vfs::FileInfo> refFileInfo = handle.read_next(file_exists);
+      if (refFileInfo->get_type() == Gnome::Vfs::FILE_TYPE_DIRECTORY
+        && ( (refFileInfo->get_name().substr(0,1) != ".") || showHidden )
+        && refFileInfo->get_name() != "."
+        && refFileInfo->get_name() != ".."){
+        j++;
+        }
       }
     }
-  closedir(d);
+  catch(const Gnome::Vfs::exception& ex){}
   return j;
   }
 
@@ -475,64 +479,68 @@ void Darimasen::DaMenuBuilder(const int v){
       sep->show();    
       } 
     
-      
-      DIR *d;
-      struct dirent *dir;
-      d = opendir(curdir.c_str());  
-      int pos = 0;
-      if (i != depth) pos = 2;    
-      while ((dir = readdir(d))){
 
-        Glib::ustring d_name = dir->d_name;
-        if( (d_name.find(".") == 0) xor (showHidden == false) ){
-        if ( (chdir( (curdir + d_name).c_str()) != -1)  ){
-          if((d_name != ".") && (d_name != "..")){ // tmp[i]?
-            
-            Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem((d_name + slash + " ")));
-            subdir->signal_activate().connect( sigc::bind<Glib::ustring>(
-              sigc::mem_fun(*this, &Darimasen::DaMenuSelect), curdir + d_name ));
+  int pos = 0;
+  try{
+    Gnome::Vfs::DirectoryHandle handle;
+    handle.open(curdir, Gnome::Vfs::FILE_INFO_DEFAULT);
+
+    bool file_exists = true;
+    while(file_exists) {
+      Glib::RefPtr<Gnome::Vfs::FileInfo> refFileInfo = handle.read_next(file_exists);
+      if (refFileInfo->get_type() == Gnome::Vfs::FILE_TYPE_DIRECTORY
+        && ( (refFileInfo->get_name().substr(0,1) != ".") || showHidden )
+        && refFileInfo->get_name() != "."
+        && refFileInfo->get_name() != ".."
+        ){ 
+          Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem((refFileInfo->get_name() + slash + " ")));
+          subdir->signal_activate().connect( sigc::bind<Glib::ustring>(
+            sigc::mem_fun(*this, &Darimasen::DaMenuSelect), curdir + refFileInfo->get_name() ));
        
-            Glib::ustring SubSubCount = int2ustr(submenuCount(curdir + d_name));
+          Glib::ustring SubSubCount = int2ustr(submenuCount(curdir + refFileInfo->get_name()));
   
-            if (SubSubCount != "0"){
-              Gtk::Label * SubSubLabel = Gtk::manage(new class Gtk::Label(SubSubCount));
-              SubSubLabel->show();
-              Gtk::Arrow * SubSubArrow = Gtk::manage(new class Gtk::Arrow(Gtk::ARROW_RIGHT, Gtk::SHADOW_OUT));     
-              SubSubArrow->set_alignment(1,0.5);
-              SubSubArrow->set_padding(0,0);
-              SubSubArrow->show();
-              Gtk::HBox * SubSubHbox = Gtk::manage(new class Gtk::HBox());     
-              SubSubHbox->show();
+          if (SubSubCount != "0"){
+            Gtk::Label * SubSubLabel = Gtk::manage(new class Gtk::Label(SubSubCount));
+            SubSubLabel->show();
+            Gtk::Arrow * SubSubArrow = Gtk::manage(new class Gtk::Arrow(Gtk::ARROW_RIGHT, Gtk::SHADOW_OUT));     
+            SubSubArrow->set_alignment(1,0.5);
+            SubSubArrow->set_padding(0,0);
+            SubSubArrow->show();
+            Gtk::HBox * SubSubHbox = Gtk::manage(new class Gtk::HBox());     
+            SubSubHbox->show();
               
-              // the following has appearance considerations - esp.
-              // pack_end and menu more than 2 wide.
-              SubSubHbox->pack_end(*SubSubArrow, Gtk::PACK_SHRINK, 0);
-              SubSubHbox->pack_end(*SubSubLabel, Gtk::PACK_SHRINK, 0);
-              Gtk::MenuItem * subsubdir = Gtk::manage( new Gtk::MenuItem(*SubSubHbox));
-              subsubdir->set_right_justified();
-              MenuRay[i].attach(*subsubdir, 3 ,4, pos, pos+1);
-              subsubdir->show();
-              MenuRay[i].attach(*subdir, 0 ,3, pos, pos+1);
+            // the following has appearance considerations - esp.
+            // pack_end and menu more than 2 wide.
+            SubSubHbox->pack_end(*SubSubArrow, Gtk::PACK_SHRINK, 0);
+            SubSubHbox->pack_end(*SubSubLabel, Gtk::PACK_SHRINK, 0);
+            Gtk::MenuItem * subsubdir = Gtk::manage( new Gtk::MenuItem(*SubSubHbox));
+            subsubdir->set_right_justified();
+            MenuRay[i].attach(*subsubdir, 3 ,4, pos+2, pos+3);
+            subsubdir->show();
+            MenuRay[i].attach(*subdir, 0 ,3, pos+2, pos+3);
 
-  subsubdir->set_sensitive(false);
-              subdir->show();
-              }
-            else {
-              MenuRay[i].attach(*subdir, 0 ,4, pos, pos+1);
-              subdir->show();            
-              }
-
-            pos++;
+            subsubdir->set_sensitive(false);
+            subdir->show();
             }
-          }}
+          else {
+            MenuRay[i].attach(*subdir, 0 ,4, pos+2, pos+3);
+            subdir->show();            
+            }
+          pos++;
+          }
         }
+      }
+  catch(const Gnome::Vfs::exception& ex){}
+
+
       if ( i == depth && pos != 0){
         MenuRay[i].show();
         DaMenu.items().push_back(Gtk::Menu_Helpers::MenuElem(int2ustr(pos) + ">>", MenuRay[i]) );  
-        }        
-      closedir(d);      
+        }     
       curdir = curdir.substr(0, curdir.rfind(slash, curdir.length()-2)) + slash;     
       i--;
+
+
     }         
 
  
