@@ -196,7 +196,7 @@ int Darimasen::resolvePath(Glib::ustring givenPath){
     }
 
     // hanging end quote
-    while( fullPath.find("\"" ) != -1 )    
+    while( fullPath.find("\"" ) != Glib::ustring::npos )    
       fullPath.replace(fullPath.find("\""),1,"");
 
     
@@ -206,29 +206,29 @@ int Darimasen::resolvePath(Glib::ustring givenPath){
   
    
     // the double dot-slash
-    while( fullPath.find(".."+slash) != -1 ){
+    while( fullPath.find(".."+slash) != std::string::npos ){
       int x = fullPath.find(".."+slash);
       int y = fullPath.rfind(slash,x-2);
       fullPath.replace(y,x-y+3, slash);
       }       
        
     // the single dot-slash
-    while( fullPath.find("." + slash) != -1 )    
+    while( fullPath.find("." + slash) != std::string::npos )    
        fullPath.replace(fullPath.find("." + slash),2,"");
     
     // the double-slash
-    while( fullPath.find(slash + slash) != -1 )
+    while( fullPath.find(slash + slash) != std::string::npos )
        fullPath.replace(fullPath.find(slash + slash),2,slash);
 
 
     //test if there is now a legitamate path 
-    if(chdir(fullPath.c_str()) == -1){
+    if( (chdir(fullPath.c_str()) == -1) ){
       fullPath = pathTruncator;
       }
     
 
   // set up for $HOME shorteneing
-  if( fullPath.find(pathTruncator) == 0)
+  if( (fullPath.find(pathTruncator) == 0) )
     return pathTruncator.length() -1;
 
   return 0;
@@ -284,7 +284,7 @@ int Darimasen::submenuCount(Glib::ustring path){
   struct dirent *dir;
   d = opendir(path.c_str());
    
-  while (dir = readdir(d)){
+  while ( (dir = readdir(d)) ) {
     Glib::ustring tmp3 = dir->d_name;
     if ( (chdir( (path + slash + tmp3 ).c_str()) != -1) && tmp3 != "." && tmp3 != ".." ){
       j++;
@@ -398,7 +398,9 @@ void Darimasen::DaMenuBuilder(const int v){
   int x = v;
               
   // determine the number of menus needed 
-  while (fullPath.find(slash,x) != -1){ x = fullPath.find(slash,x) + 1; depth++; }
+  while ( (fullPath.find(slash,x) != std::string::npos) ) {
+    x = fullPath.find(slash,x) + 1; depth++;
+    }
     
   //do the actual ustring breakup    
   Glib::ustring tmp[depth];
@@ -406,7 +408,7 @@ void Darimasen::DaMenuBuilder(const int v){
   int y = 0;
   int i = 0;
 
-  while (fullPath.find(slash,x) != -1){
+  while ( (fullPath.find(slash,x) !=  std::string::npos)){
     x = fullPath.find(slash,x) + 1;
     tmp[i++] = fullPath.substr(y,x-y);
     y = x;
@@ -479,7 +481,7 @@ void Darimasen::DaMenuBuilder(const int v){
       d = opendir(curdir.c_str());  
       int pos = 0;
       if (i != depth) pos = 2;    
-      while (dir = readdir(d)){
+      while ((dir = readdir(d))){
 
         Glib::ustring d_name = dir->d_name;
         if( (d_name.find(".") == 0) xor (showHidden == false) ){
@@ -548,12 +550,7 @@ void Darimasen::DaMenuBuilder(const int v){
     showHidden = false;
     }
 
-
-
-
- // showHidden++;
   DaMenuBuilder(changePath(fullPath,1));
-  //tb1.add(DaMenu);
   
   iconBuild();
   }

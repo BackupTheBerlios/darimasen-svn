@@ -54,9 +54,6 @@
 #include <direct.h>
 #endif
 
-//class DaIconModes;
-//typedef enum DaIconModes::iconmode;
-
 /**********************/
 
 class Darimasen : public Gtk::Window
@@ -64,10 +61,8 @@ class Darimasen : public Gtk::Window
 public:
   Darimasen(Glib::ustring);
   virtual ~Darimasen();
-  //enum DaIconModes::iconmode { SIDECON = 0, DETAIL = 1 };
     
 protected:
-
 
   int depth;
   bool showHidden;

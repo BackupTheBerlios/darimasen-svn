@@ -16,5 +16,4 @@ Glib::ustring int2ustr(int x){
   return tmp;
   }
 
-
 /**********************/
