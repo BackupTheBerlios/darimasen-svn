@@ -10,21 +10,18 @@ bin_PROGRAMS = darimasen
 darimasen_SOURCES = \
 	darimasen.cpp \
 	iconmodes.cpp \
-	mimehandler.c \
 	supplimental.cpp \
 	dirtree.cpp \
-	main.cpp \
-	safestring.c
+	main.cpp
 
 noinst_HEADERS = \
 	darimasen.h \
 	iconmodes.h \
-	mimehandler.h \
 	supplimental.h \
 	dirtree.h \
-	main.h \
-	safestring.h
+	main.h 
 
-AM_CXXFLAGS = -I../.. @SIGC_CFLAGS@ @GTKMM_CFLAGS@ @GNOMEVFSMM_CFLAGS@ 
 
-darimasen_LDADD = -lpthread @LIBS@ @SIGC_LIBS@ @GTKMM_LIBS@ @GNOMEVFSMM_LIBS@ 
+AM_CXXFLAGS = -I../.. @GTKMM_CFLAGS@ @GNOMEVFSMM_CFLAGS@ 
+
+darimasen_LDADD = -lpthread @LIBS@ @GTKMM_LIBS@ @GNOMEVFSMM_LIBS@ 

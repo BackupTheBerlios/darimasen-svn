@@ -2,6 +2,8 @@
 # generated 2004/9/10 11:30:35 CEST by nick@frisbee.mnc.ch.(none)
 # using glademm V2.6.0_cvs
 
+export WANT_AUTOMAKE="1.7"
+
 if test ! -f install-sh ; then touch install-sh ; fi
 
 MAKE=`which gnumake`
@@ -12,7 +14,7 @@ HAVE_GNU_MAKE=`$MAKE --version|grep -c "Free Software Foundation"`
 if test "$HAVE_GNU_MAKE" != "1"; then 
 echo Only non-GNU make found: $MAKE
 else
-echo `$MAKE --version | head -1` found
+echo `$MAKE --version | head -n 1` found
 fi
 
 if test ! -x `which aclocal`
@@ -22,7 +24,6 @@ if test ! -x `which automake`
 then echo you need automake to generate the Makefile
 fi
 
-echo This script runs configure and make...
 
 # autoreconf$AC_POSTFIX -fim _might_ do the trick, too.
 #  chose to your taste
@@ -31,3 +32,5 @@ libtoolize --force --copy
 autoheader$AC_POSTFIX
 automake$AM_POSTFIX --add-missing --copy --gnu
 autoconf$AC_POSTFIX
+
+echo Now run ./configure and make

@@ -37,7 +37,9 @@ DaIconModes::DaIconModes(
         // The options specify that we want to visit the files at input_uri_string,
         // get the mime type the fast way and protect against loops.
         Gnome::Vfs::DirectoryHandle::visit(fullPath, Gnome::Vfs::FILE_INFO_GET_MIME_TYPE |
-                                             Gnome::Vfs::FILE_INFO_FORCE_FAST_MIME_TYPE,
+                                             Gnome::Vfs::FILE_INFO_FORCE_FAST_MIME_TYPE |
+
+Gnome::Vfs::FILE_INFO_FOLLOW_LINKS ,
                                              Gnome::Vfs::DIRECTORY_VISIT_LOOPCHECK,
                                              sigc::mem_fun(*this,&DaIconModes::addSidecon));
         }
@@ -197,31 +199,47 @@ DaIconModes::Sidecon::~Sidecon(){
 /**********************/
 
 
+
 void DaIconModes::RunFile(const Glib::ustring file) {
 
   // see if the file is executable 
 
-struct stat   buff;
-
-  if( stat((fullPath + file).c_str(), &buff) ) {
-    std::cerr << "Path \"" + fullPath + file + "\" no longer exists";
-    return;
-  }
-
-  if ( (buff.st_mode & S_IXOTH)                                ||
-     ( (buff.st_mode & S_IXGRP) && (buff.st_gid == getgid()) ) ||
-     ( (buff.st_mode & S_IXUSR) && (buff.st_uid == getuid()) ) ) {
-    std::cout << "Executing file " << fullPath + file << std::endl;
-    Glib::spawn_command_line_async(fullPath + file);
-    return;
-  }
-
-  // not executable 
+  Gnome::Vfs::Handle read_handle;
+  Gnome::Vfs::Handle exec_handle;
   
-  const std::string& openString = "gnome-open ";
-  const std::string& commandString = openString + (fullPath + file).c_str();
-  Glib::spawn_command_line_async(commandString);
+  try
+  {
+    read_handle.open(fullPath + file, Gnome::Vfs::OPEN_READ);
+    Glib::RefPtr<const Gnome::Vfs::FileInfo> info;
+    info = read_handle.get_file_info(
+      Gnome::Vfs::FILE_INFO_GET_MIME_TYPE |
+      Gnome::Vfs::FILE_INFO_FORCE_SLOW_MIME_TYPE );
 
+    std::cout << info->get_mime_type();
+    std::cout << " opened\n";
+
+    if (Gnome::Vfs::Mime::can_be_executable(info->get_mime_type())){
+      std::cout << " Executable - in fact, I'm running it.\n";
+      Glib::spawn_command_line_async(fullPath + file);
+      return;
+      }
+    else{
+      Glib::ustring exec = getenv("HOME");
+      exec += "/Choices/MIME-types/";
+      exec += info->get_mime_type().replace(
+              info->get_mime_type().find("/"),1,"_");
+      exec += " "  + fullPath + file;
+      Glib::spawn_command_line_async(exec);
+
+      std::cout << exec << "\n";
+      return;
+      }
+    }
+  catch(const Gnome::Vfs::exception& ex){
+    std::cout << "not opened\n";
+    // If the operation was not successful, print the error and abort
+    return;;
+  }
 }
 
 

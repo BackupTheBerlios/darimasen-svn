@@ -6,7 +6,9 @@ This also breaks a lot of other things. ^_^; However, it should also allow for a
 will a allow for a simple heightChange function to redistribute them on a table.
 
 
+--
 
+GTKMM and GNOMEVFSMM have includes that overlap. How do I filter for unique ones?
 
 
 --version 0.0.6

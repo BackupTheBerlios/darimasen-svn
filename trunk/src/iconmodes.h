@@ -10,7 +10,6 @@
 #include <libgnomevfsmm.h>
 
 #include "iconmodes.h"
-#include "mimehandler.h"
 
 /**********************/
 
