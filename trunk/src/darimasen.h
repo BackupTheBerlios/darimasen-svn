@@ -54,58 +54,49 @@
 /**********************/
 
 class Darimasen : public Gtk::Window {
+  class DarimasenMenu : public Gtk::MenuBar {
+
+    Darimasen * parent;
+
+    int depth;
+    bool showHidden;
+
+    Gtk::Menu ** MenuArray; 
+    Gtk::MenuItem ** MenuItemArray;
+    Glib::ustring * menulevel;
+
+    void MenuForPath(int, Glib::ustring, Glib::ustring);
+    void SpecialMenuForPath(int, Glib::ustring, Glib::ustring);
+    void DaMenuSelect(Glib::ustring);
+    Glib::ustring CountSubdir(const Glib::ustring&);
+
   public:
-    Darimasen(std::vector<Glib::ustring>);
-    ~Darimasen();
-
-  private:
-    class DarimasenMenu : public Gtk::MenuBar {
-      int depth;
-      bool showHidden;
-      void MenuForPath(int, Glib::ustring, Glib::ustring);
-      void SpecialMenuForPath(int, Glib::ustring, Glib::ustring);
-      Glib::ustring CountSubdir(const Glib::ustring&);
-      void DaMenuSelect(Glib::ustring);
-      Darimasen * parent;
-
-      Gtk::Menu ** MenuArray; 
-      Gtk::MenuItem ** MenuItemArray;
-      Glib::ustring * menulevel;
-      public:
-
-      DarimasenMenu(const Glib::ustring, Darimasen&);
-      ~DarimasenMenu(){
-  for(int c = 0; c < depth+1; c++){
-    delete MenuArray[c];
-    }
-        delete menulevel;
-        delete MenuArray;
-        delete MenuItemArray;
-}
-
-      };
+    DarimasenMenu(const Glib::ustring, Darimasen&);
+    ~DarimasenMenu();
+    };
 
 
 
-    Gtk::VBox VerticalOrganizer;
-    Gtk::Toolbar TopBar;
-      Gtk::ToolItem * DarimasenMenuContainer;
-      DarimasenMenu * DaMenu;
-    Gtk::HPaned HideTreePane;
-      Gtk::ScrolledWindow TreeScroller;
+  Gtk::VBox VerticalOrganizer;
+  Gtk::Toolbar TopBar;
+  Gtk::ToolItem * DarimasenMenuContainer;
+  DarimasenMenu * DaMenu;
+  Gtk::HPaned HideTreePane;
+  Gtk::ScrolledWindow TreeScroller;
+  Gtk::Notebook * Tabber;
+  Gtk::Statusbar Info;
 
-        Gtk::Notebook * Tabber;
-    Gtk::Statusbar Info;
+  std::vector<Glib::ustring> path;
 
   void fNewTab();
-  std::vector<Glib::ustring> path;
   void tabberSwitched(GtkNotebookPage*, guint);
   void addTab(Glib::ustring, guint);
   void ChangeCurrentPath(Glib::ustring path);
   void removeTab(guint);
 
-
-
+public:
+  Darimasen(std::vector<Glib::ustring>);
+  ~Darimasen();
   };
 
 /**********************/

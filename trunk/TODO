@@ -1,12 +1,9 @@
-version 0.0.7: Embetterment by tabs
+version 0.0.7: Embetterment by Tab
 
 Must address:
 
 The icon view no longer handles shrinking properly.
-Gtk::Menu MenuForPath(Glib::ustring); must be self-contained.
-  -- submenu rebuilding now?
-A way to close tabs.
-Show Hidden files (all tabs the same)
+Show Hidden files - all tabs will use the same setting, I think.
 
 vector<vector<path>>, for history. DOES NOT contain current. Last visited is history[n][0] 
 
