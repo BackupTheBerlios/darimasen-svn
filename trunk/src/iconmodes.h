@@ -15,12 +15,14 @@ class DaIconModes : public Gtk::Table {
 
 
   class Sidecon : public Gtk::EventBox{
-    Glib::ustring filePath;
+  Glib::ustring filePath,
+                  mimeInfo;
     Gtk::Menu m_Menu_Popup;   
   public:
     Sidecon(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>& );
   bool on_eventbox_button_press(GdkEventButton*);
     ~Sidecon();
+    void DaIconModes::Sidecon::RunFile();
   };
 
 

@@ -6,7 +6,12 @@
 
 /**********************/
 
-DaIconModes::DaIconModes(Glib::ustring path, int atPath, unsigned short usingMode, int MainScrollerHeight, bool givehidden){
+DaIconModes::DaIconModes(
+    Glib::ustring  path,
+    int            atPath,
+    unsigned short usingMode,
+    int            MainScrollerHeight,
+    bool           givehidden ) {
                                   
   resize(filesAtPath,filesAtPath);
   double_buffered();
@@ -109,7 +114,9 @@ bool DaIconModes::addDetail(
 /**********************/
 /**********************/
 
-DaIconModes::Sidecon::Sidecon(Glib::ustring path, const Glib::RefPtr<const Gnome::Vfs::FileInfo>& info){
+DaIconModes::Sidecon::Sidecon(
+    Glib::ustring path,
+    const Glib::RefPtr<const Gnome::Vfs::FileInfo>& info){
 
 
   filePath = path + info->get_name();
@@ -142,8 +149,9 @@ DaIconModes::Sidecon::Sidecon(Glib::ustring path, const Glib::RefPtr<const Gnome
 
 
 
-  // this is where the mimetype info goes
-  Gtk::Label * FilePermissions = Gtk::manage( new class Gtk::Label(info->get_mime_type()));
+// this is where the mimetype info goes
+  mimeInfo = info->get_mime_type();
+  Gtk::Label * FilePermissions = Gtk::manage( new class Gtk::Label(mimeInfo));
 
 
   //struct stat buf;
@@ -192,7 +200,8 @@ DaIconModes::Sidecon::Sidecon(Glib::ustring path, const Glib::RefPtr<const Gnome
   Gtk::Menu::MenuList& menulist = m_Menu_Popup.items();
   
     // following is needed so underscores show correctly
-    Gtk::MenuItem * op = Gtk::manage( new Gtk::MenuItem("Open " + info->get_name()));
+    Gtk::MenuItem * op = Gtk::manage( new Gtk::MenuItem("Open \"" + info->get_name() + "\""));
+    op->signal_activate().connect( sigc::mem_fun(*this, &DaIconModes::Sidecon::RunFile) );
     op->show();
     menulist.push_back( Gtk::Menu_Helpers::MenuElem(*op));
   menulist.push_back( Gtk::Menu_Helpers::MenuElem("Rename"));
@@ -213,13 +222,55 @@ DaIconModes::Sidecon::Sidecon(Glib::ustring path, const Glib::RefPtr<const Gnome
 
 DaIconModes::Sidecon::~Sidecon(){
   }
+
+/**********************/
+ 
+void DaIconModes::Sidecon::RunFile() {
+#ifdef WIN32
+  if (! (int) ( ShellExecute( NULL, "Open", filePath.c_str(), "",
+                              getenv("USERPROFILE"),SW_SHOWNORMAL) ) > 32 ) {
+      /* XXX: handle error
+       * send some sort of message to the status bar that no app is associated
+       * should be in statusbar */
+      //std::cerr << "Could not open file, probably no program associated.\n";                  
+  }
+#else
+  /** see if the file is executable **/
+  struct stat buff;
+
+  std::cout << mimeInfo;
+
+  if( stat(filePath.c_str(), &buff) ) {
+    std::cerr << "Path \"" + filePath + "\" no longer exists";
+    return;
+  }
+
+  if ( (buff.st_mode & S_IXOTH)                                ||
+     ( (buff.st_mode & S_IXGRP) && (buff.st_gid == getgid()) ) ||
+     ( (buff.st_mode & S_IXUSR) && (buff.st_uid == getuid()) ) ) {
+    std::cout << "Executing file " << filePath << std::endl;
+    Glib::spawn_command_line_async(filePath);
+    return;
+  }
+
+  /** not executable **/
   
+  const std::string& openString = "gnome-open ";
+  const std::string& commandString = openString + filePath.c_str();
+  std::cout << "Opening file " << filePath << " as MIME-Type " << mimeInfo << std::endl;
+  Glib::spawn_command_line_async(commandString);
+#endif
+}
+
+
+
 /**********************/
 
 // make a generic icon action
 bool DaIconModes::Sidecon::on_eventbox_button_press(GdkEventButton* event){
   if ((event->type == GDK_2BUTTON_PRESS) && (event->button == 1)){
-
+     this->RunFile();
+/*
 #ifdef WIN32
     if ( (int)(ShellExecute( NULL, "Open", filePath.c_str(), "", getenv("USERPROFILE"),SW_SHOWNORMAL)) > 32)
       return true;
@@ -231,7 +282,7 @@ bool DaIconModes::Sidecon::on_eventbox_button_press(GdkEventButton* event){
 
 
 
-#endif
+#endif*/
     }
 
   if ((event->type == GDK_BUTTON_PRESS) && (event->button == 3)){
