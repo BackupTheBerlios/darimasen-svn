@@ -72,7 +72,7 @@ bool DaIconModes::addSidecon(
     if ( (info->get_name().substr(0,1) != ".") || showHidden ) {
 
       Gtk::EventBox * sideconContainer = Gtk::manage(new Gtk::EventBox);
-      //sideconContainer->set_visible_window(false);
+      sideconContainer->set_visible_window(false);
       sideconContainer->show();
 
       Sidecon * tempPath = new Sidecon(fullPath, info);
@@ -80,27 +80,12 @@ bool DaIconModes::addSidecon(
 
       sideconContainer->add(*tempPath);
 
-
       attach(*sideconContainer, x_pos, x_pos+1, y_pos, y_pos+1, Gtk::FILL, Gtk::FILL, 4, 4);
-      
 
-  
-  sideconContainer->set_events(Gdk::BUTTON_RELEASE_MASK);
-  signal_button_press_event().connect(
-sigc::bind<Glib::RefPtr<const Gnome::Vfs::FileInfo> >(
-    sigc::mem_fun(*this, &DaIconModes::on_eventbox_button_press), info ));
-  
-
-
-//, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&
-
-
-
-
-
-
-
-
+      sideconContainer->set_events(Gdk::BUTTON_RELEASE_MASK);
+      sideconContainer->signal_button_press_event().connect(
+        sigc::bind<Glib::ustring >(
+          sigc::mem_fun(*this, &DaIconModes::on_eventbox_button_press), info->get_name() ));
 
       y_pos++; // positioning stuff. 
       if ( y_pos + 1 > (heightAvailable / 58)){
@@ -140,7 +125,6 @@ bool DaIconModes::addDetail(
 }
 
 /**********************/
-/**********************/
 
 DaIconModes::Sidecon::Sidecon(
     Glib::ustring path,
@@ -167,17 +151,11 @@ DaIconModes::Sidecon::Sidecon(
 
     }
                    
-    resize(3,2);
-  
-  //Gtk::Table * IconArangementTable = *this;
+  resize(3,2);
   Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(Gtk::StockID("gtk-dnd"), Gtk::IconSize(6)));
   Gtk::Label * FileName = Gtk::manage(new class Gtk::Label(shortnom));
 
-
-
-
-
-// this is where the mimetype info goes
+  // this is where the mimetype info goes
   mimeInfo = info->get_mime_type();
   Gtk::Label * FilePermissions = Gtk::manage( new class Gtk::Label(mimeInfo));
 
@@ -206,53 +184,44 @@ DaIconModes::Sidecon::Sidecon(
   attach(*image1, 0, 1, 0, 3, Gtk::FILL, Gtk::FILL, 0, 0);
   attach(*FileName, 1, 2, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
   attach(*FilePermissions, 1, 2, 1, 2, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-  attach(*FileSizeInfo, 1, 2, 2, 3, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-  
-
+  attach(*FileSizeInfo, 1, 2, 2, 3, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
   
   image1->show();
   FileName->show();
   FilePermissions->show();
   FileSizeInfo->show();
   show();  }
-
-
+/**********************/
 
 DaIconModes::Sidecon::~Sidecon(){
   }
 
-/**********************
- // this will have to be changed to take file information,
-// since it is no longer a member of the icon.
+/**********************/
 
 
-void DaIconModes::RunFile() {
+void DaIconModes::RunFile(const Glib::ustring file) {
 
   // see if the file is executable 
 
-
-  //std::cout << mimeInfo;
-
 struct stat   buff;
 
-  if( stat(filePath.c_str(), &buff) ) {
-    std::cerr << "Path \"" + filePath + "\" no longer exists";
+  if( stat((fullPath + file).c_str(), &buff) ) {
+    std::cerr << "Path \"" + fullPath + file + "\" no longer exists";
     return;
   }
 
   if ( (buff.st_mode & S_IXOTH)                                ||
      ( (buff.st_mode & S_IXGRP) && (buff.st_gid == getgid()) ) ||
      ( (buff.st_mode & S_IXUSR) && (buff.st_uid == getuid()) ) ) {
-    std::cout << "Executing file " << filePath << std::endl;
-    Glib::spawn_command_line_async(filePath);
+    std::cout << "Executing file " << fullPath + file << std::endl;
+    Glib::spawn_command_line_async(fullPath + file);
     return;
   }
 
   // not executable 
   
   const std::string& openString = "gnome-open ";
-  const std::string& commandString = openString + filePath.c_str();
-  std::cout << "Opening file " << filePath << " as MIME-Type " << mimeInfo << std::endl;
+  const std::string& commandString = openString + (fullPath + file).c_str();
   Glib::spawn_command_line_async(commandString);
 
 }
@@ -262,33 +231,38 @@ struct stat   buff;
 /**********************/
 
 // make a generic icon action
-bool DaIconModes::on_eventbox_button_press(GdkEventButton* event, const Glib::RefPtr<const Gnome::Vfs::FileInfo>& Icon){
+bool DaIconModes::on_eventbox_button_press(GdkEventButton* event, const Glib::ustring Icon){
   if ((event->type == GDK_2BUTTON_PRESS) && (event->button == 1)){
-     //this->RunFile();
+     RunFile(Icon);
      static int x = 0;
      return true;
     }
 
   if ((event->type == GDK_BUTTON_PRESS) && (event->button == 3)){
-
-
-
-
-
     Gtk::Menu::MenuList& menulist = m_Menu_Popup.items();
 
-m_Menu_Popup.items().pop_back();
-m_Menu_Popup.items().pop_back();
-m_Menu_Popup.items().pop_back();
-std::cout << Icon->get_name() << "!\n";
-    menulist.push_back( Gtk::Menu_Helpers::MenuElem("_Edit"  ) );
-    menulist.push_back( Gtk::Menu_Helpers::MenuElem("_Process" ) );
-    menulist.push_back( Gtk::Menu_Helpers::MenuElem("_Remove" ) );
 
-   m_Menu_Popup.popup(event->button, event->time);
+    for( int i=9; i > 0; i--)
+      m_Menu_Popup.items().pop_back();
+
+    // following is needed so underscores show correctly
+    Gtk::MenuItem * op = Gtk::manage( new Gtk::MenuItem("Open \"" + Icon + "\""));
+    op->signal_activate().connect(
+      sigc::bind<Glib::ustring >(
+        sigc::mem_fun(*this, &DaIconModes::RunFile),Icon) );
+    op->show();
+    menulist.push_back( Gtk::Menu_Helpers::MenuElem(*op));
+    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Rename"));
+    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Delete "));
+    menulist.push_back( Gtk::Menu_Helpers::SeparatorElem());
+    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Copy"));
+    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Move"));
+    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Link"));
+    menulist.push_back( Gtk::Menu_Helpers::SeparatorElem());
+    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Properties... "));
+
+    m_Menu_Popup.popup(event->button, event->time);
     return true;
-
-
     }
 
   return false;

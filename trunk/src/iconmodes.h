@@ -25,11 +25,11 @@ class DaIconModes : public Gtk::Table {
     Sidecon(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>& );
   
     ~Sidecon();
-    void DaIconModes::Sidecon::RunFile();
+    //void DaIconModes::Sidecon::RunFile();
   };
 
-void RunFile();
-bool on_eventbox_button_press(GdkEventButton*, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&);
+void RunFile(const Glib::ustring);
+bool on_eventbox_button_press(GdkEventButton*, const Glib::ustring);
   Glib::ustring fullPath;
   int filesAtPath;
   int heightAvailable;
