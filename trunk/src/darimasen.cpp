@@ -102,7 +102,7 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
 /**********************/
 
 Darimasen::~Darimasen(){
-  
+  DarimasenMenuContainer->remove();
   hide();
   }
 
@@ -130,7 +130,30 @@ void Darimasen::addTab(Glib::ustring path, guint pos){
     Tabber->set_show_tabs(true);
   //numOfTabs++;
 
-  Gtk::Label * tabNum = Gtk::manage(new Gtk::Label(path.substr(path.rfind(slash, path.length() -2)+1)));
+  Gtk::Image * xed = Gtk::manage(
+    new Gtk::Image("/usr/share/icons/hicolor/16x16/stock/generic/stock_close.png"));
+
+
+xed->show();
+
+  Gtk::Label * tabNum = Gtk::manage(new Gtk::Label(path.substr(path.rfind(slash, path.length() -2)+1) + "  "));
+  Gtk::HBox * arrangement= Gtk::manage(new Gtk::HBox()) ;
+  Gtk::Button * closeButton = Gtk::manage( new Gtk::Button());
+
+closeButton->add(*xed);
+closeButton->set_relief(Gtk::RELIEF_NONE); 
+closeButton->show();
+closeButton->set_sensitive(false);
+
+ closeButton->signal_clicked().connect(       sigc::bind<guint>(
+sigc::mem_fun(*this, &Darimasen::removeTab),pos) );
+
+
+tabNum->show();
+arrangement->show();
+
+arrangement->pack_start(*tabNum);
+arrangement->pack_end(*closeButton);
 
   Gtk::EventBox * MainEventBox = Gtk::manage(new class Gtk::EventBox);
 
@@ -148,7 +171,8 @@ void Darimasen::addTab(Glib::ustring path, guint pos){
   MainEventBox->add(*foo);
   MainScroller->set_policy(Gtk::POLICY_ALWAYS, Gtk::POLICY_AUTOMATIC);
   foo->show();
-  Tabber->insert_page( *MainScroller, *tabNum, pos);
+  Tabber->insert_page( *MainScroller, *arrangement, pos);
+//Tabber->insert_page( *MainScroller, *tabNum, pos);
   }
 
 /**********************/
@@ -170,7 +194,7 @@ Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring path, Darimasen& Myp
     startPos = shortpath.find(slash,startPos) + 1; depth++;
     }
 
-  menulevel = new Glib::ustring[depth];
+  menulevel =  new Glib::ustring[depth];
 
   startPos = 0;
   for(i = 0; shortpath.find(slash,startPos) !=  Glib::ustring::npos ; i++ ){
@@ -182,14 +206,14 @@ Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring path, Darimasen& Myp
   MenuItemArray = new Gtk::MenuItem*[depth+1];
 
   for(int c = 0; c < depth+1; c++){
-    MenuArray[c] = new Gtk::Menu;
+    MenuArray[c] =  new Gtk::Menu;
     }
 
   
   
     Glib::ustring subin = CountSubdir(path);
     if ( subin != "0" ){
-      MenuItemArray[depth] = new Gtk::MenuItem( subin + " \342\226\272" );
+      MenuItemArray[depth] =  Gtk::manage(new Gtk::MenuItem( subin + " \342\226\272" ));
       MenuItemArray[depth]->show();
       MenuItemArray[depth]->set_submenu(*MenuArray[depth]);
       prepend(*MenuItemArray[depth]);
@@ -209,7 +233,7 @@ Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring path, Darimasen& Myp
     MenuForPath(i, crop, "");
     }
 
-  MenuItemArray[i] = new Gtk::MenuItem(underscoreSafe(menulevel[i]) );
+  MenuItemArray[i] = new Gtk::MenuItem(underscoreSafe(menulevel[i] ));
   MenuItemArray[i]->show();
   prepend(*MenuItemArray[i]);
 
@@ -314,7 +338,7 @@ void Darimasen::DarimasenMenu::SpecialMenuForPath(
 
   MenuItemArray[position]->remove_submenu();
   delete MenuArray[position];
-  MenuArray[position] = new Gtk::Menu;
+  MenuArray[position] = Gtk::manage( new Gtk::Menu);
 
 
   MenuItemArray[position]->set_submenu(*MenuArray[position]);
@@ -354,7 +378,7 @@ Glib::ustring Darimasen::DarimasenMenu::CountSubdir(const Glib::ustring& path){
 void Darimasen::tabberSwitched(GtkNotebookPage* sig, guint n){
   DarimasenMenuContainer->remove();
 
-  DaMenu = new DarimasenMenu(path[n], *this);
+  DaMenu = Gtk::manage(new DarimasenMenu(path[n], *this));
   DarimasenMenuContainer->add(*DaMenu);
 
   }
@@ -376,7 +400,7 @@ void Darimasen::ChangeCurrentPath(Glib::ustring pathin){
   path[nth] = pathin + slash;
 
   DarimasenMenuContainer->remove();
-  DaMenu = new DarimasenMenu(path[nth], *this);
+  DaMenu = Gtk::manage( new DarimasenMenu(path[nth], *this));
   DarimasenMenuContainer->add(*DaMenu);
 
   Tabber->remove_page(nth);
@@ -386,6 +410,13 @@ void Darimasen::ChangeCurrentPath(Glib::ustring pathin){
   }
 
 /**********************/
+
+void Darimasen::removeTab(guint pos){
+  std::cout << pos << "\n";
+  Tabber->remove_page(pos);
+  }
+
+
 /**********************/
 /**********************/
 /**********************/

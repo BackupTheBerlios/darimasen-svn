@@ -17,7 +17,7 @@ DEPEND=">=dev-libs/libsigc++-2.0.3
         >=dev-cpp/gtkmm-2.4.0
         >=dev-cpp/gnome-vfsmm-2.6.0
         x11-themes/gnome-icon-theme"
-
+RDEPEND="!x11-misc/darimasen"
 
 
 subversion_svn_fetch() {

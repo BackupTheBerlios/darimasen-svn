@@ -21,8 +21,9 @@ class DaIconModes : public Gtk::EventBox {
 
   class Sidecon : public Gtk::Table {
     Glib::ustring filePath, mimeInfo;
+    DaIconModes * parent;
     public:
-    Sidecon(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>& );
+    Sidecon(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, DaIconModes&);
     };
 
 /*
@@ -101,6 +102,9 @@ class DaIconModes : public Gtk::EventBox {
   bool addEntry(const Glib::ustring&, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, bool, bool&);
 
 Gtk::Menu m_Menu_Popup;
+
+
+Glib::RefPtr<Gdk::Pixbuf> getIcon(Glib::ustring, guint);
 
 public:
 ~DaIconModes();

@@ -90,7 +90,7 @@ hidden[slotsUsed] = (info->get_name().substr(0,1) == ".");
 
 switch(iconmode){
 case 0: {
-Sidecon * tempPathS = new Sidecon(fullPath, info);
+Sidecon * tempPathS = new Sidecon(fullPath, info, *this);
       tempPathS->show();
       sideconContainer[slotsUsed]->add(*tempPathS);
 	}
@@ -118,7 +118,11 @@ break;
 
 DaIconModes::Sidecon::Sidecon(
     Glib::ustring path,
-    const Glib::RefPtr<const Gnome::Vfs::FileInfo>& info){
+    const Glib::RefPtr<const Gnome::Vfs::FileInfo>& info,
+    DaIconModes& above){
+
+
+  parent = &above;
   filePath = path + info->get_name();
 
   Glib::ustring shortnom = info->get_name();
@@ -169,7 +173,7 @@ Glib::RefPtr<Gdk::Pixbuf> xf = xe->scale_simple(48,48,Gdk::INTERP_TILES);
 
 
   Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(xf));
-*/
+///
 
 
   try{
@@ -186,6 +190,17 @@ Glib::RefPtr<Gdk::Pixbuf> xf = xe->scale_simple(48,48,Gdk::INTERP_TILES);
     }
 
   Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(ico));
+*/
+
+
+Glib::RefPtr<Gdk::Pixbuf> img;
+img = parent->getIcon(info->get_mime_type(), 48);
+
+
+Gtk::Image * image1 = Gtk::manage (new class Gtk::Image(img));
+
+image1->show();
+
 
 
   Gtk::Label * FileName = Gtk::manage(new class Gtk::Label(shortnom));
@@ -796,5 +811,57 @@ void DaIconModes::SetPermissionsDialogue::apply(Glib::RefPtr<Gnome::Vfs::FileInf
 
   hide();
   }
+
+/**********************/
+
+Glib::RefPtr<Gdk::Pixbuf> DaIconModes::getIcon(Glib::ustring mimeGiven, guint size){
+  int i;
+  static std::vector <Glib::ustring> mimeList;
+  static std::vector < Glib::RefPtr<Gdk::Pixbuf> > unsizedImg;
+
+//Glib::RefPtr<Gdk::Pixbuf> xe = Gdk::Pixbuf::create_from_file(ico);
+//Glib::RefPtr<Gdk::Pixbuf> xf = xe->scale_simple(48,48,Gdk::INTERP_TILES);
+
+
+//  Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(xf));
+
+  for(i = 0; i< mimeList.size(); i++){
+    if( mimeGiven == mimeList[i] ){
+      Glib::RefPtr<Gdk::Pixbuf> scale = unsizedImg[i]->scale_simple(size,size,Gdk::INTERP_TILES);
+      //Gtk::Image * pic = Gtk::manage(new class Gtk::Image(scale));
+      return scale;
+      }
+    }
+   // pic doesn't exist.
+
+    Glib::ustring ico;
+  try{
+    ico = "/usr/share/icons/gnome/48x48/mimetypes/gnome-mime-";
+    ico += mimeGiven.replace(mimeGiven.find("/"), 1, "-");
+    ico += ".png";
+
+    Glib::file_get_contents(ico);
+    }
+  catch(const Glib::Error) {
+    ico = "/usr/share/icons/gnome/48x48/mimetypes/gnome-mime-";
+    ico += mimeGiven.substr(0,mimeGiven.find("-"));
+    ico += ".png";
+
+    }
+//std::cout << mimeGiven << " " << mimeGiven.substr(0,mimeGiven.rfind("/")) << "\n";
+    mimeList.push_back(mimeGiven);
+
+  Glib::RefPtr<Gdk::Pixbuf> xe = Gdk::Pixbuf::create_from_file(ico);
+
+  unsizedImg.push_back(xe);
+
+      Glib::RefPtr<Gdk::Pixbuf> scale = unsizedImg[i]->scale_simple(size,size,Gdk::INTERP_TILES);
+      //Gtk::Image * pic = Gtk::manage(new class Gtk::Image(scale));
+      return scale;
+
+  
+}
+
+
 
 /**********************/

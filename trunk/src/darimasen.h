@@ -72,7 +72,17 @@ class Darimasen : public Gtk::Window {
       Gtk::MenuItem ** MenuItemArray;
       Glib::ustring * menulevel;
       public:
+
       DarimasenMenu(const Glib::ustring, Darimasen&);
+      ~DarimasenMenu(){
+  for(int c = 0; c < depth+1; c++){
+    delete MenuArray[c];
+    }
+        delete menulevel;
+        delete MenuArray;
+        delete MenuItemArray;
+}
+
       };
 
 
@@ -92,8 +102,7 @@ class Darimasen : public Gtk::Window {
   void tabberSwitched(GtkNotebookPage*, guint);
   void addTab(Glib::ustring, guint);
   void ChangeCurrentPath(Glib::ustring path);
-
-
+  void removeTab(guint);
 
 
 
