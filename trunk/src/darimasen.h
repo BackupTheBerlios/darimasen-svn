@@ -68,6 +68,7 @@ class Darimasen : public Gtk::Window {
     void SpecialMenuForPath(int, Glib::ustring, Glib::ustring);
     void DaMenuSelect(Glib::ustring);
     Glib::ustring CountSubdir(const Glib::ustring&);
+    bool PopupMenu(GdkEventButton*, const Glib::ustring);
 
   public:
     DarimasenMenu(const Glib::ustring, Darimasen&);
@@ -108,6 +109,7 @@ public:
   Darimasen(std::vector<Glib::ustring>);
   ~Darimasen();
   Gtk::CheckMenuItem * optShowHidden;
+  void set_message(Glib::ustring);
   };
 
 /**********************/

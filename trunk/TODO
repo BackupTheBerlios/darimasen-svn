@@ -2,10 +2,7 @@ version 0.0.7: Embetterment by Tab
 
 Must address:
 
-The icon view no longer handles shrinking properly.
-Show Hidden files - all tabs will use the same setting, I think.
-
-vector<vector<path>>, for history. DOES NOT contain current. Last visited is history[n][0] 
+getting submenus to popup in the correct position
 
 Would like to address:
 

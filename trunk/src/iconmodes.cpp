@@ -6,7 +6,7 @@
 /**********************/
 
 DaIconModes::DaIconModes(Glib::ustring path,  Darimasen& myParent) {                        
-
+lastclick = 0;
   filesAtPath = 0;
   try{
     Gnome::Vfs::DirectoryHandle handle;
@@ -337,12 +337,11 @@ void DaIconModes::RunFile(const Glib::ustring file) {
     exec += " \""  + fullPath + file + "\"";
     Glib::spawn_command_line_async(exec);
 
-    std::cout << exec << " was run.\n";
+    parent->set_message(exec + " was run.");
     return;
 
     }
   catch(const Gnome::Vfs::exception& ex){
-    std::cout << "Specific Mime Handler does not exist.\n";
     }
 
 
@@ -352,20 +351,18 @@ void DaIconModes::RunFile(const Glib::ustring file) {
     exec += " \""  + fullPath + file + "\"";
     Glib::spawn_command_line_async(exec);
 
-    std::cout << exec << " was run.\n";
+    parent->set_message(exec + " was run.");
     return;
     }
   catch(const Gnome::Vfs::exception& ex){
-    std::cout << "Generic Mime Handler does not exist.\n";
     }
 
   if (Gnome::Vfs::Mime::can_be_executable(info->get_mime_type())){
-    std::cout << " Executable - in fact, I'm running it.\n";
+    parent->set_message( "Running " +fullPath + file);
     Glib::spawn_command_line_async(fullPath + file);
     return;
     }
   else {
-    std::cout << "Not identified as an executable either.\n";
     }
     
 
@@ -384,13 +381,13 @@ void DaIconModes::RunFile(const Glib::ustring file) {
       exec += "/Choices/MIME-types/text_plain";
       exec += " \""  + fullPath + file + "\"";
       Glib::spawn_command_line_async(exec);
-      std::cout << exec << " was run.\n";
+    parent->set_message(exec + " was opened as a text file.");
       return;
       break;
     }
     default:
     {
-      std::cout << "Well, that was usefull." << std::endl;
+    parent->set_message("Well, that was usefull.");
       break;
     }
   }
@@ -423,7 +420,7 @@ void DaIconModes::SetRunAction(const Glib::ustring file) {
     chooseAction->show();
     }
   catch(const Gnome::Vfs::exception& ex) {
-    std::cout << "Err... Setting error?\n";
+    parent->set_message("Err... Setting error?");
     }
   }
 
@@ -431,9 +428,14 @@ void DaIconModes::SetRunAction(const Glib::ustring file) {
 
 // make a generic icon action
 bool DaIconModes::on_eventbox_button_press(GdkEventButton* event, const Glib::ustring Icon){
-  if ((event->type == GDK_2BUTTON_PRESS) && (event->button == 1)){
+
+
+
+  if ((event->type == GDK_BUTTON_PRESS) && (event->button == 1)  && (lastclick < event->time)){
+lastclick = event->time + 1000;
+
      RunFile(Icon);
-     static int x = 0;
+     static int x;
      return true;
     }
 
@@ -629,7 +631,6 @@ void DaIconModes::ChooseActionDialogue::GetCurrentAction(Glib::ustring mimeType)
     contents = contents.substr(0,contents.find("\n"));
     }
   catch(const Glib::Error) {
-    std::cout << "The frellin mime file doesn't exist. Use an empty one.\n";
     contents = "* \"$@\"" ;
     }
   entry1->set_text(contents);
@@ -662,10 +663,10 @@ void DaIconModes::ChooseActionDialogue::modifyAction(){
       write_handle.create(exec1, Gnome::Vfs::OPEN_WRITE, false, 0755);
       write_handle.seek(Gnome::Vfs::SEEK_POS_START, 0);
       GnomeVFSFileSize bytes_written = write_handle.write(command.data(), command.size());
-      std::cout << "New action set.\n";
+  //  parent->set_message("New action set.");
       }
     catch(const Gnome::Vfs::exception) {
-      std::cout << "couldn't write new definition.\n";
+  //  parent->set_message("Couldn't write new definition.");
       hide();
       return;
       }
@@ -691,7 +692,7 @@ void DaIconModes::SetPermissions(const Glib::ustring file) {
     setPermissions->show();
     }
   catch(const Gnome::Vfs::exception& ex) {
-    std::cout << "Err... Setting error?\n";
+    parent->set_message("Err... Setting error?");
     }
   }
 
@@ -874,10 +875,12 @@ Glib::RefPtr<Gdk::Pixbuf> DaIconModes::getIcon(Glib::ustring mimeGiven, guint si
 
  void DaIconModes::SwitchHidden(){
 
-//std::cout << "!" << fullPath << "\n";
-    std::cout << "newstate is" << parent->optShowHidden->get_active() << "\n";
 
- // std::cout << showHidden << "\n";
+if (parent->optShowHidden->get_active())
+    parent->set_message("Showing Hidden Files");
+else
+    parent->set_message("Hidden Files are hidden again");
+
   redraw();
   }
 

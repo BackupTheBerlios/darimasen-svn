@@ -103,7 +103,7 @@ class DaIconModes : public Gtk::EventBox {
   int slotsUsed;
   int IconsHigh;
   Gtk::Menu m_Menu_Popup;
-
+guint32 lastclick;
 
 public:
   ~DaIconModes();

@@ -76,6 +76,12 @@ void Darimasen::DarimasenMenu::MenuForPath(
           Gtk::MenuItem * subsubdir = Gtk::manage( new Gtk::MenuItem(*SubSubLabel));
           subsubdir->set_right_justified();
 
+
+         // subsubdir->signal_button_press_event().connect_notify(
+       //     sigc::bind<int, Glib::ustring, Glib::ustring>(
+      //        sigc::mem_fun(*this, &Darimasen::DarimasenMenu::PopupMenu),
+       //         position, path, ext+ slash + refFileInfo->get_name()));
+
           subsubdir->signal_activate().connect(
             sigc::bind<int, Glib::ustring, Glib::ustring>(
               sigc::mem_fun(*this, &Darimasen::DarimasenMenu::SpecialMenuForPath),
@@ -150,6 +156,13 @@ Glib::ustring Darimasen::DarimasenMenu::CountSubdir(const Glib::ustring& path){
   return int2ustr(j);
 
 }
+
+/**********************/
+
+bool Darimasen::DarimasenMenu::PopupMenu(GdkEventButton*, const Glib::ustring inn){
+  std::cout<< inn << "\n";
+
+  }
 
 /**********************/
 
@@ -541,4 +554,10 @@ void Darimasen::fPrintHist(){
     }
   }
 
+/**********************/
+
+  void Darimasen::set_message(Glib::ustring in){
+   Info.pop();
+   Info.push(in);
+}
 /**********************/
