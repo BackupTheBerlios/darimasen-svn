@@ -6,6 +6,7 @@
 /**********************/
 
 #include <gtkmm/table.h>
+#include <gtkmm/messagedialog.h>
 #include "main.h"
 #include <libgnomevfsmm.h>
 

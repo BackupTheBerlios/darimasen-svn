@@ -1,7 +1,9 @@
 Sudrien - <fusemail.com>
-Ron Kuslak  - <rds@rdsarts.com> - Mime-types & executables (and AppDir support soon)
+Ron Kuslak  - <rds@rdsarts.com> - initial executables work
 
 
 
 Thanks to Benjamin Lau and Alexander Larsson for sharing their knowledge.
+
+Darimasen may or may not have code from Regexxer (http://regexxer.sourceforge.net/) - their autogen.sh was consuted, at least. ^_^
 

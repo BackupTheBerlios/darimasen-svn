@@ -206,40 +206,88 @@ void DaIconModes::RunFile(const Glib::ustring file) {
 
   Gnome::Vfs::Handle read_handle;
   Gnome::Vfs::Handle exec_handle;
+  Glib::RefPtr<const Gnome::Vfs::FileInfo> info;
   
-  try
-  {
+  try{
     read_handle.open(fullPath + file, Gnome::Vfs::OPEN_READ);
-    Glib::RefPtr<const Gnome::Vfs::FileInfo> info;
     info = read_handle.get_file_info(
       Gnome::Vfs::FILE_INFO_GET_MIME_TYPE |
       Gnome::Vfs::FILE_INFO_FORCE_SLOW_MIME_TYPE );
-
-    std::cout << info->get_mime_type();
-    std::cout << " opened\n";
-
-    if (Gnome::Vfs::Mime::can_be_executable(info->get_mime_type())){
-      std::cout << " Executable - in fact, I'm running it.\n";
-      Glib::spawn_command_line_async(fullPath + file);
-      return;
-      }
-    else{
-      Glib::ustring exec = getenv("HOME");
-      exec += "/Choices/MIME-types/";
-      exec += info->get_mime_type().replace(
-              info->get_mime_type().find("/"),1,"_");
-      exec += " "  + fullPath + file;
-      Glib::spawn_command_line_async(exec);
-
-      std::cout << exec << "\n";
-      return;
-      }
     }
   catch(const Gnome::Vfs::exception& ex){
-    std::cout << "not opened\n";
-    // If the operation was not successful, print the error and abort
-    return;;
+    std::cout << "Does not exist.\n";
+    return;
+    }
+
+
+  Glib::ustring exec = getenv("HOME");
+  try{
+    exec += "/Choices/MIME-types/";
+    exec += info->get_mime_type().replace(info->get_mime_type().find("/"),1,"_");
+    exec_handle.open(exec, Gnome::Vfs::OPEN_READ);
+
+    exec += " \""  + fullPath + file + "\"";
+    Glib::spawn_command_line_async(exec);
+
+    std::cout << exec << " was run.\n";
+    return;
+
+    }
+  catch(const Gnome::Vfs::exception& ex){
+    std::cout << "Specific Mime Handler does not exist.\n";
+    }
+
+
+  try{
+    exec = exec.substr(0, exec.rfind("_"));
+    exec_handle.open(exec, Gnome::Vfs::OPEN_READ);
+    exec += " \""  + fullPath + file + "\"";
+    Glib::spawn_command_line_async(exec);
+
+    std::cout << exec << " was run.\n";
+    return;
+    }
+  catch(const Gnome::Vfs::exception& ex){
+    std::cout << "Generic Mime Handler does not exist.\n";
+    }
+
+  if (Gnome::Vfs::Mime::can_be_executable(info->get_mime_type())){
+    std::cout << " Executable - in fact, I'm running it.\n";
+    Glib::spawn_command_line_async(fullPath + file);
+    return;
+    }
+  else {
+    std::cout << "Not identified as an executable either.\n";
+    }
+    
+
+  Gtk::MessageDialog dialog(
+    "This mimetype does not have any action associated with it.\n"
+    "should it be opened as text?",
+    false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK_CANCEL);
+
+
+  //Handle the response:
+  switch(dialog.run())
+  {
+    case(Gtk::RESPONSE_OK):
+    {
+      Glib::ustring exec = getenv("HOME");
+      exec += "/Choices/MIME-types/text_plain";
+      exec += " \""  + fullPath + file + "\"";
+      Glib::spawn_command_line_async(exec);
+      std::cout << exec << " was run.\n";
+      return;
+      break;
+    }
+    default:
+    {
+      std::cout << "Well, that was usefull." << std::endl;
+      break;
+    }
   }
+    
+
 }
 
 
@@ -271,9 +319,9 @@ bool DaIconModes::on_eventbox_button_press(GdkEventButton* event, const Glib::us
     menulist.push_back( Gtk::Menu_Helpers::MenuElem("Rename"));
     menulist.push_back( Gtk::Menu_Helpers::MenuElem("Delete "));
     menulist.push_back( Gtk::Menu_Helpers::SeparatorElem());
-    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Copy"));
-    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Move"));
-    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Link"));
+    //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Copy"));
+    //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Move"));
+    //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Link"));
     menulist.push_back( Gtk::Menu_Helpers::SeparatorElem());
     menulist.push_back( Gtk::Menu_Helpers::MenuElem("Properties... "));
 

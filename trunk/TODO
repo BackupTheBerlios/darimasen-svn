@@ -8,10 +8,14 @@ will a allow for a simple heightChange function to redistribute them on a table.
 
 --
 
-GTKMM and GNOMEVFSMM have includes that overlap. How do I filter for unique ones?
+Now that we can open files "a la mode du ROX", there should probably be a way to associate files too.
 
+--
 
---version 0.0.6
+Ron <Rds> mentioned that Roc will be moving for ~/Choices to ~/.choices - should probably support that, or check both locations.
+
+--
+
 
    limit DaMenu expansion. (preserve window width for long paths)
    Hung up on the fact that new width is calculated *after*
@@ -27,27 +31,48 @@ GTKMM and GNOMEVFSMM have includes that overlap. How do I filter for unique ones
    --! Actually, it seems that the way this might be done is in
        the on_configure_event, which  has immediate sizes. 
 
+How would you determine if an toolbox overflow menu is displayed? (not just available, but currently in use)
 
-Gdk::VISIBILITY_NOTIFY_MASK has somthing to do with progressive menu building.
+A: There are ways to do it with get_allocation(), but the redraw point needs to be somehow moved up. 
+
+--
+
    
    
-   Generic detail view (Name, Size, Permissions, etc.)
-
-
---version 0.0.7++ and onwards
-
-   Icon Context menus that do somthing
+   Generic detail view (Name, Size, Permissions, etc.) should be easy now with gnome_vfsmm; however, sorting them by this info is a bit more of a challenge. A ListView would probably be much better for this.
 
 
 
- The Generated becomes a class that returns a Gtk::Menubar&
- Makefiles XOR ./autogen.sh
- ROX or Gnome-compatible mimetypes and execution, some standard
+
+
+
+-----------------------------------------------
+version 0.0.7 and onwards
+-----------------------------------------------
+
+
+mime-type dependant icons, a la ROX.
+
+---
+
+@commit 11 -- With the ROX / Gnome-vfsmm work done, most of Ron's <Rds> code is gone. This would include the AppDir test. However, appdirs would never end up showing up in the main window, so this is not a huge loss as of yet. His test was for AppRun within the directory - it would require testing for that file's existance, then notifying that it is an executable and needs a unique icon.
+
+---
+
+   Icon Context menus that do somthing mopre than open
+
+---
+
  standard tree navigation
- all the folder context menus...
+Gdk::VISIBILITY_NOTIFY_MASK has somthing to do with progressive menu building.
 
- CVS @ sf, other repository?
->
+---
+
+all the folder context menus...
+
+---
+
+
 --version 0.1.0
 
 public release ^_^;
@@ -58,27 +83,5 @@ File search?
 
 
 
---Questions 
 
-3. window_layout.cpp
-   C:\Documents and Settings\-----------\My Documents\Projects\Darimasen-0.0.4\window_layout.o
-   (.text$_ZN3Gtk14TreeViewColumnC1IN4Glib7ustringEEERKS3_RKNS_15TreeModelColumnIT_EE+0x116)
-   variable 'vtable for Gtk::TreeViewColumn' can't be auto-imported.
-   Please read the documentation for ld's --enable-auto-import for details.
-   
-   A: This seems to be a Win32-specific error, looking at alternate means.
-      Using table instead, although this would probably be more easily sorted.
-
-
-4. Is there a generic empty container to put things in, to switch the contents
-   between the file listing and Find window?
-
-   A: it seems an HBox could do it, switching between showing the different
-      windows. Simply don't show() it.
-      
-6. How would you determine if an toolbox overflow menu is displayed?
-  (not just available, but currently in use)
-
-   A: There are ways to do it with get_allocation(), but the redraw point needs to
-      be somehow moved up. 
 */
