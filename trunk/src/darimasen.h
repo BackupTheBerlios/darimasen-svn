@@ -50,7 +50,8 @@
 #include <gtkmm/treestore.h>
 #include <gtkmm/treeview.h>
 #include <gtkmm/notebook.h>
-
+#include <gtkmm/aboutdialog.h>
+#include <gdkmm/pixbufloader.h>
 /**********************/
 
 class Darimasen : public Gtk::Window {
@@ -104,6 +105,7 @@ class Darimasen : public Gtk::Window {
   void removeTab(guint);
   void fBack();
   void fQuit();
+  void fAbout();
   void fShowHidden();
   void fPrintHist();
 
