@@ -10,20 +10,16 @@ DaIconModes::DaIconModes(
     Glib::ustring  path,
     int            atPath,
     unsigned short usingMode,
-  //  int            MainScrollerHeight,
     bool           givehidden ) {                        
-  //There really should be a more efficient way of doing this...
-  //resize(atPath,atPath);
-  //double_buffered(); 
+ 
   fullPath = path;
   filesAtPath = atPath;
   iconmode = usingMode;
-  //heightAvailable = MainScrollerHeight;
   showHidden = givehidden;
   slotsUsed = 0;
   IconsHigh = 0;
   set_visible_window(false);
-hidden = new int[filesAtPath];
+  hidden = new int[filesAtPath];
   if(iconmode == 0){
     sideconContainer = new Gtk::EventBox*[filesAtPath];
     for(int c = 0; c < filesAtPath; c++){
@@ -410,7 +406,7 @@ menulist.push_back( Gtk::Menu_Helpers::MenuElem("Set Run Action"
 
 void DaIconModes::on_size_allocate(Gtk::Allocation& allocation){
 
-Gtk::Widget * tmp = get_child();
+  Gtk::Widget * tmp = get_child();
 
   if(iconmode == 0){
     int oldie = IconsHigh;
@@ -426,19 +422,19 @@ Gtk::Widget * tmp = get_child();
 
       for(int i = 0; i < slotsUsed; i++){
         if( !hidden[i] || showHidden){
-
-        DisposableTable->attach( *sideconContainer[i],
-          x_pos, x_pos+1, y_pos, y_pos+1,
-          Gtk::FILL, Gtk::FILL, 4, 4);
-        sideconContainer[i]->show();
-        y_pos++; 
-        if(iconmode == 0){
-          if ( y_pos + 1 > IconsHigh){
-            y_pos = 0;
-            x_pos++;
+          DisposableTable->attach( *sideconContainer[i],
+              x_pos, x_pos+1, y_pos, y_pos+1,
+              Gtk::FILL, Gtk::FILL, 4, 4);
+          sideconContainer[i]->show();
+          y_pos++; 
+          if(iconmode == 0){
+            if ( y_pos + 1 > IconsHigh){
+              y_pos = 0;
+              x_pos++;
+              }
             }
           }
-        }}
+        }
       DisposableTable->show();
       }
     }
