@@ -10,7 +10,8 @@
 
 /**********************/
 
-Glib::ustring int2ustr(int x);
+Glib::ustring int2ustr(int);
+Glib::ustring underscoreSafe(Glib::ustring);
 
 /**********************/
 

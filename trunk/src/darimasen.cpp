@@ -465,14 +465,14 @@ std::cout << "\n";
         DaMenu.items().push_back(Gtk::Menu_Helpers::MenuElem(tmp[i], MenuRay[i]) );
         }
       else { //correct handling of underscores (_)
-        int startAtPos = 0;
-        Glib::ustring undrescored = tmp[i];
+   /*     int startAtPos = 0;
+        Glib::ustring undrescored = underscoreSafe(tmp[i]);
         while (tmp[i].find("_",startAtPos) != -1){
           startAtPos = tmp[i].find("_", startAtPos);
           undrescored.replace(startAtPos, 1, "__");
           startAtPos ++;   
-          }
-        DaMenu.items().push_back(Gtk::Menu_Helpers::MenuElem(undrescored, MenuRay[i]) );
+          }*/
+        DaMenu.items().push_back(Gtk::Menu_Helpers::MenuElem(underscoreSafe(tmp[i]), MenuRay[i]) );
         }
       }
 

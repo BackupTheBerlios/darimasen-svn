@@ -418,15 +418,12 @@ bool DaIconModes::on_eventbox_button_press(GdkEventButton* event, const Glib::us
     for( int i=9; i > 0; i--)
       m_Menu_Popup.items().pop_back();
 
+
+        int startAtPos = 0;
     // following is needed so underscores show correctly
-    Gtk::MenuItem * op = Gtk::manage( new Gtk::MenuItem("Open \"" + Icon + "\""));
-    op->signal_activate().connect(
+    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Open \"" + underscoreSafe(Icon) + "\"",
       sigc::bind<Glib::ustring >(
-        sigc::mem_fun(*this, &DaIconModes::RunFile),Icon) );
-
-    op->show();
-    menulist.push_back( Gtk::Menu_Helpers::MenuElem(*op));
-
+        sigc::mem_fun(*this, &DaIconModes::RunFile),Icon)));
 
     menulist.push_back( Gtk::Menu_Helpers::MenuElem("Set Run Action...",
       sigc::bind<Glib::ustring>(
@@ -436,11 +433,14 @@ bool DaIconModes::on_eventbox_button_press(GdkEventButton* event, const Glib::us
       sigc::bind<Glib::ustring>(
         sigc::mem_fun(*this, &DaIconModes::SetPermissions), Icon  )));
 
+    menulist.push_back( Gtk::Menu_Helpers::SeparatorElem());
+
+
+// this stuff needs tab completion to be usefull.
+    //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Move To..."));
+    //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Copy To..."));
 
     //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Delete "));
-    menulist.push_back( Gtk::Menu_Helpers::SeparatorElem());
-    //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Copy"));
-    //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Move"));
     //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Link"));
     //menulist.push_back( Gtk::Menu_Helpers::SeparatorElem());
     //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Properties... "));
@@ -524,7 +524,7 @@ DaIconModes::ChooseActionDialogue::ChooseActionDialogue(Glib::ustring mimeType){
  radiobutton2 = Gtk::manage(
       new class Gtk::RadioButton(_RadioBGroup_radiobutton1,
       "Set Mime For \"" + mimeType + "\"") ) ;
-
+https://www.fusemail.com/sq/src/webmail.php
   radiobutton2->signal_clicked().connect(
       sigc::bind<Glib::ustring >( sigc::mem_fun(*this,
       &DaIconModes::ChooseActionDialogue::GetCurrentAction), mimeType ));
@@ -673,7 +673,7 @@ fullPath = path;
 
    explaination = Gtk::manage(new class Gtk::Label("for \""+ info->get_name() + "\"..."));
 
-   layout = Gtk::manage(new class Gtk::Table(5, 5, false));
+   layout = Gtk::manage(new class Gtk::Table(5, 6, false));
 
    u_r = Gtk::manage(new class Gtk::CheckButton(""));
    if((info->get_permissions() & Gnome::Vfs::PERM_USER_READ) != 0)  u_r->set_active(true);
@@ -694,24 +694,38 @@ fullPath = path;
    o_x = Gtk::manage(new class Gtk::CheckButton(""));
    if((info->get_permissions() & Gnome::Vfs::PERM_OTHER_EXEC) != 0)  o_x->set_active(true);
 
+   extra = Gtk::manage(new  Gtk::VSeparator);
 
-   layout->attach(*u_r, 1, 2, 2, 3);
-   layout->attach(*u_w, 2, 3, 2, 3);
-   layout->attach(*u_x, 3, 4, 2, 3);
-   layout->attach(*g_r, 1, 2, 3, 4);
-   layout->attach(*g_w, 2, 3, 3, 4);
-   layout->attach(*g_x, 3, 4, 3, 4);
-   layout->attach(*o_r, 1, 2, 4, 5);
-   layout->attach(*o_w, 2, 3, 4, 5);
-   layout->attach(*o_x, 3, 4, 4, 5);
+   sticky = Gtk::manage(new class Gtk::CheckButton("Sticky"));
+   if((info->get_permissions() & Gnome::Vfs::PERM_STICKY) != 0)  sticky->set_active(true);
+   GID = Gtk::manage(new class Gtk::CheckButton("Group ID"));
+   if((info->get_permissions() & Gnome::Vfs::PERM_SGID) != 0)  GID->set_active(true);
+   UID = Gtk::manage(new class Gtk::CheckButton("User ID"));;
+   if((info->get_permissions() & Gnome::Vfs::PERM_SUID) != 0)  UID->set_active(true);
 
-   layout->attach(*read, 1, 2, 1, 2);
-   layout->attach(*write, 2, 3, 1, 2);
-   layout->attach(*run, 3, 4, 1, 2);
-   layout->attach(*user, 0, 1, 2, 3);
-   layout->attach(*group, 0, 1, 3, 4);
-   layout->attach(*others, 0, 1, 4, 5);
-   layout->attach(*explaination, 0, 4, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 10, 0);
+   layout->attach(*u_r, 1, 2, 2, 3, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*u_w, 2, 3, 2, 3, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*u_x, 3, 4, 2, 3, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*g_r, 1, 2, 3, 4, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*g_w, 2, 3, 3, 4, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*g_x, 3, 4, 3, 4, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*o_r, 1, 2, 4, 5, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*o_w, 2, 3, 4, 5, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*o_x, 3, 4, 4, 5, Gtk::FILL, Gtk::FILL, 0, 0);
+
+   layout->attach(*extra,4,5,1,5, Gtk::FILL | Gtk::EXPAND, Gtk::FILL, 10, 0);
+
+   layout->attach(*sticky, 5, 6, 2, 3, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*GID, 5, 6, 3, 4, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*UID, 5, 6, 4, 5, Gtk::FILL, Gtk::FILL, 0, 0);
+
+   layout->attach(*read, 1, 2, 1, 2, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*write, 2, 3, 1, 2, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*run, 3, 4, 1, 2, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*user, 0, 1, 2, 3, Gtk::FILL , Gtk::FILL, 0, 0);
+   layout->attach(*group, 0, 1, 3, 4, Gtk::FILL , Gtk::FILL, 0, 0);
+   layout->attach(*others, 0, 1, 4, 5, Gtk::FILL , Gtk::FILL, 0, 0);
+   layout->attach(*explaination, 0, 6, 0, 1, Gtk::FILL | Gtk::EXPAND, Gtk::FILL, 10, 0);
 
   get_vbox()->pack_start(*layout);
   button1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-cancel")));
@@ -748,12 +762,20 @@ void DaIconModes::SetPermissionsDialogue::apply(Glib::RefPtr<Gnome::Vfs::FileInf
   // *nix and *BSD only, blah blah blah.
   int permissions = 0;
 
+
+
+  if(UID->get_active()) permissions += 2048;
+  if(GID->get_active()) permissions += 1024;
+  if(sticky->get_active()) permissions += 512;
+
   if(u_r->get_active()) permissions += 256;
   if(u_w->get_active()) permissions += 128;
   if(u_x->get_active()) permissions += 64;
+
   if(g_r->get_active()) permissions += 32;
   if(g_w->get_active()) permissions += 16;
   if(g_x->get_active()) permissions += 8;
+
   if(o_r->get_active()) permissions += 4;
   if(o_w->get_active()) permissions += 2;
   if(o_x->get_active()) permissions += 1;

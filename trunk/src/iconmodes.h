@@ -12,6 +12,7 @@
 #include <gtkmm/entry.h>
 #include <gdkmm/pixbuf.h>
 #include "iconmodes.h"
+#include <gtkmm/separator.h>
 
 /**********************/
 
@@ -60,6 +61,9 @@ class DaIconModes : public Gtk::EventBox {
     Gtk::CheckButton * o_r, * o_w, * o_x;
     
     Gnome::Vfs::Handle info;
+
+    Gtk::VSeparator * extra;
+    Gtk::CheckButton * sticky, * GID, * UID;
 
     Gtk::Label * user, * group, * others;
     Gtk::Label * read, * write, * run;
