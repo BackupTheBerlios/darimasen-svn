@@ -15,7 +15,7 @@ void Darimasen::DarimasenMenu::MenuForPath(
        Glib::ustring ext){
 
   int entry = 0;
-
+usingSpecial = false;
 
 
   if( position < depth ){
@@ -113,8 +113,7 @@ void Darimasen::DarimasenMenu::SpecialMenuForPath(
        Glib::ustring path,
        Glib::ustring ext){
 
-
-
+usingSpecial = true;
   MenuItemArray[position]->remove_submenu();
   delete MenuArray[position];
   MenuArray[position] = Gtk::manage( new Gtk::Menu);
@@ -125,25 +124,25 @@ void Darimasen::DarimasenMenu::SpecialMenuForPath(
 
 
 
-  //closeButton->signal_clicked().connect(
-
-
-MenuArray[position]->signal_deactivate().connect(    sigc::bind<guint, Glib::ustring>(sigc::mem_fun(*this, &Darimasen::DarimasenMenu::offClick),position, path) );
+  MenuArray[position]->signal_deactivate().connect(
+    sigc::bind<guint, Glib::ustring>(sigc::mem_fun(*this, &Darimasen::DarimasenMenu::offClick),position, path) );
 
 
   MenuArray[position]->popup(1,gtk_get_current_event_time());
   }
 
+
 /**********************/
 
-    void Darimasen::DarimasenMenu::offClick(int position, Glib::ustring path){
-//void Darimasen::DarimasenMenu::on_popup_menu_position(int& x, int& y, bool& push_in){
+void Darimasen::DarimasenMenu::offClick(int position, Glib::ustring path){
 
+if (usingSpecial == true){
   MenuItemArray[position]->remove_submenu();
   delete MenuArray[position];
   MenuArray[position] = Gtk::manage( new Gtk::Menu);
   MenuItemArray[position]->set_submenu(*MenuArray[position]);
   MenuForPath(position, path, "");
+  }
 }
 
 /**********************/
@@ -209,6 +208,7 @@ Glib::ustring Darimasen::DarimasenMenu::CountSubdir(const Glib::ustring& path){
 // parses the path, builds the menu bar. 
 Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring path, Darimasen& Myparent){
   depth = 0;
+usingSpecial = false;
   //showHidden = false;
   Glib::ustring shortpath = path; //home = getenv("HOME");
   parent = &Myparent;
@@ -368,7 +368,12 @@ void Darimasen::addTab(Glib::ustring path, guint pos){
   DaIconModes * foo;
   foo = new DaIconModes(path, *this);
 
-hackishUnhide[pos] = foo;
+
+    hackishUnhide[pos] = foo;
+
+
+
+
   //IconModeList.push(*foo);
 //if the current tab number is greater than those that actually exist,
 //push_back. Otherwise, change the one at pos. 
@@ -430,7 +435,12 @@ void Darimasen::removeTab(guint pos){
   Tabber->remove_page(pos);
 
   history.erase(history.begin()+pos,history.begin()+pos+1 );
-delete hackishUnhide[pos];
+
+  delete hackishUnhide[pos];
+
+  for( int i = 0; (i + pos) < (Tabber->get_n_pages()); i++)
+    hackishUnhide[pos+i] = hackishUnhide[pos+i+1];
+
   }
 
 
@@ -441,6 +451,8 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   set_default_size(500, 330);
 
 hackishUnhide = new DaIconModes*[20];
+
+
 
   add(VerticalOrganizer);
   VerticalOrganizer.show();
@@ -908,17 +920,31 @@ const unsigned icon128x128_png_size = 5172;
 
 
 
-   Gtk::AboutDialog aboutDarimasen;
+   Gtk::Dialog aboutDarimasen;
 
+   Gtk::Button * closebutton1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-close")));
+   Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(loader->get_pixbuf()));
+   Gtk::Label * label1 = Gtk::manage(new class Gtk::Label("<span size ='xx-large'>Darimasen 0.0.7</span>\n"
+                "\"Embetterment by Tabs\"\n"
+		"\n"
+		"http://darimasen.berlios.de\n"
+		"\n"
+		"(c) GPL 2004, 2005 by Sudrien"));
 
+   aboutDarimasen.get_action_area()->property_layout_style().set_value(Gtk::BUTTONBOX_END);
+   label1->set_justify(Gtk::JUSTIFY_CENTER);
+   label1->set_use_markup(true);
 
+   aboutDarimasen.get_vbox()->set_homogeneous(false);
+   aboutDarimasen.get_vbox()->set_spacing(10);
+   aboutDarimasen.get_vbox()->pack_start(*image1);
+   aboutDarimasen.get_vbox()->pack_start(*label1, Gtk::PACK_SHRINK, 0);
+   aboutDarimasen.set_title("About Darimasen");
+   aboutDarimasen.set_modal(true);
+   aboutDarimasen.set_resizable(false);
+   aboutDarimasen.add_action_widget(*closebutton1, -7);
 
-
-  aboutDarimasen.set_logo (loader->get_pixbuf());
-  aboutDarimasen.set_name ("Darimasen");
-  aboutDarimasen.set_version ("0.0.7");
-  aboutDarimasen.set_website ("http://darimasen.berlios.de/");
-
+  aboutDarimasen.show_all_children();
   aboutDarimasen.run();
   }
 
@@ -934,9 +960,20 @@ void Darimasen::fShowHidden(){
 
 
   for (int i = 0; i < Tabber->get_n_pages(); i++){
-hackishUnhide[i]->SwitchHidden();
+    hackishUnhide[i]->SwitchHidden();
+
+/*    Gtk::ScrolledWindow *  tmp1 = (Gtk::ScrolledWindow *)Tabber->get_nth_page(i);
+std::cout << tmp1->get_vscrollbar_visible () << "\n";
+
+
+Gtk::Layout * tmp2 = (Gtk::Layout*)tmp1->get_child();
+Gtk::EventBox * tmp3 = (Gtk::EventBox*)tmp2->get_children().data();
+DaIconModes * tmp4 = (DaIconModes*)tmp3->get_child();
+tmp4->SwitchHidden();
+//DaIconModes
+//    tmp2->SwitchHidden();*/
+
     }
-std::cout << "\n";
 
   }
 

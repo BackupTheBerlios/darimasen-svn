@@ -6,9 +6,8 @@ getting submenus to popup in the correct position
 
 Would like to address:
 
-Detail view, how to handle icon mode switching now
 limiting DaMenu expansion (preserve window width for long paths) - by shortening menu names
-Include Lila icons (with flag?)
+
 Folder context menus.
 
 
@@ -18,7 +17,7 @@ version 0.0.8 and onwards
 -----------------------------------------------
 
 --
-
+Detail view, how to handle icon mode switching now
 Ron <Rds> mentioned that Rox will be moving for ~/Choices to ~/.choices - should probably support that, or check both locations.
 
 --

@@ -50,8 +50,10 @@
 #include <gtkmm/treestore.h>
 #include <gtkmm/treeview.h>
 #include <gtkmm/notebook.h>
-#include <gtkmm/aboutdialog.h>
+
 #include <gdkmm/pixbufloader.h>
+
+#include <gtkmm/layout.h>
 /**********************/
 
 class Darimasen : public Gtk::Window {
@@ -70,13 +72,10 @@ class Darimasen : public Gtk::Window {
 
     void offClick(int, Glib::ustring);
 
- //   void DaMenuSelect(Glib::ustring);
     Glib::ustring CountSubdir(const Glib::ustring&);
-//    bool PopupMenu(GdkEventButton*, const Glib::ustring);
-   bool DaMenuSelect(GdkEventButton*, const Glib::ustring);
+    bool DaMenuSelect(GdkEventButton*, const Glib::ustring);
 
-
-
+    bool usingSpecial;
 //void on_popup_menu_position(int& x, int& y, bool& push_in);
 //typedef on_popup_menu_position Gtk::Menu::SlotPositionCalc;
 
@@ -98,10 +97,7 @@ class Darimasen : public Gtk::Window {
 
 
   std::vector< std::stack<Glib::ustring> > history;
- // std::vector<DaIconModes> IconModeList;
-
   Gtk::ToolButton * BackButton;
- // bool showHidden;
 
   void fNewTab();
   void newTab(Glib::ustring);
@@ -115,7 +111,8 @@ class Darimasen : public Gtk::Window {
   void fShowHidden();
   void fPrintHist();
 
- class DaIconModes ** hackishUnhide;
+  class DaIconModes ** hackishUnhide;
+
 
 public:
   Darimasen(std::vector<Glib::ustring>);
