@@ -23,10 +23,13 @@ void Darimasen::DarimasenMenu::MenuForPath(
     Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem(menulevel[position] + " "));
     MenuArray[position]->attach(*subdir, 0 ,4, entry++, entry+1);
     subdir->show();
-    subdir->signal_activate().connect(
-      sigc::bind<Glib::ustring>(
-         sigc::mem_fun(*this, &Darimasen::DarimasenMenu::DaMenuSelect),
-           (path + menulevel[position]).substr(0, (path + menulevel[position]).length() - 1)));
+
+          subdir->set_events(Gdk::BUTTON_RELEASE_MASK);
+
+          subdir->signal_button_press_event().connect(
+            sigc::bind<Glib::ustring>(
+              sigc::mem_fun(*this, &Darimasen::DarimasenMenu::DaMenuSelect),
+                 (path + menulevel[position]).substr(0, (path + menulevel[position]).length() - 1)));
 
     Gtk::SeparatorMenuItem * sep = Gtk::manage( new Gtk::SeparatorMenuItem());
     MenuArray[position]->attach(*sep, 0 ,4, entry++, entry+1);
@@ -55,18 +58,24 @@ void Darimasen::DarimasenMenu::MenuForPath(
         Glib::ustring SubSubCount;
         if(ext == ""){
           subdir = Gtk::manage( new Gtk::MenuItem(refFileInfo->get_name() + slash + " "));
-          subdir->signal_activate().connect(
+          subdir->set_events(Gdk::BUTTON_RELEASE_MASK);
+
+          subdir->signal_button_press_event().connect(
             sigc::bind<Glib::ustring>(
               sigc::mem_fun(*this, &Darimasen::DarimasenMenu::DaMenuSelect),
-               (path + refFileInfo->get_name()) ));
+                 (path + refFileInfo->get_name())));
+
           SubSubCount = CountSubdir(path + refFileInfo->get_name());
           }
         else{
           subdir = Gtk::manage( new Gtk::MenuItem(ext + slash + refFileInfo->get_name() + slash + " "));
-          subdir->signal_activate().connect(
+          subdir->set_events(Gdk::BUTTON_RELEASE_MASK);
+
+          subdir->signal_button_press_event().connect(
             sigc::bind<Glib::ustring>(
               sigc::mem_fun(*this, &Darimasen::DarimasenMenu::DaMenuSelect),
-                (path + ext.substr(1) + slash + refFileInfo->get_name()) ));
+                (path + ext.substr(1) + slash + refFileInfo->get_name())));
+
           SubSubCount = CountSubdir(path + ext + slash + refFileInfo->get_name());
           }
 
@@ -75,12 +84,6 @@ void Darimasen::DarimasenMenu::MenuForPath(
           SubSubLabel->show();
           Gtk::MenuItem * subsubdir = Gtk::manage( new Gtk::MenuItem(*SubSubLabel));
           subsubdir->set_right_justified();
-
-
-         // subsubdir->signal_button_press_event().connect_notify(
-       //     sigc::bind<int, Glib::ustring, Glib::ustring>(
-      //        sigc::mem_fun(*this, &Darimasen::DarimasenMenu::PopupMenu),
-       //         position, path, ext+ slash + refFileInfo->get_name()));
 
           subsubdir->signal_activate().connect(
             sigc::bind<int, Glib::ustring, Glib::ustring>(
@@ -124,10 +127,33 @@ void Darimasen::DarimasenMenu::SpecialMenuForPath(
 
 /**********************/
 
-//this is just a wrapper to get to the parent windows' function. It may go away soon.
+//Decides the action of the menuItem, more sophisticated than the activate signal. 
 //its comment should always be somewhere.
-void Darimasen::DarimasenMenu::DaMenuSelect(Glib::ustring path){
+
+bool Darimasen::DarimasenMenu::DaMenuSelect(GdkEventButton* event, const Glib::ustring path){
+
+  if ((event->type == GDK_BUTTON_PRESS) && (event->button == 2) ) //middle
+  {
+  parent->newTab(path);
+  return true;
+  }
+  if ((event->type == GDK_BUTTON_PRESS) && (event->button == 1) ) //left
+  {
   parent->ChangeCurrentPath(path);
+  return true;
+  }
+  if ((event->type == GDK_BUTTON_PRESS) && (event->button == 3) ) //right
+  {
+    Gtk::Menu * m_Menu_Popup = Gtk::manage( new Gtk::Menu);
+    Gtk::Menu::MenuList& menulist = m_Menu_Popup->items();
+
+    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Open In new Tab"));
+    m_Menu_Popup->popup(event->button, event->time);
+  return true;
+   }
+
+  return false;
+
   //DaFileLister(); //5:45pm, 24 Dec 2004, it worked! // leave this comment    
   }
 
@@ -156,13 +182,6 @@ Glib::ustring Darimasen::DarimasenMenu::CountSubdir(const Glib::ustring& path){
   return int2ustr(j);
 
 }
-
-/**********************/
-
-bool Darimasen::DarimasenMenu::PopupMenu(GdkEventButton*, const Glib::ustring inn){
-  std::cout<< inn << "\n";
-
-  }
 
 /**********************/
 
@@ -255,6 +274,19 @@ void Darimasen::fNewTab(){
   history[history.size() -1].push(getenv("HOME") + slash);
   addTab(getenv("HOME") + slash, Tabber->get_n_pages());
 #endif
+  }
+
+/**********************/
+
+// ...and there was already one with an f.
+void Darimasen::newTab(Glib::ustring newpath){
+    std::stack<Glib::ustring> empty;
+    history.push_back(empty);
+
+
+  history[history.size() -1].push(newpath + slash);
+  addTab(newpath + slash, Tabber->get_n_pages());
+
   }
 
 /**********************/
