@@ -4,8 +4,7 @@ Ron <Rds> mentioned that Rox will be moving for ~/Choices to ~/.choices - should
 
 --
 
-
-   limit DaMenu expansion. (preserve window width for long paths)
+limit DaMenu expansion. (preserve window width for long paths)
 
 There are two ways to do the actual shrinkage - shorten the names up top, or make another menu wih dirs a menus.
 
