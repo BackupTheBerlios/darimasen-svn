@@ -83,15 +83,17 @@ hidden[slotsUsed] = (info->get_name().substr(0,1) == ".");
 //std::cout << (info->get_name().substr(0,1) == ".") << " " << info->get_name() << "\n";
 
 switch(iconmode){
-case 0:
+case 0: {
 Sidecon * tempPathS = new Sidecon(fullPath, info);
       tempPathS->show();
       sideconContainer[slotsUsed]->add(*tempPathS);
+	}
 break;
-case 1:
+case 1: {
 Detail * tempPathD = new Detail(fullPath, info); 
       tempPathD->show();
       sideconContainer[slotsUsed]->add(*tempPathD);
+	}
 break;
 }
 
@@ -256,7 +258,7 @@ DaIconModes::Detail::Detail(
 
     }
                    
-  resize(3,1);
+  resize(1,3);
   //Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(Gtk::StockID("gtk-dnd"), Gtk::IconSize(6)));
   Gtk::Label * FileName = Gtk::manage(new class Gtk::Label(shortnom));
 
@@ -397,167 +399,160 @@ void DaIconModes::RunFile(const Glib::ustring file) {
 
 void DaIconModes::SetRunAction(const Glib::ustring file) {
 
-  Gnome::Vfs::Handle read_handle;
-  Glib::RefPtr<const Gnome::Vfs::FileInfo> info;
-  Glib::ustring exec;
-  
-  try{
+	Gnome::Vfs::Handle read_handle;
+	Glib::RefPtr<const Gnome::Vfs::FileInfo> info;
+	Glib::ustring exec_subtype;
+	Glib::ustring exec_mimetype;
 
-    read_handle.open(fullPath + file, Gnome::Vfs::OPEN_READ);
-
-    info = read_handle.get_file_info(
-      Gnome::Vfs::FILE_INFO_GET_MIME_TYPE |
-      Gnome::Vfs::FILE_INFO_FORCE_SLOW_MIME_TYPE );
-
-
-    exec = info->get_mime_type().replace(info->get_mime_type().find("/"),1,"_");
-
-
-
-
-   //Glade rip!
-
-
-
-   Gtk::Dialog * dialog1 = new Gtk::Dialog;
-
-
-   Gtk::Button * cancelbutton1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-cancel")));
-   Gtk::Button * okbutton1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-ok")));
-
-   
+   /* XXX: These should all be initalized to NULL to keep our arse out of the */
+   /* proverbial fire. Mmmm proverbial fire *drool*                           */
+   /* Widgets *************************************************************** */
    Gtk::RadioButton::Group _RadioBGroup_radiobutton1;
+   Gtk::Dialog      * dialog1;
+   Gtk::Button      * cancelbutton1;
+   Gtk::Button      * okbutton1;
+   Gtk::RadioButton * radiobutton1;
+   Gtk::RadioButton * radiobutton2;
+   Gtk::Label       * label1;
+   Gtk::Entry       * entry1;
+   Gtk::VBox        * vbox1;
+   /* *********************************************************************** */
+
+   dialog1       = new Gtk::Dialog;
+   cancelbutton1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-close")));
+   okbutton1     = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-apply")));
+   label1 = Gtk::manage(new class Gtk::Label("Enter a Shell command:"));
+   entry1 = Gtk::manage(new class Gtk::Entry());
+   vbox1  = Gtk::manage(new class Gtk::VBox(false, 0));
+  
+	try {
+
+	read_handle.open(fullPath + file, Gnome::Vfs::OPEN_READ);
+
+	info = read_handle.get_file_info(
+			Gnome::Vfs::FILE_INFO_GET_MIME_TYPE |
+			Gnome::Vfs::FILE_INFO_FORCE_SLOW_MIME_TYPE );
 
 
+	exec_subtype  = info->get_mime_type();
+	exec_subtype  = exec_subtype.replace( exec_subtype.find("/"), 1, "_" );
+	exec_mimetype = exec_subtype.substr( 0, exec_subtype.rfind("_") );
 
-   Gtk::RadioButton *radiobutton1 = Gtk::manage(
-     new class Gtk::RadioButton(_RadioBGroup_radiobutton1,
-       "Set Mime For all " + exec.substr(0, exec.rfind("_"))));
-   Gtk::RadioButton *radiobutton2 = Gtk::manage(
-     new class Gtk::RadioButton(_RadioBGroup_radiobutton1,
-      "Set Mime For " + exec));
-   Gtk::Label * label1 = Gtk::manage(new class Gtk::Label("Enter a Shell command:"));
-   Gtk::Entry * entry1 = Gtk::manage(new class Gtk::Entry());
-   Gtk::VBox * vbox1 = Gtk::manage(new class Gtk::VBox(false, 0));
-   cancelbutton1->set_flags(Gtk::CAN_FOCUS);
-   cancelbutton1->set_flags(Gtk::CAN_DEFAULT);
-   cancelbutton1->set_relief(Gtk::RELIEF_NORMAL);
-   okbutton1->set_flags(Gtk::CAN_FOCUS);
-   okbutton1->set_flags(Gtk::CAN_DEFAULT);
-   okbutton1->set_relief(Gtk::RELIEF_NORMAL);
-   dialog1->get_action_area()->property_layout_style().set_value(Gtk::BUTTONBOX_END);
-   radiobutton1->set_sensitive(false);
-   radiobutton1->set_flags(Gtk::CAN_FOCUS);
-   radiobutton1->set_relief(Gtk::RELIEF_NORMAL);
-   radiobutton1->set_mode(true);
-   radiobutton1->set_active(false);
-   radiobutton2->set_flags(Gtk::CAN_FOCUS);
-   radiobutton2->set_relief(Gtk::RELIEF_NORMAL);
-   radiobutton2->set_mode(true);
-   radiobutton2->set_active(true);
-   label1->set_alignment(0,0.48);
-   label1->set_padding(2,4);
-   label1->set_justify(Gtk::JUSTIFY_LEFT);
-   label1->set_line_wrap(false);
-   label1->set_use_markup(false);
-   label1->set_selectable(false);
-   entry1->set_flags(Gtk::CAN_FOCUS);
-   entry1->set_visibility(true);
-   entry1->set_editable(true);
-   entry1->set_max_length(0);
+	radiobutton1 = Gtk::manage(
+		new class Gtk::RadioButton(_RadioBGroup_radiobutton1, 
+			"Set Mime For \"" + exec_mimetype + "\"") );
 
-   entry1->set_has_frame(true);
-   entry1->set_activates_default(false);
-   vbox1->pack_start(*radiobutton1, Gtk::PACK_SHRINK, 0);
-   vbox1->pack_start(*radiobutton2, Gtk::PACK_SHRINK, 0);
-   vbox1->pack_start(*label1, Gtk::PACK_SHRINK, 0);
-   vbox1->pack_start(*entry1, Gtk::PACK_SHRINK, 0);
-   dialog1->get_vbox()->set_homogeneous(false);
-   dialog1->get_vbox()->set_spacing(5);
-   dialog1->get_vbox()->pack_start(*vbox1);
-   dialog1->set_title("Set Run Action");
-   dialog1->set_modal(false);
-   dialog1->property_window_position().set_value(Gtk::WIN_POS_CENTER_ON_PARENT);
-   dialog1->set_resizable(true);
-   dialog1->property_destroy_with_parent().set_value(false);
-   dialog1->set_has_separator(true);
-   dialog1->add_action_widget(*cancelbutton1, -6);
-   dialog1->add_action_widget(*okbutton1, -5);
-   cancelbutton1->show();
-   okbutton1->show();
-   radiobutton1->show();
-   radiobutton2->show();
-   label1->show();
-   entry1->show();
-   vbox1->show();
+	radiobutton2 = Gtk::manage(
+		new class Gtk::RadioButton(_RadioBGroup_radiobutton1,
+			"Set Mime For \"" + info->get_mime_type() + "\"") ) ;
 
+	cancelbutton1->set_flags(Gtk::CAN_FOCUS);
+	cancelbutton1->set_flags(Gtk::CAN_DEFAULT);
+	cancelbutton1->set_relief(Gtk::RELIEF_NORMAL);
+	okbutton1->set_flags(Gtk::CAN_FOCUS);
+	okbutton1->set_flags(Gtk::CAN_DEFAULT);
+	okbutton1->set_relief(Gtk::RELIEF_NORMAL);
+	dialog1->get_action_area()->property_layout_style().set_value(Gtk::BUTTONBOX_END);
+	radiobutton1->set_flags(Gtk::CAN_FOCUS);
+	radiobutton1->set_relief(Gtk::RELIEF_NORMAL);
+	radiobutton1->set_mode(true);
+	radiobutton1->set_active(false);
+	radiobutton2->set_flags(Gtk::CAN_FOCUS);
+	radiobutton2->set_relief(Gtk::RELIEF_NORMAL);
+	radiobutton2->set_mode(true);
+	radiobutton2->set_active(true);
+	label1->set_alignment(0,0.48);
+	label1->set_padding(2,4);
+	label1->set_justify(Gtk::JUSTIFY_LEFT);
+	label1->set_line_wrap(false);
+	label1->set_use_markup(false);
+	label1->set_selectable(false);
+	entry1->set_flags(Gtk::CAN_FOCUS);
+	entry1->set_visibility(true);
+	entry1->set_editable(true);
+	entry1->set_max_length(0);
 
-   Glib::ustring contents, exec1 = getenv("HOME");
-   exec1 += (Glib::ustring)("/Choices/MIME-types/");
-   exec1 += exec;
+	entry1->set_has_frame(true);
+	entry1->set_activates_default(false);
+	vbox1->pack_start(*radiobutton1, Gtk::PACK_SHRINK, 0);
+	vbox1->pack_start(*radiobutton2, Gtk::PACK_SHRINK, 0);
+	vbox1->pack_start(*label1, Gtk::PACK_SHRINK, 0);
+	vbox1->pack_start(*entry1, Gtk::PACK_SHRINK, 0);
+	dialog1->get_vbox()->set_homogeneous(false);
+	dialog1->get_vbox()->set_spacing(5);
+	dialog1->get_vbox()->set_border_width(6);
+	dialog1->get_vbox()->pack_start(*vbox1);
+	dialog1->set_border_width(6);
+	dialog1->set_title("Set Run Action");
+	dialog1->set_modal(false);
+	dialog1->property_window_position().set_value(Gtk::WIN_POS_CENTER_ON_PARENT);
+	dialog1->set_resizable(true);
+	dialog1->property_destroy_with_parent().set_value(false);
+	dialog1->set_has_separator(false);
+	dialog1->add_action_widget(*cancelbutton1, Gtk::RESPONSE_CANCEL);
+	dialog1->add_action_widget(*okbutton1, Gtk::RESPONSE_OK);
+	dialog1->set_default_response(Gtk::RESPONSE_OK);
+	cancelbutton1->show();
+	okbutton1->show();
+	radiobutton1->show();
+	radiobutton2->show();
+	label1->show();
+	entry1->show();
+	vbox1->show();
 
-   try{
-     contents = Glib::file_get_contents(exec1);
-     contents = contents.substr(contents.find("exec ") + 5);
-     contents = contents.substr(0,contents.find("\n"));
-     }
-   catch(const Glib::Error){
-     std::cout << "The frellin mime file doesn't exist. Use an empty one.\n";
-     contents = "* \"$@\"" ;
-     }
-   entry1->set_text(contents);
+	/* XXX: Check for mimetype handler. Currently only looks for sub */
+	Glib::ustring contents, exec1 = getenv("HOME");
+	exec1 += (Glib::ustring)("/Choices/MIME-types/");
+	exec1 += exec_subtype;
 
+	try {
+		contents = Glib::file_get_contents(exec1);
+		contents = contents.substr(contents.find("exec ") + 5);
+		contents = contents.substr(0,contents.find("\n"));
+	} catch(const Glib::Error) {
+		std::cout << "The frellin mime file doesn't exist. Use an empty one.\n";
+		contents = "* \"$@\"" ;
+	}
 
+	entry1->set_text(contents);
 
-  switch(dialog1->run())
-  {
-    case(Gtk::RESPONSE_OK):
-    {
-      Gnome::Vfs::Handle write_handle;
+	if (dialog1->run() ==  Gtk::RESPONSE_OK) {
+		std::cout << "In here!" << std::endl;
+		Gnome::Vfs::Handle write_handle;
 
-      try{
+		if(entry1->get_text().substr(0,1) == "*") {
+			std::cout << "Nothing was changed! Rejecting.\n";
+			dialog1->hide();
+			return;
+		}
 
-        if(entry1->get_text().substr(0,1) == "*"){
-          std::cout << "Nothing was changed! Rejecting.\n";
-          dialog1->hide();
-          return;
-          }
+		Glib::ustring contents, exec1 = getenv("HOME");
+		exec1 += (Glib::ustring)("/Choices/MIME-types/");
+		exec1 += (radiobutton1->get_active()) ? exec_mimetype : exec_subtype;
 
+		Glib::ustring command = "#! /bin/sh\n#Made by Darimasen\nexec ";
+		command += entry1->get_text();
+		command += "\n";
+		std::cout << "New script is:\n" << command;
 
-        write_handle.create(exec1, Gnome::Vfs::OPEN_WRITE, false, 0755);
+		try {
+			// Now write the data we read out to the output uri
+			write_handle.create(exec1, Gnome::Vfs::OPEN_WRITE, false, 0755);
+			write_handle.seek(Gnome::Vfs::SEEK_POS_START, 0);
+			GnomeVFSFileSize bytes_written = write_handle.write(command.data(), command.size());
+			
+		} catch(const Gnome::Vfs::exception) {
+					std::cout << "couldn't write new definition.\n";
+					dialog1->hide();
+					return;
+		} // try for file write
 
-        write_handle.seek(Gnome::Vfs::SEEK_POS_START, 0);
-        Glib::ustring command = "#! /bin/sh\n#Made by Darimasen\nexec ";
-        command += entry1->get_text();
-        command += "\n";
-        std::cout << "New script is:\n" << command;
+	}
 
-        // Now write the data we read out to the output uri
-        GnomeVFSFileSize bytes_written = write_handle.write(command.data(), command.size());
+	dialog1->hide();
 
-        }
-      catch(const Gnome::Vfs::exception){
-        std::cout << "couldn't write new definition.\n";
-        dialog1->hide();
-        return;
-        }
-
-      dialog1->hide();
-      return;
-      break;
-    }
-    default:
-    {
-      std::cout << "There is no change to the script" << std::endl;
-      dialog1->hide();
-      return;
-      break;
-    }
-  }
-
-    } 
-  catch(const Gnome::Vfs::exception& ex) {
-    std::cout << "Err... Setting error?\n";
+	} catch(const Gnome::Vfs::exception& ex) {
+		std::cout << "Err... Setting error?\n";
     }
 }
 
@@ -620,7 +615,7 @@ Gtk::Widget * tmp = get_child();
     if ( (oldie != IconsHigh) ){ // if resize is needed
       if (tmp)
         delete tmp; // actually DisposableTable, but segfaulted otherwise
-      Gtk::Table * DisposableTable = new Gtk::Table(filesAtPath/IconsHigh,IconsHigh);
+      Gtk::Table * DisposableTable = new Gtk::Table((filesAtPath)/IconsHigh+1,IconsHigh);
       add(*DisposableTable);
       int y_pos = 0;
       int x_pos = 0;

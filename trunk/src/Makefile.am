@@ -11,14 +11,12 @@ darimasen_SOURCES = \
 	darimasen.cpp \
 	iconmodes.cpp \
 	supplimental.cpp \
-	dirtree.cpp \
 	main.cpp
 
 noinst_HEADERS = \
 	darimasen.h \
 	iconmodes.h \
 	supplimental.h \
-	dirtree.h \
 	main.h 
 
 
