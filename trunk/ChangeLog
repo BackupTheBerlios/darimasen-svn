@@ -45,7 +45,11 @@ Darimasen 0.0.5
 Darimasen 0.0.6
   
   Icon display bugs fixed
-  Window resize now effects icons
+  Window resize now effects icons (speeding up)
+  Gnome-VFSMM integration
+  Show Hidden files option
+  Linux release - autogen.sh
+  Directory tree navigation started
   
   
   

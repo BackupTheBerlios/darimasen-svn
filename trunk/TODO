@@ -31,12 +31,6 @@ Gdk::VISIBILITY_NOTIFY_MASK has somthing to do with progressive menu building.
    
    Generic detail view (Name, Size, Permissions, etc.)
 
-   De-activate menu items so signals can get through to event boxes.
-   
-   --! this requires Gtk::Menu::attach() and a lot of menuitems.
-
-
-
 
 --version 0.0.7++ and onwards
 

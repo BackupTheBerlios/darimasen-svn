@@ -203,18 +203,18 @@ int Darimasen::resolvePath(Glib::ustring givenPath){
   
    
     // the double dot-slash
-    while( fullPath.find(".."+slash) != std::string::npos ){
+    while( fullPath.find(".."+slash) != Glib::ustring::npos ){
       int x = fullPath.find(".."+slash);
       int y = fullPath.rfind(slash,x-2);
       fullPath.replace(y,x-y+3, slash);
       }       
        
     // the single dot-slash
-    while( fullPath.find("." + slash) != std::string::npos )    
+    while( fullPath.find("." + slash) != Glib::ustring::npos )    
        fullPath.replace(fullPath.find("." + slash),2,"");
     
     // the double-slash
-    while( fullPath.find(slash + slash) != std::string::npos )
+    while( fullPath.find(slash + slash) != Glib::ustring::npos )
        fullPath.replace(fullPath.find(slash + slash),2,slash);
 
 
@@ -460,8 +460,19 @@ void Darimasen::DaMenuBuilder(const int v){
     
     for (i=1; i<depth; i++){
       MenuRay[i].show();
-      //mishandles underscores (_)
-      DaMenu.items().push_back(Gtk::Menu_Helpers::MenuElem(tmp[i], MenuRay[i]) );
+      if (tmp[i].find("_") == Glib::ustring::npos){
+        DaMenu.items().push_back(Gtk::Menu_Helpers::MenuElem(tmp[i], MenuRay[i]) );
+        }
+      else { //correct handling of underscores (_)
+        int startAtPos = 0;
+        Glib::ustring undrescored = tmp[i];
+        while (tmp[i].find("_",startAtPos) != -1){
+          startAtPos = tmp[i].find("_", startAtPos);
+          undrescored.replace(startAtPos, 1, "__");
+          startAtPos ++;   
+          }
+        DaMenu.items().push_back(Gtk::Menu_Helpers::MenuElem(undrescored, MenuRay[i]) );
+        }
       }
 
     Glib::ustring curdir = fullPath;

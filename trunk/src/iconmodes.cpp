@@ -133,7 +133,6 @@ DaIconModes::Sidecon::Sidecon(
 
   filePath = path + info->get_name();
 
-  //Glib::ustring nom = filePath.substr( filePath.rfind(slash) + 1, filePath.length() - filePath.rfind(slash));
   Glib::ustring shortnom = info->get_name();
 
   if (info->get_name().length() > 25){
@@ -141,7 +140,6 @@ DaIconModes::Sidecon::Sidecon(
     int last = info->get_name().rfind(".");
 
     if (last != -1){ //fix for the missing extension bug
-      //std::cout << nom << "\n";
       Glib::ustring ext = info->get_name().substr(last);  
       shortnom = info->get_name().substr(0, 20) + ".." + ext;
       }
