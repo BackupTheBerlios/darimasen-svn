@@ -45,113 +45,52 @@
 
 #include "supplimental.h"
 #include <iostream>
-//#include <gdkmm/window.h>
 #include <gtkmm/scrollbar.h>
-//#include "dirtree.h"
 #include <gtkmm/treemodel.h>
 #include <gtkmm/treestore.h>
 #include <gtkmm/treeview.h>
-
-
-#ifdef WIN32
-#include <windows.h>
-#include <direct.h>
-#endif
+#include <gtkmm/notebook.h>
 
 /**********************/
 
-class Darimasen : public Gtk::Window
-{
-public:
-  Darimasen(Glib::ustring);
-  virtual ~Darimasen();
-    
-private:
-
-  class dirtree : public Gtk::TreeView {
-
-  //Tree model columns:
-  class ModelColumns : public Gtk::TreeModel::ColumnRecord
-  {
+class Darimasen : public Gtk::Window {
   public:
+    Darimasen(Glib::ustring);
+    ~Darimasen();
 
-    ModelColumns()
-    { /*add(m_col_id);*/ add(m_col_name); }
+  private:
+    class DarimasenMenu : public Gtk::MenuBar {
+      int depth;
+      Gtk::Menu MenuForPath(Glib::ustring);
+      Glib::ustring CountSubdir(Glib::ustring);
+      public:
+      DarimasenMenu(const Glib::ustring);
+      };
 
-    //Gtk::TreeModelColumn<int> m_col_id;
-    Gtk::TreeModelColumn<Glib::ustring> m_col_name;
+
+
+    Gtk::VBox VerticalOrganizer;
+    Gtk::Toolbar TopBar;
+      Gtk::ToolItem * DarimasenMenuContainer;
+      DarimasenMenu * DaMenu;
+    Gtk::HPaned HideTreePane;
+      Gtk::ScrolledWindow TreeScroller;
+
+        Gtk::Notebook * Tabber;
+        Gtk::EventBox * MainEventBox;
+    Gtk::Statusbar Info;
+
+
+  int numOfTabs;
+
+  void addTab(Glib::ustring);
+
   };
-  ModelColumns m_Columns;
-
-
-
-public:
-  Glib::RefPtr<Gtk::TreeStore> m_refTreeModel;
-  dirtree(Glib::ustring);
-};
-
-
-
-  int depth;
-  bool showHidden;
-          
-
-  Glib::ustring fullPath;
-  Glib::ustring pathTruncator; //$HOME and equivelent
-  std::stack<Glib::ustring> history;
-  int filesAtPath;
-  Gdk::Color m_Color;
-  unsigned short iconmode;
-
-     
-  //Signal handlers:
-  void on_menu_file_quit();
-  void fBackButton();
-  void fChangeIconMode();
-  void fViewTree();
-  void fShowHidden();
-  void fActiveCompaction();  
-  int resolvePath(Glib::ustring);
-  int changePath(Glib::ustring, bool);
-  void DaMenuBuilder(const int);
-  int submenuCount(Glib::ustring);
-  void DaMenuSelect(Glib::ustring);
-  void iconBuild();
-
-void DaMenu_size_allocate(Gtk::Allocation&);
-void Menubar_size_allocate(Gtk::Allocation& );
-  
-  //bool on_configure_event(GdkEventConfigure*); // overwrite the virtual
-
-  int MainScrollerHeight;
-  int DaMenuAvailableWidth;
-  int DaMenuRequestWidth;
-  bool DoSomethingWithDaMenu;
-  
-  //Child widgets:
-  Gtk::VBox m_Box;
-    Gtk::Toolbar m_Controls;
-      Gtk::ToolItem tb0;
-        Gtk::MenuBar CompactMenu;
-        Gtk::CheckMenuItem * activeCompact; 
-        Gtk::CheckMenuItem * ShowHidden;
-      Gtk::SeparatorToolItem separatortoolitem1;
-      Gtk::ToolItem tb1;
-        Gtk::MenuBar DaMenu; //the generated one ^_^
-        int * MenuWidths;
-      Gtk::SeparatorToolItem separatortoolitem2;
-      Gtk::ToolButton * BackButton;
-      Gtk::ToolButton * ChangeIconMode;
-      Gtk::ToggleToolButton * ViewTree;
-    Gtk::HPaned m_hpane;
-      Gtk::ScrolledWindow FileTreeScroller;
-
-      Gtk::ScrolledWindow MainScroller;
-
-        Gtk::EventBox * MainEventBox;   
-    Gtk::Statusbar m_Statusbar;
-};
 
 /**********************/
 
 #endif //DARIMASEN_H
+
+
+
+

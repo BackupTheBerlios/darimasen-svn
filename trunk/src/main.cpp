@@ -16,6 +16,18 @@ int main(int argc, char *argv[])
       }
     }
 
+  if(path == "")
+    #ifdef WIN32
+    path = getenv("USERPROFILE");
+    #else
+    path = getenv("HOME");
+    #endif
+
+    if(path.substr(path.length()-1,1) != slash )
+      path += slash;
+
+    // What should be sent to the constructor is a correctly formed, existant path.
+    // This should be checked better in the future.
     Darimasen window(path);
     Gtk::Main::run(window); 
     return 0;

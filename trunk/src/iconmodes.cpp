@@ -5,20 +5,31 @@
 
 /**********************/
 
-DaIconModes::DaIconModes(
-    Glib::ustring  path,
-    int            atPath,
-    unsigned short usingMode,
-    bool           givehidden ) {                        
- 
+DaIconModes::DaIconModes(Glib::ustring  path) {                        
+
+  filesAtPath = 0;
+  try{
+    Gnome::Vfs::DirectoryHandle handle;
+    handle.open(path, Gnome::Vfs::FILE_INFO_DEFAULT);
+    bool file_exists = true;
+    while(file_exists){
+      handle.read_next(file_exists);
+      filesAtPath++;
+      }
+    }
+  catch(const Gnome::Vfs::exception&){std::cout << "Miscount?\n";}
+
+
+
   fullPath = path;
-  filesAtPath = atPath;
-  iconmode = usingMode;
-  showHidden = givehidden;
+
+  iconmode = 0;
+  showHidden = 0;
   slotsUsed = 0;
   IconsHigh = 0;
   set_visible_window(false);
   hidden = new int[filesAtPath];
+
   if(iconmode == 0){
     sideconContainer = new Gtk::EventBox*[filesAtPath];
     for(int c = 0; c < filesAtPath; c++){
@@ -108,7 +119,6 @@ break;
 DaIconModes::Sidecon::Sidecon(
     Glib::ustring path,
     const Glib::RefPtr<const Gnome::Vfs::FileInfo>& info){
-
   filePath = path + info->get_name();
 
   Glib::ustring shortnom = info->get_name();
@@ -255,7 +265,7 @@ DaIconModes::Detail::Detail(
     size = int2ustr(info->get_size() / 1024) + " KB";
     }
   else{
-    size = int2ustr(info->get_size() / 1024 / 1024) + " MB";
+    size = int2ustr(info->get_size() / 1024 / 1024) + " MB";  std::cout << "2\n";
     }
 
   // ideally, this label would be 80% size of standard
@@ -455,12 +465,11 @@ bool DaIconModes::on_eventbox_button_press(GdkEventButton* event, const Glib::us
 /**********************/
 
 void DaIconModes::on_size_allocate(Gtk::Allocation& allocation){
-
   Gtk::Widget * tmp = get_child();
 
   if(iconmode == 0){
     int oldie = IconsHigh;
-    IconsHigh = allocation.get_height() / 58;
+    IconsHigh = allocation.get_height() / 60;
   
     if ( (oldie != IconsHigh) ){ // if resize is needed
       if (tmp)

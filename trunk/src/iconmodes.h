@@ -104,7 +104,7 @@ Gtk::Menu m_Menu_Popup;
 
 public:
 ~DaIconModes();
-  DaIconModes(Glib::ustring, int, unsigned short, bool); //path, filesAtPath, mode 
+  DaIconModes(Glib::ustring); //path, filesAtPath, mode 
   //void getNewTable(int);
   };
 
