@@ -64,8 +64,10 @@ class Darimasen : public Gtk::Window {
       bool showHidden;
       int MenuForPath(Gtk::Menu&, Glib::ustring&, Glib::ustring = "");
       Glib::ustring CountSubdir(const Glib::ustring&);
+      void DaMenuSelect(Glib::ustring);
+      Darimasen * parent;
       public:
-      DarimasenMenu(const Glib::ustring);
+      DarimasenMenu(const Glib::ustring, Darimasen&);
       };
 
 
@@ -81,12 +83,12 @@ class Darimasen : public Gtk::Window {
     Gtk::Statusbar Info;
 
   void fNewTab();
-  int numOfTabs;
+  //int numOfTabs;
   std::vector<Glib::ustring> path;
-    guint CurrentPath;
+   // guint CurrentPath;
     void tabberSwitched(GtkNotebookPage*, guint);
-  void addTab(Glib::ustring);
-
+  void addTab(Glib::ustring, guint);
+  void ChangeCurrentPath(Glib::ustring path);
 
   };
 

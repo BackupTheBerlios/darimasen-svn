@@ -10,7 +10,7 @@
 Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   set_title("Darimasen");
   set_default_size(500, 330);
-  numOfTabs = 0;
+  //numOfTabs = 0;
   path = paths;
 
   add(VerticalOrganizer);
@@ -96,7 +96,7 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
 
   //std::cout << path << "\n";
   for(int i = 0; i < path.size(); i++)
-    addTab(path[i]);
+    addTab(path[i], Tabber->get_n_pages());
   }
 
 /**********************/
@@ -111,21 +111,24 @@ Darimasen::~Darimasen(){
 void Darimasen::fNewTab(){
 #ifdef WIN32
   path.push_back(getenv("USERPROFILE") + slash);
-  addTab(getenv("USERPROFILE") + slash);
+  addTab(getenv("USERPROFILE") + slash, Tabber->get_n_pages());
 #else
   path.push_back(getenv("HOME") + slash);
-  addTab(getenv("HOME") + slash);
+  addTab(getenv("HOME") + slash, Tabber->get_n_pages());
 #endif
   }
 
 /**********************/
 
-void Darimasen::addTab(Glib::ustring path){
-  if( numOfTabs == 0 )
+void Darimasen::addTab(Glib::ustring path, guint pos){
+
+
+
+  if( Tabber->get_n_pages() == 0 )
     Tabber->set_show_tabs(false);
   else
     Tabber->set_show_tabs(true);
-  numOfTabs++;
+  //numOfTabs++;
 
   Gtk::Label * tabNum = Gtk::manage(new Gtk::Label(path.substr(path.rfind(slash, path.length() -2)+1)));
 
@@ -145,15 +148,16 @@ void Darimasen::addTab(Glib::ustring path){
   MainEventBox->add(*foo);
   MainScroller->set_policy(Gtk::POLICY_ALWAYS, Gtk::POLICY_AUTOMATIC);
   foo->show();
-  Tabber->append_page( *MainScroller, *tabNum );
+  Tabber->insert_page( *MainScroller, *tabNum, pos);
   }
 
 /**********************/
 
-Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring path){
+Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring path, Darimasen& Myparent){
   depth = 0;
   showHidden = false;
   Glib::ustring shortpath = path; //home = getenv("HOME");
+  parent = &Myparent;
   
   int startPos = 0 , i = 0;
 
@@ -175,7 +179,12 @@ Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring path){
     };
 
   Gtk::Menu * MenuRay = Gtk::manage(new Gtk::Menu[depth+1]); // +1 for subfolder menu
-  items().push_front(Gtk::Menu_Helpers::MenuElem( CountSubdir(path) + ">>", MenuRay[depth]));
+  
+  {
+    Glib::ustring subin = CountSubdir(path);
+    if ( subin != "0" )
+      items().push_front(Gtk::Menu_Helpers::MenuElem( subin + ">>", MenuRay[depth]));
+  }
 
   Glib::ustring crop = path;
 
@@ -187,7 +196,7 @@ Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring path){
       MenuForPath(MenuRay[i+1], crop);
     else
       MenuForPath(MenuRay[i+1], crop, menulevel[i+1]);
-    std::cout << "!" << crop << "\n";
+    //std::cout << "!" << crop << "\n";
     crop = crop.substr(0, crop.rfind(slash,crop.length()-2)) + slash;
 
     };
@@ -226,8 +235,9 @@ int Darimasen::DarimasenMenu::MenuForPath(
         && refFileInfo->get_name() != ".."
         ){ 
           Gtk::MenuItem * subdir = Gtk::manage( new Gtk::MenuItem((refFileInfo->get_name() + slash + " ")));
-        //  subdir->signal_activate().connect( sigc::bind<Glib::ustring>(
-        //    sigc::mem_fun(*this, &Darimasen::DaMenuSelect), curdir + refFileInfo->get_name() ));
+          subdir->signal_activate().connect(
+            sigc::bind<Glib::ustring>(
+              sigc::mem_fun(*this, &Darimasen::DarimasenMenu::DaMenuSelect), (path + refFileInfo->get_name()) ));
        
           Glib::ustring SubSubCount = CountSubdir(path + refFileInfo->get_name());
   
@@ -301,25 +311,48 @@ Glib::ustring Darimasen::DarimasenMenu::CountSubdir(const Glib::ustring& path){
 
  
 void Darimasen::tabberSwitched(GtkNotebookPage* sig, guint n){
-  std::cout << "#" << n << " sig\n";
+  //std::cout << "#" << n << " sig\n";
 
-  CurrentPath = n;
-  Gtk::Widget * tmp = DarimasenMenuContainer->get_child();
+  //CurrentPath = n;
+ // Gtk::Widget * tmp = DarimasenMenuContainer->get_child();
 
-  if (!tmp){
-    DaMenu = new DarimasenMenu(path[n]);
-    DarimasenMenuContainer->add(*DaMenu);
-    }
-  else{
-DarimasenMenuContainer->remove();
-    DaMenu = new DarimasenMenu(path[n]);
-    DarimasenMenuContainer->add(*DaMenu);
-    }
+ // if (tmp)
+  DarimasenMenuContainer->remove();
+
+  DaMenu = new DarimasenMenu(path[n], *this);
+  DarimasenMenuContainer->add(*DaMenu);
+
   }
 
 
 /**********************/
+
+void Darimasen::DarimasenMenu::DaMenuSelect(Glib::ustring path){
+  parent->ChangeCurrentPath(path);
+  //DaFileLister(); //5:45pm, 24 Dec 2004, it worked! // leave this comment    
+  }
+
 /**********************/
+
+void Darimasen::ChangeCurrentPath(Glib::ustring pathin){
+//  std::cout << pathin << "!\n";
+
+  guint nth = Tabber->get_current_page();
+
+
+  path[nth] = pathin + slash;
+
+  DarimasenMenuContainer->remove();
+  DaMenu = new DarimasenMenu(path[nth], *this);
+  DarimasenMenuContainer->add(*DaMenu);
+
+  Tabber->remove_page(nth);
+
+  //std::cout << path[nth] << " " << nth << "\n";
+  addTab(path[nth], nth);
+  Tabber->set_current_page(nth);
+  }
+
 /**********************/
 /**********************/
 /**********************/
