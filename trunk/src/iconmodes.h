@@ -33,28 +33,52 @@ class DaIconModes : public Gtk::EventBox {
 */
 
   class ChooseActionDialogue : public Gtk::Dialog {
-
-   Gtk::RadioButton::Group _RadioBGroup_radiobutton1;
-   Gtk::Button *cancelbutton1, *okbutton1;
-   Gtk::RadioButton *radiobutton1, *radiobutton2;
-   Gtk::Label       * label1;
-   Gtk::Entry       * entry1;
-   Gtk::VBox        * vbox1;
-
-   Glib::ustring mime;
-   void cancled();
-   void modifyAction();
-
-void GetCurrentAction(Glib::ustring);
+    Gtk::RadioButton::Group _RadioBGroup_radiobutton1;
+    Gtk::Button *cancelbutton1, *okbutton1;
+    Gtk::RadioButton *radiobutton1, *radiobutton2;
+    Gtk::Label       * label1;
+    Gtk::Entry       * entry1;
+    Gtk::VBox        * vbox1;
+    Glib::ustring mime;
+    void cancled();
+    void modifyAction();
+    void GetCurrentAction(Glib::ustring);
 
     public:
+
     ChooseActionDialogue(Glib::ustring);
+    };
+
+
+  class SetPermissionsDialogue : public Gtk::Dialog {
+    Glib::ustring fullPath;
+    Gtk::Button * button1;
+    Gtk::Button * button2;
+
+    Gtk::CheckButton * u_r, * u_w, * u_x;
+    Gtk::CheckButton * g_r, * g_w, * g_x;
+    Gtk::CheckButton * o_r, * o_w, * o_x;
+    
+    Gnome::Vfs::Handle info;
+
+    Gtk::Label * user, * group, * others;
+    Gtk::Label * read, * write, * run;
+    Gtk::Label * explaination;
+
+    Gtk::Table * layout;
+    void cancled();
+    void apply(Glib::RefPtr<Gnome::Vfs::FileInfo>);
+
+    public:
+
+    SetPermissionsDialogue(Glib::RefPtr<Gnome::Vfs::FileInfo> , Glib::ustring);
     };
 
   int * hidden;
 
   void RunFile(const Glib::ustring);
   void SetRunAction(const Glib::ustring);
+  void SetPermissions(const Glib::ustring);
 
   bool on_eventbox_button_press(GdkEventButton*, const Glib::ustring);
   Glib::ustring fullPath;

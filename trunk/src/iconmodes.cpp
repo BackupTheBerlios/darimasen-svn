@@ -143,7 +143,7 @@ ico += ".png";
 
   try {
 
-if(info->get_mime_type() == "image/jpeg"
+/*if(info->get_mime_type() == "image/jpeg"
     || info->get_mime_type() == "image/gif"
     || info->get_mime_type() == "image/png"){
 
@@ -153,7 +153,7 @@ else{
   ico = "/usr/share/icons/Lila/scalable/mimetypes/mime-";
   ico += info->get_mime_type().replace(info->get_mime_type().find("/"), 1, ":");
   ico += ".svg";
-  }
+ // }
 
     Glib::file_get_contents(ico);
     }
@@ -174,6 +174,8 @@ Glib::RefPtr<Gdk::Pixbuf> xf = xe->scale_simple(48,48,Gdk::INTERP_TILES);
   Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(xf));
 */
   Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(ico));
+
+
   Gtk::Label * FileName = Gtk::manage(new class Gtk::Label(shortnom));
 
   // this is where the mimetype info goes
@@ -422,15 +424,20 @@ bool DaIconModes::on_eventbox_button_press(GdkEventButton* event, const Glib::us
     op->signal_activate().connect(
       sigc::bind<Glib::ustring >(
         sigc::mem_fun(*this, &DaIconModes::RunFile),Icon) );
+
     op->show();
     menulist.push_back( Gtk::Menu_Helpers::MenuElem(*op));
 
 
-menulist.push_back( Gtk::Menu_Helpers::MenuElem("Set Run Action"
-,
-    sigc::bind<Glib::ustring>(sigc::mem_fun(*this, &DaIconModes::SetRunAction), Icon  )));
+    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Set Run Action...",
+      sigc::bind<Glib::ustring>(
+        sigc::mem_fun(*this, &DaIconModes::SetRunAction), Icon  )));
 
-    //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Rename"));
+    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Permissions...",
+      sigc::bind<Glib::ustring>(
+        sigc::mem_fun(*this, &DaIconModes::SetPermissions), Icon  )));
+
+
     //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Delete "));
     menulist.push_back( Gtk::Menu_Helpers::SeparatorElem());
     //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Copy"));
@@ -628,4 +635,204 @@ void DaIconModes::ChooseActionDialogue::modifyAction(){
   hide();
   return;
   }
+
+/**********************/
+
+void DaIconModes::SetPermissions(const Glib::ustring file) {
+
+
+  Gnome::Vfs::Handle read_handle;
+  Glib::RefPtr<Gnome::Vfs::FileInfo> info;
+  //Glib::ustring exec_subtype;
+  //Glib::ustring exec_mimetype;
+
+  try {
+    read_handle.open(fullPath + file, Gnome::Vfs::OPEN_READ);
+    info = read_handle.get_file_info(Gnome::Vfs::FILE_INFO_GET_ACCESS_RIGHTS);
+
+   // exec_subtype  = info->get_mime_type();
+   // exec_subtype  = exec_subtype.replace( exec_subtype.find("/"), 1, "_" );
+   // exec_mimetype = exec_subtype.substr( 0, exec_subtype.rfind("_") );
+
+    SetPermissionsDialogue * setPermissions;
+    setPermissions = new SetPermissionsDialogue(info,fullPath);
+    setPermissions->show();
+    }
+  catch(const Gnome::Vfs::exception& ex) {
+    std::cout << "Err... Setting error?\n";
+    }
+  }
+
+/**********************/
+
+DaIconModes::SetPermissionsDialogue::SetPermissionsDialogue(
+    Glib::RefPtr<Gnome::Vfs::FileInfo> info, Glib::ustring path){
+fullPath = path;
+  set_title("Set file permissions");
+  set_modal(true);
+
+   read = Gtk::manage(new class Gtk::Label("R"));
+   write = Gtk::manage(new class Gtk::Label("W"));
+   run = Gtk::manage(new class Gtk::Label("X"));
+   user = Gtk::manage(new class Gtk::Label("User"));
+   group = Gtk::manage(new class Gtk::Label("Group"));
+   others = Gtk::manage(new class Gtk::Label("Everybody"));
+
+   explaination = Gtk::manage(new class Gtk::Label("for \""+ info->get_name() + "\"..."));
+
+   layout = Gtk::manage(new class Gtk::Table(5, 5, false));
+
+   u_r = Gtk::manage(new class Gtk::CheckButton(""));
+   if((info->get_permissions() & Gnome::Vfs::PERM_USER_READ) != 0)  u_r->set_active(true);
+   u_w = Gtk::manage(new class Gtk::CheckButton(""));
+   if((info->get_permissions() & Gnome::Vfs::PERM_USER_WRITE) != 0)  u_w->set_active(true);
+   u_x = Gtk::manage(new class Gtk::CheckButton(""));
+   if((info->get_permissions() & Gnome::Vfs::PERM_USER_EXEC) != 0)  u_x->set_active(true);
+   g_r = Gtk::manage(new class Gtk::CheckButton(""));
+   if((info->get_permissions() & Gnome::Vfs::PERM_GROUP_READ) != 0)  g_r->set_active(true);
+   g_w = Gtk::manage(new class Gtk::CheckButton(""));
+   if((info->get_permissions() & Gnome::Vfs::PERM_GROUP_WRITE) != 0)  g_w->set_active(true);
+   g_x = Gtk::manage(new class Gtk::CheckButton(""));
+   if((info->get_permissions() & Gnome::Vfs::PERM_GROUP_EXEC) != 0)  g_x->set_active(true);
+   o_r = Gtk::manage(new class Gtk::CheckButton(""));
+   if((info->get_permissions() & Gnome::Vfs::PERM_OTHER_READ) != 0)  o_r->set_active(true);
+   o_w = Gtk::manage(new class Gtk::CheckButton(""));
+   if((info->get_permissions() & Gnome::Vfs::PERM_OTHER_WRITE) != 0)  o_w->set_active(true);
+   o_x = Gtk::manage(new class Gtk::CheckButton(""));
+   if((info->get_permissions() & Gnome::Vfs::PERM_OTHER_EXEC) != 0)  o_x->set_active(true);
+
+
+   layout->attach(*u_r, 1, 2, 2, 3);
+   layout->attach(*u_w, 2, 3, 2, 3);
+   layout->attach(*u_x, 3, 4, 2, 3);
+   layout->attach(*g_r, 1, 2, 3, 4);
+   layout->attach(*g_w, 2, 3, 3, 4);
+   layout->attach(*g_x, 3, 4, 3, 4);
+   layout->attach(*o_r, 1, 2, 4, 5);
+   layout->attach(*o_w, 2, 3, 4, 5);
+   layout->attach(*o_x, 3, 4, 4, 5);
+
+   layout->attach(*read, 1, 2, 1, 2);
+   layout->attach(*write, 2, 3, 1, 2);
+   layout->attach(*run, 3, 4, 1, 2);
+   layout->attach(*user, 0, 1, 2, 3);
+   layout->attach(*group, 0, 1, 3, 4);
+   layout->attach(*others, 0, 1, 4, 5);
+   layout->attach(*explaination, 0, 4, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 10, 0);
+
+  get_vbox()->pack_start(*layout);
+  button1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-cancel")));
+  button1->signal_clicked().connect(
+      sigc::mem_fun(*this, &DaIconModes::SetPermissionsDialogue::cancled) );
+
+
+  button2 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-apply")));
+  button2->signal_clicked().connect(
+    sigc::bind<Glib::RefPtr<Gnome::Vfs::FileInfo> >(
+      sigc::mem_fun(*this, &DaIconModes::SetPermissionsDialogue::apply), info ));
+
+
+     // sideconContainer[slotsUsed]->signal_button_press_event().connect(
+     //   sigc::bind<Glib::ustring >(
+     //     sigc::mem_fun(*this, &DaIconModes::on_eventbox_button_press), info->get_name() ));
+
+
+  get_action_area()->property_layout_style().set_value(Gtk::BUTTONBOX_END);
+  add_action_widget(*button1, -6);
+  add_action_widget(*button2, -10);
+
+  button1->show();
+  button2->show();
+
+  set_modal(true);
+  show_all_children();
+  show();
+  }
+
+/**********************/
+
+void DaIconModes::SetPermissionsDialogue::cancled(){hide();}
+
+/**********************/
+
+void DaIconModes::SetPermissionsDialogue::apply(Glib::RefPtr<Gnome::Vfs::FileInfo> info){
+
+
+  Gnome::Vfs::FilePermissions permissions;
+  //make sure I've got the stuff that doesn't change
+  permissions = info->get_permissions();
+
+
+  if(u_r->get_active()){
+    std::cout << "+u_r ";
+  }else{
+    std::cout << "-u_r ";
+  }
+  if(u_w->get_active()){
+    std::cout << "+u_w ";
+  }else{
+    std::cout << "-u_w ";
+  }
+  if(u_x->get_active()){
+    std::cout << "+u_x ";
+  }else{
+    std::cout << "-u_x ";
+  }
+    std::cout << "\n";
+  if(g_r->get_active()){
+    std::cout << "+g_r ";
+  }else{
+    std::cout << "-g_r ";
+  }
+  if(g_w->get_active()){
+    std::cout << "+g_w ";
+  }else{
+    std::cout << "-g_w ";
+  }
+  if(g_x->get_active()){
+    std::cout << "+g_x ";
+  }else{
+    std::cout << "-g_x ";
+  }
+    std::cout << "\n";
+  if(o_r->get_active()){
+(permissions & Gnome::Vfs::PERM_OTHER_READ) == 1;
+    std::cout << "+o_r ";
+  }else{
+(permissions & Gnome::Vfs::PERM_OTHER_READ) == 0;
+    std::cout << "-o_r ";
+  }
+  if(o_w->get_active()){
+(permissions & Gnome::Vfs::PERM_OTHER_WRITE) == 1;
+    std::cout << "+o_w ";
+  }else{
+(permissions & Gnome::Vfs::PERM_OTHER_WRITE) == 0;
+    std::cout << "-o_w ";
+  }
+  if(o_x->get_active()){
+(permissions & Gnome::Vfs::PERM_OTHER_EXEC) == 1;
+    std::cout << "+o_x ";
+  }else{
+(permissions & Gnome::Vfs::PERM_OTHER_EXEC) == 0;
+    std::cout << "-o_x ";
+  }
+    std::cout << "\n\n";
+
+//permissions
+Glib::RefPtr<Gnome::Vfs::FileInfo> perm2 = permissions;
+
+std::cout << fullPath << info->get_name() << "\n\n";
+
+/*
+try{
+Gnome::Vfs::Handle::set_file_info(fullPath + info->get_name(), perm2, Gnome::Vfs::SET_FILE_INFO_PERMISSIONS);
+}
+  catch(const Gnome::Vfs::exception& ex){
+std::cout << "Could not change permissions.\n";
+}
+*/
+
+hide();
+  }
+
 /**********************/

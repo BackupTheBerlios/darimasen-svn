@@ -6,7 +6,9 @@ Ron <Rds> mentioned that Rox will be moving for ~/Choices to ~/.choices - should
 
 limit DaMenu expansion. (preserve window width for long paths)
 
-There are two ways to do the actual shrinkage - shorten the names up top, or make another menu wih dirs a menus.
+int * MenuWidths; is for saving the lengths of the strings, to determine which should be shortened first. I think for 0.0.6 taht just replacing the title with single character should be good enough. 
+
+the other method - make another menu wih dirs a menus - well, am I going to do it? I dunno.
 
 --
 

@@ -3,7 +3,8 @@ Ron Kuslak  - <rds@rdsarts.com> - initial executables work
 
 
 
-Thanks to Benjamin Lau and Alexander Larsson for sharing their knowledge.
+Thanks to Benjamin Lau, Alexander Larsson, and Bryan Forbes for sharing their knowledge.
 
 Darimasen may or may not have code from Regexxer (http://regexxer.sourceforge.net/) - their autogen.sh was consuted, at least. ^_^
 
+Some code is form glademm.

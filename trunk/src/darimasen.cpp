@@ -15,6 +15,7 @@ Darimasen::Darimasen(Glib::ustring path)
   depth = 0;
   filesAtPath = 0;
   DoSomethingWithDaMenu = false;
+MenuWidths = new int;
   Gnome::Vfs::init();
   
     DaMenu.signal_size_allocate().connect (
@@ -381,6 +382,12 @@ void Darimasen::iconBuild(){
 /**********************/
 
 void Darimasen::DaMenuBuilder(const int v){
+
+  
+    delete MenuWidths;
+    MenuWidths = new int[depth];
+
+
   filesAtPath = 0;
   while( depth-- >= 0) //clean out if needed
   DaMenu.items().pop_back();
@@ -398,15 +405,20 @@ void Darimasen::DaMenuBuilder(const int v){
   x = v;
   int y = 0;
   int i = 0;
+MenuWidths[i] = 0;
 
   while ( (fullPath.find(slash,x) !=  std::string::npos)){
     x = fullPath.find(slash,x) + 1;
     tmp[i++] = fullPath.substr(y,x-y);
+    //MenuWidths[i] = x - y ;
+    if(y != 0) MenuWidths[i] = x - y ;
+std::cout << MenuWidths[i] << ";\n";
     y = x;
     }
-
+std::cout << "\n";
   Gtk::Menu * MenuRay; //menuArray
   MenuRay = new Gtk::Menu[depth+1]; // +1 for subfolder menu
+ 
 
   Glib::ustring tmpp;
   if(v != 0){ // Shortened? Show it!
@@ -447,6 +459,8 @@ void Darimasen::DaMenuBuilder(const int v){
     
     for (i=1; i<depth; i++){
       MenuRay[i].show();
+      //MenuWidths[i]=tmp[i].length();
+      //std::cout << MenuWidths[i] << "x ";
       if (tmp[i].find("_") == Glib::ustring::npos){
         DaMenu.items().push_back(Gtk::Menu_Helpers::MenuElem(tmp[i], MenuRay[i]) );
         }

@@ -138,6 +138,7 @@ void Menubar_size_allocate(Gtk::Allocation& );
       Gtk::SeparatorToolItem separatortoolitem1;
       Gtk::ToolItem tb1;
         Gtk::MenuBar DaMenu; //the generated one ^_^
+        int * MenuWidths;
       Gtk::SeparatorToolItem separatortoolitem2;
       Gtk::ToolButton * BackButton;
       Gtk::ToolButton * ChangeIconMode;
