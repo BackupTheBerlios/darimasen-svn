@@ -25,10 +25,18 @@ void Darimasen::DarimasenMenu::MenuForPath(
 
           subdir->set_events(Gdk::BUTTON_RELEASE_MASK);
 
+    if ( ext != "" ){
           subdir->signal_button_press_event().connect(
             sigc::bind<Glib::ustring,guint,bool>(
               sigc::mem_fun(*this, &Darimasen::DarimasenMenu::DaMenuSelect),
                  (path + menulevel[position]).substr(0, (path + menulevel[position]).length() - 1),position,true));
+      }
+    else {
+          subdir->signal_button_press_event().connect(
+            sigc::bind<Glib::ustring,guint,bool>(
+              sigc::mem_fun(*this, &Darimasen::DarimasenMenu::DaMenuSelect),
+                 (path + menulevel[position]).substr(0, (path + menulevel[position]).length() - 1),position,false));
+      }
 
     Gtk::SeparatorMenuItem * sep = Gtk::manage( new Gtk::SeparatorMenuItem());
     MenuArray[position]->attach(*sep, 0 ,4, entry++, entry+1);
@@ -164,9 +172,7 @@ bool Darimasen::DarimasenMenu::DaMenuSelect(GdkEventButton* event, const Glib::u
   if ((event->type == GDK_BUTTON_PRESS) && (event->button == 3) ) //right
   {
     Gtk::Menu * m_Menu_Popup = Gtk::manage( new Gtk::Menu);
-    Gtk::Menu::MenuList& menulist = m_Menu_Popup->items();
-
-    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Open In new Tab"));
+    m_Menu_Popup->items().push_back( Gtk::Menu_Helpers::MenuElem("Open In new Tab"));
     m_Menu_Popup->popup(event->button, event->time);
   return true;
    }
@@ -199,13 +205,6 @@ Glib::ustring Darimasen::DarimasenMenu::CountSubdir(const Glib::ustring& path){
     }
   catch(const Gnome::Vfs::exception& ex){}
   return int2ustr(j);
-
-}
-
-/**********************
-
-void  Darimasen::DarimasenMenu::signal_deactivate (){
-std::cout << "on_unmap_event(GdkEventAny* event)\n";
 
 }
 
@@ -249,7 +248,7 @@ Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring & path, Darimasen& M
  
     Glib::ustring subin = CountSubdir(path);
     if ( subin != "0" ){
-      MenuItemArray[depth] =  Gtk::manage(new Gtk::MenuItem( subin + " \342\226\272" ));
+      MenuItemArray[depth] =  new Gtk::MenuItem( subin + " \342\226\272" );
       MenuItemArray[depth]->show();
       MenuItemArray[depth]->set_submenu(*MenuArray[depth]);
       prepend(*MenuItemArray[depth]);
@@ -326,8 +325,12 @@ Darimasen::DarimasenMenu::~DarimasenMenu(){
     delete MenuArray[c];
     }
   delete menulevel;
-  delete MenuArray;
-  delete MenuItemArray;
+
+  for (int i = 0; i <=depth; i++){
+    delete MenuArray[i];
+    delete MenuItemArray[i];
+    }
+  
   }
 
 /**********************/
@@ -365,6 +368,7 @@ void Darimasen::tabberSwitched(GtkNotebookPage* sig, guint n){
 
   DarimasenMenuContainer->remove();
 
+ 
   DaMenu = Gtk::manage(new DarimasenMenu(history[n].top(), *this, n));
   DarimasenMenuContainer->add(*DaMenu);
 
@@ -416,7 +420,7 @@ else
   arrangement->pack_start(*tabNum);
   arrangement->pack_end(*closeButton);
 
-  Gtk::EventBox * MainEventBox = Gtk::manage(new class Gtk::EventBox);
+  Gtk::EventBox * MainEventBox = new class Gtk::EventBox;
 
   Gdk::Color m_Color;
   m_Color.set_rgb(65535, 65535, 65535);
@@ -428,10 +432,13 @@ else
 
   if ( IconModeList.size() == pos ){
     IconModeList.push_back(foo);
+    EventBoxList.push_back(MainEventBox);
     }
   else {
     delete IconModeList[pos];
     IconModeList[pos] = foo;
+    delete EventBoxList[pos];
+    EventBoxList[pos] = MainEventBox;
     }
 
   Gtk::ScrolledWindow * MainScroller = Gtk::manage(new Gtk::ScrolledWindow);
@@ -490,6 +497,9 @@ void Darimasen::removeTab(guint pos){
   history.erase(history.begin()+pos,history.begin()+pos+1 );
   delete IconModeList[pos];
   IconModeList.erase(IconModeList.begin()+pos,IconModeList.begin()+pos+1 );
+
+  delete EventBoxList[pos];
+  EventBoxList.erase(EventBoxList.begin()+pos,EventBoxList.begin()+pos+1 );
   }
 
 
@@ -498,7 +508,7 @@ void Darimasen::removeTab(guint pos){
 Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   set_title("Darimasen");
   set_default_size(500, 330);
-
+  set_icon_from_file( (Glib::ustring)DATADIR + (Glib::ustring)"/icons/hicolor/48x48/apps/darimasen.png"  );
   add(VerticalOrganizer);
   VerticalOrganizer.show();
 
@@ -508,30 +518,32 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   TopBar.set_toolbar_style(Gtk::TOOLBAR_ICONS); 
 
 
-  Gtk::ToolItem * CompactMenuContainer = Gtk::manage(new Gtk::ToolItem);
+  CompactMenuContainer = new Gtk::ToolItem;
   TopBar.append(*CompactMenuContainer);
   CompactMenuContainer->show();
 
-  Gtk::MenuBar * CompactMenu = Gtk::manage(new Gtk::MenuBar);
-  Gtk::Menu * m_Menu_File = Gtk::manage(new Gtk::Menu);
-  Gtk::Menu::MenuList& menulist = m_Menu_File->items();
+  CompactMenu = new Gtk::MenuBar;
+  m_Menu_File = new Gtk::Menu;
+
+
 
   CompactMenu->items().push_back( Gtk::Menu_Helpers::MenuElem("\342\226\274", *m_Menu_File) );
 
   // glade-- told me to do it....
-  menulist.push_back(Gtk::Menu_Helpers::CheckMenuElem(
+  m_Menu_File->items().push_back(Gtk::Menu_Helpers::CheckMenuElem(
     "Show Hidden",Gtk::AccelKey(GDK_H, Gdk::CONTROL_MASK), sigc::mem_fun(*this, &Darimasen::fShowHidden)));
-  optShowHidden = (Gtk::CheckMenuItem *)&menulist.back();
 
-  menulist.push_back(Gtk::Menu_Helpers::MenuElem(
+  optShowHidden = (Gtk::CheckMenuItem *)&m_Menu_File->items().back();
+
+  m_Menu_File->items().push_back(Gtk::Menu_Helpers::MenuElem(
     "Print history to Terminal",Gtk::AccelKey(GDK_P, Gdk::CONTROL_MASK), sigc::mem_fun(*this, &Darimasen::fPrintHist)));
 
-  menulist.push_back( Gtk::Menu_Helpers::MenuElem("About...",
+  m_Menu_File->items().push_back( Gtk::Menu_Helpers::MenuElem("About...",
     sigc::mem_fun(*this, &Darimasen::fAbout) ) );
 
-  menulist.push_back( Gtk::Menu_Helpers::SeparatorElem() ) ;
+  m_Menu_File->items().push_back( Gtk::Menu_Helpers::SeparatorElem() ) ;
 
-  menulist.push_back( Gtk::Menu_Helpers::StockMenuElem(Gtk::Stock::QUIT,
+  m_Menu_File->items().push_back( Gtk::Menu_Helpers::StockMenuElem(Gtk::Stock::QUIT,
     sigc::mem_fun(*this, &Darimasen::fQuit) ) );
     
   TopBar.set_show_arrow(false);
@@ -539,38 +551,38 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   CompactMenu->show();
 
 
-  Gtk::SeparatorToolItem * sep1  = Gtk::manage(new Gtk::SeparatorToolItem);
+  Gtk::SeparatorToolItem * sep1 = new Gtk::SeparatorToolItem;
   TopBar.append(*sep1);
   sep1->show();
 
-  DarimasenMenuContainer = Gtk::manage(new Gtk::ToolItem);
+  DarimasenMenuContainer = new Gtk::ToolItem;
   TopBar.append(*DarimasenMenuContainer);
   DarimasenMenuContainer->set_expand(true);
   DarimasenMenuContainer->show();
 
-  Gtk::SeparatorToolItem * sep2  = Gtk::manage(new Gtk::SeparatorToolItem);
+  Gtk::SeparatorToolItem * sep2  = new Gtk::SeparatorToolItem;
   TopBar.append(*sep2);
   sep2->show();
 
-  BackButton = Gtk::manage(new Gtk::ToolButton(Gtk::StockID("gtk-go-back")));
+  BackButton = new Gtk::ToolButton(Gtk::StockID("gtk-go-back"));
   BackButton->signal_clicked().connect(sigc::mem_fun(*this, &Darimasen::fBack));
   TopBar.append(*BackButton);
   BackButton->set_sensitive(false);
   BackButton->show();
   
-  Gtk::ToolButton * ChangeIconMode = Gtk::manage(new Gtk::ToolButton(Gtk::StockID("gtk-convert")));
+  ChangeIconMode = new Gtk::ToolButton(Gtk::StockID("gtk-convert"));
   //ChangeIconMode->signal_clicked().connect(sigc::mem_fun(*this, &Darimasen::fChangeIconMode));
   TopBar.append(*ChangeIconMode);
   ChangeIconMode->set_sensitive(false);
-  ChangeIconMode->show();
+  //ChangeIconMode->show();
    
-  Gtk::ToggleToolButton * ViewTree = Gtk::manage(new Gtk::ToggleToolButton(Gtk::StockID("gtk-index")));
+  ViewTree = new Gtk::ToggleToolButton(Gtk::StockID("gtk-index"));
   //ViewTree->signal_clicked().connect(sigc::mem_fun(*this, &Darimasen::fViewTree));
   TopBar.append(*ViewTree);
   ViewTree->set_sensitive(false);
-  ViewTree -> show();
+  //ViewTree -> show();
 
-  Gtk::ToolButton * NewTab = Gtk::manage(new Gtk::ToolButton(Gtk::StockID("gtk-new")));
+  NewTab = new Gtk::ToolButton(Gtk::StockID("gtk-new"));
   NewTab->signal_clicked().connect(sigc::mem_fun(*this, &Darimasen::fNewTab));
   TopBar.append(*NewTab);
   NewTab->show();
@@ -580,7 +592,7 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
 
   HideTreePane.pack1(TreeScroller, Gtk::SHRINK);
 
-  Tabber = Gtk::manage(new Gtk::Notebook);
+  Tabber = new Gtk::Notebook;
   Tabber->signal_switch_page().connect(sigc::mem_fun(*this, &Darimasen::tabberSwitched));
   Tabber->set_show_border(false);
   Tabber->show();
@@ -611,33 +623,71 @@ Darimasen::~Darimasen(){
 /**********************/
 
 void Darimasen::fQuit(){
+
+  delete Tabber;
+
+ // delete sep1;
+ // delete sep2;
+  delete BackButton;
+  delete ChangeIconMode;
+  delete ViewTree;
+  delete NewTab;
   DarimasenMenuContainer->remove();
+
+  delete DarimasenMenuContainer;
+  delete m_Menu_File;
+  delete CompactMenu;
+  delete CompactMenuContainer;
+
+  for (int i=0; i < IconModeList.size(); i++){
+     delete IconModeList[i];
+     delete EventBoxList[i];
+     }
+
   hide();
   }
 
 /**********************/
 
 void Darimasen::fAbout(){
-
-  Glib::RefPtr<Gdk::Pixbuf> loader=  
-    Gdk::Pixbuf::create_from_file( 
-      ((Glib::ustring)DATADIR + (Glib::ustring)"/pixmaps/darimasenInfo.svg" ));
-
-   Gtk::Dialog aboutDarimasen;
-
-   Gtk::Button * closebutton1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-close")));
-   Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(loader));
-   aboutDarimasen.get_action_area()->property_layout_style().set_value(Gtk::BUTTONBOX_END);
-   aboutDarimasen.get_vbox()->set_homogeneous(false);
-   aboutDarimasen.get_vbox()->set_spacing(10);
-   aboutDarimasen.get_vbox()->pack_start(*image1);
-   aboutDarimasen.set_title("About Darimasen");
-   aboutDarimasen.set_modal(true);
-   aboutDarimasen.set_resizable(false);
-   aboutDarimasen.add_action_widget(*closebutton1, -7);
-  aboutDarimasen.show_all_children();
-  aboutDarimasen.run();
+  aboutDa about;
+  Gtk::Main::run(about); 
   }
+
+/**********************/
+
+bool Darimasen::aboutDa::ch0wned(GdkEventButton*){
+  hide();
+  }
+
+/**********************/
+
+Darimasen::aboutDa::aboutDa(){
+  image1 = new class Gtk::Image(  Gdk::Pixbuf::create_from_file( 
+    (Glib::ustring)DATADIR + (Glib::ustring)"/pixmaps/darimasenInfo.svg" ) );
+  closer = new Gtk::EventBox;
+  closer->add(*image1);
+  closer->signal_button_press_event().connect(
+    sigc::mem_fun(*this, &Darimasen::aboutDa::ch0wned));
+
+  add(*closer);
+  set_title("About Darimasen");
+  set_modal(true);
+  set_resizable(false);
+  set_decorated (false);
+  set_position(Gtk::WIN_POS_CENTER);
+
+  show_all_children();
+  }
+
+/**********************/
+
+Darimasen::aboutDa::~aboutDa(){
+  delete image1;
+  delete closer;
+  }
+
+
 
 /**********************/
 

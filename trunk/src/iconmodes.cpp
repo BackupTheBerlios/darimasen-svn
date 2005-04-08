@@ -70,8 +70,11 @@ DaIconModes::~DaIconModes(){
   for(int c = 0; c < filesAtPath; c++){
     delete sideconContainer[c];
     }
-
   delete sideconContainer;
+  delete hidden;
+
+
+  //delete sideconContainer; //well, valgrind --tool=addrcheck said this line was bad.
 }
 }
 /**********************/
@@ -117,130 +120,63 @@ break;
 /**********************/
 
 DaIconModes::Sidecon::Sidecon(
-    Glib::ustring path,
-    const Glib::RefPtr<const Gnome::Vfs::FileInfo>& info,
-    DaIconModes& above){
-
+      Glib::ustring path,
+      const Glib::RefPtr<const Gnome::Vfs::FileInfo>& info,
+      DaIconModes& above){
 
   parent = &above;
   filePath = path + info->get_name();
 
-  Glib::ustring shortnom = info->get_name();
-
   if (info->get_name().length() > 25){
-
     int last = info->get_name().rfind(".");
-
-    if (last != -1){ //fix for the missing extension bug
-      Glib::ustring ext = info->get_name().substr(last);  
-      shortnom = info->get_name().substr(0, 20) + ".." + ext;
+    if (last != -1){
+      FileName = new class Gtk::Label( info->get_name().substr(0, 20) + ".." + info->get_name().substr(last) );
       }
     else {
-      shortnom = info->get_name().substr(0,22) + "...";
+      FileName = new class Gtk::Label( info->get_name().substr(0,22) + "..." );
       }
-
     }
-                   
-  resize(3,2);
-
-
-Glib::ustring ico;
-
-/*
-
-  try {
-  if(info->get_mime_type() == "image/jpeg"
-    || info->get_mime_type() == "image/gif"
-    || info->get_mime_type() == "image/png"){
-
-  ico = info->get_name();
+  else {
+  FileName = new class Gtk::Label( info->get_name() );
   }
-else{
-  ico = "/usr/share/icons/Lila/scalable/mimetypes/mime-";
-  ico += info->get_mime_type().replace(info->get_mime_type().find("/"), 1, ":");
-  ico += ".svg";
-   }
-
-    Glib::file_get_contents(ico);
-    }
-  catch(const Glib::Error) {
-ico = "/usr/share/icons/Lila/scalable/mimetypes/mime-";
-ico += info->get_mime_type().substr(0,info->get_mime_type().find("/"));
-ico += ".svg";
-    }
-Glib::RefPtr<Gdk::Pixbuf> xe = Gdk::Pixbuf::create_from_file(ico);
-Glib::RefPtr<Gdk::Pixbuf> xf = xe->scale_simple(48,48,Gdk::INTERP_TILES);
+                   
 
 
-  Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(xf));
-///
-
-
-  try{
-    ico = "/usr/share/icons/gnome/48x48/mimetypes/gnome-mime-";
-    ico += info->get_mime_type().replace(info->get_mime_type().find("/"), 1, "-");
-    ico += ".png";
-    Glib::file_get_contents(ico);
-    }
-  catch(const Glib::Error) {
-    ico = "/usr/share/icons/gnome/48x48/mimetypes/gnome-mime-";
-    ico += info->get_mime_type().substr(0,info->get_mime_type().find("/"));
-    ico += ".png";
-
-    }
-
-  Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(ico));
-*/
-
-
-Glib::RefPtr<Gdk::Pixbuf> img;
-img = parent->getIcon(info->get_mime_type(), 48);
-
-
-Gtk::Image * image1 = Gtk::manage (new class Gtk::Image(img));
-
-image1->show();
-
-
-
-  Gtk::Label * FileName = Gtk::manage(new class Gtk::Label(shortnom));
-
-  // this is where the mimetype info goes
-  mimeInfo = info->get_mime_type();
-  Gtk::Label * FilePermissions = Gtk::manage( new class Gtk::Label(mimeInfo));
-
-  // THis is simply file size - images an video could have more. Much later.
-  Glib::ustring size;
-  if( info->get_size() < 1024 ){
-    size = int2ustr(info->get_size()) + " B";
-    }
-  else if ( info->get_size() < (1024 * 1024) ){
-    size = int2ustr(info->get_size() / 1024) + " KB";
-    }
-  else{
-    size = int2ustr(info->get_size() / 1024 / 1024) + " MB";
-    }
-
-  // ideally, this label would be 80% size of standard
-  Gtk::Label * FileSizeInfo = Gtk::manage( new class Gtk::Label(size));
-
+//  FileName = new class Gtk::Label(shortnom);
   FileName->set_alignment(0,0.5);
   FileName->set_justify(Gtk::JUSTIFY_LEFT);
+  attach(*FileName, 1, 2, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
+
+
+  // hand off getting the icon
+  image1 = new class Gtk::Image(parent->getIcon(info->get_mime_type(), 48));
+  attach(*image1, 0, 1, 0, 3, Gtk::FILL, Gtk::FILL, 0, 0);
+
+
+  // this is where the mimetype info goes
+  FilePermissions = new class Gtk::Label(info->get_mime_type());
   FilePermissions->set_alignment(0,0.5);
   FilePermissions->set_justify(Gtk::JUSTIFY_LEFT);
+  attach(*FilePermissions, 1, 2, 1, 2, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
+
+
+  // This is simply file size - images an video could have more. Later.
+  if( info->get_size() < 1024 ){
+    FileSizeInfo = new class Gtk::Label(int2ustr(info->get_size()) + " B");
+    }
+  else if ( info->get_size() < (1024 * 1024) ){
+    FileSizeInfo = new class Gtk::Label(int2ustr(info->get_size() / 1024) + " KB");
+    }
+  else{
+    FileSizeInfo = new class Gtk::Label( int2ustr(info->get_size() / 1048576) + " MB");
+    }
   FileSizeInfo->set_alignment(0,0.5);
   FileSizeInfo->set_justify(Gtk::JUSTIFY_LEFT);
-  
-  attach(*image1, 0, 1, 0, 3, Gtk::FILL, Gtk::FILL, 0, 0);
-  attach(*FileName, 1, 2, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-  attach(*FilePermissions, 1, 2, 1, 2, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-  attach(*FileSizeInfo, 1, 2, 2, 3, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-  
-  image1->show();
-  FileName->show();
-  FilePermissions->show();
-  FileSizeInfo->show();
-  show();  }
+  attach(*FileSizeInfo, 1, 2, 2, 3, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
+
+
+  show_all_children();  }
+
 /**********************
 
 DaIconModes::Detail::Detail(
@@ -549,24 +485,22 @@ void DaIconModes::redraw(){
 DaIconModes::ChooseActionDialogue::ChooseActionDialogue(Glib::ustring mimeType){
 
   mime = mimeType;
-  cancelbutton1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-close")));
-  okbutton1     = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-apply")));
-  label1 = Gtk::manage(new class Gtk::Label("Enter a Shell command:"));
-  entry1 = Gtk::manage(new class Gtk::Entry());
-  vbox1  = Gtk::manage(new class Gtk::VBox(false, 0));
+  cancelbutton1 = new class Gtk::Button(Gtk::StockID("gtk-close"));
+  okbutton1 = new class Gtk::Button(Gtk::StockID("gtk-apply"));
+  label1 = new class Gtk::Label("Enter a Shell command:");
+  entry1 = new class Gtk::Entry();
+  vbox1  = new class Gtk::VBox(false, 0);
 
 
-  radiobutton1 = Gtk::manage(
-      new class Gtk::RadioButton(_RadioBGroup_radiobutton1, 
-      "Set Mime For \"" + mimeType.substr(0, mimeType.find("_")) + "\"") );
+  radiobutton1 = new class Gtk::RadioButton(_RadioBGroup_radiobutton1, 
+    "Set Mime For \"" + mimeType.substr(0, mimeType.find("_")) + "\"" );
 
   radiobutton1->signal_clicked().connect(
       sigc::bind<Glib::ustring >( sigc::mem_fun(*this,
       &DaIconModes::ChooseActionDialogue::GetCurrentAction), mimeType.substr(0, mimeType.find("_")) ));
 
- radiobutton2 = Gtk::manage(
-      new class Gtk::RadioButton(_RadioBGroup_radiobutton1,
-      "Set Mime For \"" + mimeType + "\"") ) ;
+ radiobutton2 = new class Gtk::RadioButton(_RadioBGroup_radiobutton1,
+      "Set Mime For \"" + mimeType + "\"")  ;
 
   radiobutton2->signal_clicked().connect(
       sigc::bind<Glib::ustring >( sigc::mem_fun(*this,
@@ -609,14 +543,8 @@ DaIconModes::ChooseActionDialogue::ChooseActionDialogue(Glib::ustring mimeType){
   add_action_widget(*cancelbutton1, Gtk::RESPONSE_CANCEL);
   add_action_widget(*okbutton1, Gtk::RESPONSE_OK);
   set_default_response(Gtk::RESPONSE_OK);
-  cancelbutton1->show();
-  okbutton1->show();
-  radiobutton1->show();
-  radiobutton2->show();
-  label1->show();
-  entry1->show();
-  vbox1->show();
-  show();
+
+  show_all_children();
   }
 
 /**********************/
@@ -706,43 +634,43 @@ fullPath = path;
   set_title("Set file permissions");
   set_modal(true);
 
-   read = Gtk::manage(new class Gtk::Label("R"));
-   write = Gtk::manage(new class Gtk::Label("W"));
-   run = Gtk::manage(new class Gtk::Label("X"));
-   user = Gtk::manage(new class Gtk::Label("User"));
-   group = Gtk::manage(new class Gtk::Label("Group"));
-   others = Gtk::manage(new class Gtk::Label("Everybody"));
+   read = new class Gtk::Label("R");
+   write = new class Gtk::Label("W");
+   run = new class Gtk::Label("X");
+   user = new class Gtk::Label("User");
+   group = new class Gtk::Label("Group");
+   others = new class Gtk::Label("Everybody");
 
-   explaination = Gtk::manage(new class Gtk::Label("for \""+ info->get_name() + "\"..."));
+   explaination = new class Gtk::Label("for \""+ info->get_name() + "\"...");
 
-   layout = Gtk::manage(new class Gtk::Table(5, 6, false));
+   layout = new class Gtk::Table(5, 6, false);
 
-   u_r = Gtk::manage(new class Gtk::CheckButton(""));
+   u_r = new class Gtk::CheckButton("");
    if((info->get_permissions() & Gnome::Vfs::PERM_USER_READ) != 0)  u_r->set_active(true);
-   u_w = Gtk::manage(new class Gtk::CheckButton(""));
+   u_w = new class Gtk::CheckButton("");
    if((info->get_permissions() & Gnome::Vfs::PERM_USER_WRITE) != 0)  u_w->set_active(true);
-   u_x = Gtk::manage(new class Gtk::CheckButton(""));
+   u_x = new class Gtk::CheckButton("");
    if((info->get_permissions() & Gnome::Vfs::PERM_USER_EXEC) != 0)  u_x->set_active(true);
-   g_r = Gtk::manage(new class Gtk::CheckButton(""));
+   g_r = new class Gtk::CheckButton("");
    if((info->get_permissions() & Gnome::Vfs::PERM_GROUP_READ) != 0)  g_r->set_active(true);
-   g_w = Gtk::manage(new class Gtk::CheckButton(""));
+   g_w = new class Gtk::CheckButton("");
    if((info->get_permissions() & Gnome::Vfs::PERM_GROUP_WRITE) != 0)  g_w->set_active(true);
-   g_x = Gtk::manage(new class Gtk::CheckButton(""));
+   g_x = new class Gtk::CheckButton("");
    if((info->get_permissions() & Gnome::Vfs::PERM_GROUP_EXEC) != 0)  g_x->set_active(true);
-   o_r = Gtk::manage(new class Gtk::CheckButton(""));
+   o_r = new class Gtk::CheckButton("");
    if((info->get_permissions() & Gnome::Vfs::PERM_OTHER_READ) != 0)  o_r->set_active(true);
-   o_w = Gtk::manage(new class Gtk::CheckButton(""));
+   o_w = new class Gtk::CheckButton("");
    if((info->get_permissions() & Gnome::Vfs::PERM_OTHER_WRITE) != 0)  o_w->set_active(true);
-   o_x = Gtk::manage(new class Gtk::CheckButton(""));
+   o_x = new class Gtk::CheckButton("");
    if((info->get_permissions() & Gnome::Vfs::PERM_OTHER_EXEC) != 0)  o_x->set_active(true);
 
-   extra = Gtk::manage(new  Gtk::VSeparator);
+   extra = new  Gtk::VSeparator;
 
-   sticky = Gtk::manage(new class Gtk::CheckButton("Sticky"));
+   sticky = new class Gtk::CheckButton("Sticky");
    if((info->get_permissions() & Gnome::Vfs::PERM_STICKY) != 0)  sticky->set_active(true);
-   GID = Gtk::manage(new class Gtk::CheckButton("Group ID"));
+   GID = new class Gtk::CheckButton("Group ID");
    if((info->get_permissions() & Gnome::Vfs::PERM_SGID) != 0)  GID->set_active(true);
-   UID = Gtk::manage(new class Gtk::CheckButton("User ID"));;
+   UID = new class Gtk::CheckButton("User ID");
    if((info->get_permissions() & Gnome::Vfs::PERM_SUID) != 0)  UID->set_active(true);
 
    layout->attach(*u_r, 1, 2, 2, 3, Gtk::FILL, Gtk::FILL, 0, 0);
@@ -769,13 +697,14 @@ fullPath = path;
    layout->attach(*others, 0, 1, 4, 5, Gtk::FILL , Gtk::FILL, 0, 0);
    layout->attach(*explaination, 0, 6, 0, 1, Gtk::FILL | Gtk::EXPAND, Gtk::FILL, 10, 0);
 
+
   get_vbox()->pack_start(*layout);
-  button1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-cancel")));
+  button1 = new class Gtk::Button(Gtk::StockID("gtk-cancel"));
   button1->signal_clicked().connect(
       sigc::mem_fun(*this, &DaIconModes::SetPermissionsDialogue::cancled) );
 
 
-  button2 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-apply")));
+  button2 = new class Gtk::Button(Gtk::StockID("gtk-apply"));
   button2->signal_clicked().connect(
     sigc::bind<Glib::RefPtr<Gnome::Vfs::FileInfo> >(
       sigc::mem_fun(*this, &DaIconModes::SetPermissionsDialogue::apply), info ));
@@ -785,9 +714,6 @@ fullPath = path;
   add_action_widget(*button1, -6);
   add_action_widget(*button2, -10);
 
-  button1->show();
-  button2->show();
-
   set_modal(true);
   show_all_children();
   show();
@@ -795,7 +721,9 @@ fullPath = path;
 
 /**********************/
 
-void DaIconModes::SetPermissionsDialogue::cancled(){hide();}
+void DaIconModes::SetPermissionsDialogue::cancled(){
+  hide();
+  }
 
 /**********************/
 
@@ -826,6 +754,34 @@ void DaIconModes::SetPermissionsDialogue::apply(Glib::RefPtr<Gnome::Vfs::FileInf
 
   hide();
   }
+
+/**********************/
+
+DaIconModes::SetPermissionsDialogue::~SetPermissionsDialogue(){
+      delete read;
+      delete write;
+      delete run;
+      delete user;
+      delete group;
+      delete others;
+      delete explaination;
+      delete layout;
+      delete u_r;
+      delete u_w;
+      delete u_x;
+      delete g_r;
+      delete g_w;
+      delete g_x;
+      delete o_r;
+      delete o_w;
+      delete o_x;
+      delete extra;
+      delete sticky;
+      delete GID;
+      delete UID;
+      delete button1;
+      delete button2;
+      }
 
 /**********************/
 

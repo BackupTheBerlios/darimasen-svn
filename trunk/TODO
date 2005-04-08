@@ -1,22 +1,17 @@
-version 0.0.7: Embetterment by Tab
+version 0.0.7: Embetterment by Tabs
 
 Must address:
 
 resetting menus where subsubdirs have been used
 
 
-
-Would like to address:
-
-limiting DaMenu expansion (preserve window width for long paths) - by shortening menu names
-
-Folder context menus.
-
-
-
 -----------------------------------------------
 version 0.0.8 and onwards
 -----------------------------------------------
+
+limiting DaMenu expansion (preserve window width for long paths) - by shortening menu names
+
+Full Folder & Icon context menus.
 
 --
 Detail view, how to handle icon mode switching now

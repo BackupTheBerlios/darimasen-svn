@@ -14,6 +14,17 @@
   <defs
      id="defs3">
     <linearGradient
+       id="linearGradient2049">
+      <stop
+         id="stop2051"
+         offset="0.0000000"
+         style="stop-color:#d8d8d8;stop-opacity:1.0000000;" />
+      <stop
+         id="stop2053"
+         offset="1.0000000"
+         style="stop-color:#ffffff;stop-opacity:1.0000000;" />
+    </linearGradient>
+    <linearGradient
        id="linearGradient2439">
       <stop
          id="stop2441"
@@ -33,13 +44,22 @@
        x2="129.66743"
        y1="330.76971"
        x1="129.06119" />
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       xlink:href="#linearGradient2049"
+       id="linearGradient2057"
+       y2="194.05247"
+       x2="141.06122"
+       y1="70.903793"
+       x1="29.854227" />
   </defs>
   <rect
-     id="rect2886"
-     style="fill:#ffffff;fill-opacity:1.0000000"
-     y="2.7185509e-14"
+     id="rect1287"
+     style="fill:url(#linearGradient2057);fill-opacity:1.0000000;stroke:#000000;stroke-opacity:1.0000000"
+     y="-5.3400210e-15"
      x="0.0000000"
-     ry="27.970919"
+     ry="0.0000000"
+     rx="0.0000000"
      height="256.00000"
      width="198.00000" />
   <g

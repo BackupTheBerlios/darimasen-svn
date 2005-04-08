@@ -1,3 +1,8 @@
+# Copyright 1999-2004 Gentoo Technologies, Inc.
+# Distributed under the terms of the GNU General Public License v2
+# $Header: $
+
+
 DESCRIPTION="A file manager with menu-based navigation"
 HOMEPAGE="http://darimasen.berlios.de/"
 SRC_URI="http://download.berlios.de/darimasen/${P}.tar.bz2"
@@ -7,6 +12,7 @@ SLOT="0"
 KEYWORDS="x86"
 
 IUSE=""
+SLOT="0"
 
 DEPEND=">=dev-libs/libsigc++-2.0.3
         >=dev-cpp/gtkmm-2.4.11

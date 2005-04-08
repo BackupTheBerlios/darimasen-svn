@@ -71,8 +71,6 @@ class Darimasen : public Gtk::Window {
       };
 
 
-
-
     Darimasen * parent;
 
     int depth;
@@ -97,7 +95,14 @@ class Darimasen : public Gtk::Window {
     ~DarimasenMenu();
     };
 
-
+  class aboutDa : public Gtk::Window {
+    Gtk::Image * image1;
+    Gtk::EventBox * closer;
+    bool ch0wned(GdkEventButton*);
+  public:
+    aboutDa();
+    ~aboutDa();
+    };
   
   Gtk::VBox VerticalOrganizer;
   Gtk::Toolbar TopBar;
@@ -108,9 +113,19 @@ class Darimasen : public Gtk::Window {
   Gtk::Notebook * Tabber;
   Gtk::Statusbar Info;
 
+  Gtk::ToolItem * CompactMenuContainer;
+  Gtk::MenuBar * CompactMenu;
+  Gtk::Menu * m_Menu_File;
 
+  Gtk::SeparatorToolItem * sep1;
+  Gtk::SeparatorToolItem * sep2;
 
   Gtk::ToolButton * BackButton;
+Gtk::ToolButton * ChangeIconMode;
+ Gtk::ToggleToolButton * ViewTree;
+Gtk::ToolButton * NewTab;
+
+
 
   void fNewTab();
   void newTab(Glib::ustring);
@@ -126,6 +141,7 @@ class Darimasen : public Gtk::Window {
 
 
   std::vector< class DaIconModes* > IconModeList;
+  std::vector< class Gtk::EventBox* > EventBoxList;
 
 
 public:
@@ -140,7 +156,3 @@ public:
 /**********************/
 
 #endif //DARIMASEN_H
-
-
-
-

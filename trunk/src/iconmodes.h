@@ -23,8 +23,20 @@ class DaIconModes : public Gtk::EventBox {
   class Sidecon : public Gtk::Table {
     Glib::ustring filePath, mimeInfo;
     DaIconModes * parent;
+    Gtk::Image * image1;
+    Gtk::Label * FileName;
+    Gtk::Label * FilePermissions ;
+  Gtk::Label * FileSizeInfo;
     public:
     Sidecon(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, DaIconModes&);
+~Sidecon(){
+delete image1;
+delete FileName;
+delete FilePermissions;
+delete FileSizeInfo;
+
+}
+
     };
 
 /*
@@ -50,6 +62,16 @@ class DaIconModes : public Gtk::EventBox {
     public:
 
     ChooseActionDialogue(Glib::ustring);
+    ~ChooseActionDialogue(){
+
+      delete cancelbutton1;
+      delete okbutton1;
+      delete label1;
+      delete entry1;
+      delete vbox1;
+      delete radiobutton1;
+      delete radiobutton2;
+      }
     };
 
 
@@ -78,6 +100,7 @@ class DaIconModes : public Gtk::EventBox {
     public:
 
     SetPermissionsDialogue(Glib::RefPtr<Gnome::Vfs::FileInfo> , Glib::ustring);
+    ~SetPermissionsDialogue();
     };
 
   class Darimasen * parent;

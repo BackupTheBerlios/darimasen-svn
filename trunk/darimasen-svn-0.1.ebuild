@@ -1,3 +1,7 @@
+# Copyright 1999-2004 Gentoo Technologies, Inc.
+# Distributed under the terms of the GNU General Public License v2
+# $Header: $
+
 
 ESVN_REPO_URI="svn://svn.berlios.de/darimasen/trunk"
 ESVN_PROJECT="darimasen"
@@ -12,6 +16,7 @@ SLOT="0"
 KEYWORDS="~x86"
 
 IUSE=""
+SLOT="0"
 
 DEPEND=">=dev-libs/libsigc++-2.0.3
         >=dev-cpp/gtkmm-2.4.11
