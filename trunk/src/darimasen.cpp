@@ -16,6 +16,7 @@ void Darimasen::DarimasenMenu::MenuForPath(
 
   int entry = 0;
 
+MenuItemArray[position]->signal_activate().connect_notify(sigc::bind<guint,Glib::ustring>(sigc::mem_fun(*this,&Darimasen::DarimasenMenu:: selection_reset),position,path));
 
   if( position < depth || ext != ""){
 
@@ -123,16 +124,14 @@ bool Darimasen::DarimasenMenu::SpecialMenuForPath(GdkEventButton* event,
        Glib::ustring path,
        Glib::ustring ext){
 
-  extended = position; 
-
- MenuItemArray[position]->remove_submenu();
- delete MenuArray[position];
- MenuArray[position] =  new DirectoryMenu(*this);
-
+  MenuItemArray[position]->remove_submenu();
+  delete MenuArray[position];
+  MenuArray[position] =  new DirectoryMenu(*this);
   MenuItemArray[position]->set_submenu(*MenuArray[position]);
   MenuForPath(position, path, ext);
-
   MenuItemArray[position]->select();
+
+  needsRebuild[position] = true;
 
   return true;
 
@@ -140,16 +139,17 @@ bool Darimasen::DarimasenMenu::SpecialMenuForPath(GdkEventButton* event,
 
 /**********************/
 
-void Darimasen::DarimasenMenu::offClick(){
-if( extended != -1 ){
-std::cout << extended << "\n";
-  MenuItemArray[extended]->remove_submenu();
-  delete MenuArray[extended];
-  MenuArray[extended] =  new DirectoryMenu(*this);
-  MenuItemArray[extended]->set_submenu(*MenuArray[extended]);
-  MenuForPath(extended, parent->history[extended].top() , "");
-extended = -1;
-}
+void Darimasen::DarimasenMenu:: selection_reset(guint position, Glib::ustring path){
+  if ( needsRebuild[position] ){
+    MenuItemArray[position]->remove_submenu();
+    delete MenuArray[position];
+    MenuArray[position] =  new DirectoryMenu(*this);
+    MenuItemArray[position]->set_submenu(*MenuArray[position]);
+    MenuForPath(position, path, "");
+    MenuItemArray[position]->select();
+
+    needsRebuild[position] = false;
+    }
 }
 
 /**********************/
@@ -214,7 +214,6 @@ Glib::ustring Darimasen::DarimasenMenu::CountSubdir(const Glib::ustring& path){
 Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring & path, Darimasen& Myparent, guint pos){
 
   depth = 0;
-  extended = -1;
 
   Glib::ustring shortpath = path; //home = getenv("HOME");
   parent = &Myparent;
@@ -231,6 +230,10 @@ Darimasen::DarimasenMenu::DarimasenMenu(const Glib::ustring & path, Darimasen& M
     }
 
   menulevel =  new Glib::ustring[depth+1];
+  needsRebuild = new bool[depth+1];
+  for( int i=0; i<=depth; i++)
+        needsRebuild[i] = false;
+
 
   startPos = 0;
   for(i = 0; shortpath.find(slash,startPos) !=  Glib::ustring::npos ; i++ ){
@@ -325,7 +328,7 @@ Darimasen::DarimasenMenu::~DarimasenMenu(){
     delete MenuArray[c];
     }
   delete menulevel;
-
+  delete needsRebuild;
   for (int i = 0; i <=depth; i++){
     delete MenuArray[i];
     delete MenuItemArray[i];
@@ -626,8 +629,6 @@ void Darimasen::fQuit(){
 
   delete Tabber;
 
- // delete sep1;
- // delete sep2;
   delete BackButton;
   delete ChangeIconMode;
   delete ViewTree;

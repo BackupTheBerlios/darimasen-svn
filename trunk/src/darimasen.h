@@ -82,17 +82,17 @@ class Darimasen : public Gtk::Window {
     void MenuForPath(int, Glib::ustring , Glib::ustring); //extension
     bool SpecialMenuForPath(GdkEventButton* , int, Glib::ustring  , Glib::ustring); //extension
 
-    void offClick();
-
     Glib::ustring CountSubdir(const Glib::ustring&);
     bool DaMenuSelect(GdkEventButton*, const Glib::ustring,guint,bool);
+    void selection_reset(guint, Glib::ustring);
  
+    bool * needsRebuild;
   public:
 
-    short extended;
     void signal_deactivate ();
     DarimasenMenu(const Glib::ustring&, Darimasen&, guint);
     ~DarimasenMenu();
+
     };
 
   class aboutDa : public Gtk::Window {
@@ -102,6 +102,8 @@ class Darimasen : public Gtk::Window {
   public:
     aboutDa();
     ~aboutDa();
+
+
     };
   
   Gtk::VBox VerticalOrganizer;

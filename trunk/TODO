@@ -1,51 +1,54 @@
-version 0.0.7: Embetterment by Tabs
+version 0.0.8
 
-Must address:
+Must do:
 
-resetting menus where subsubdirs have been used
+evaluate the " Gtk-CRITICAL **: gtk_widget_event: assertion `WIDGET_REALIZED_FOR_EVENT (widget, event)' failed" messages
+Full Folder & Icon context menus.
+Keyboard navigation of menus (Alt+1 opens root menu, Alt+2 opens first child, etc)
+
+Move, copy, delete of files
+
+move, copy, delete of folder
+move, copy of folder contents
+
+Traditional List and detail views
 
 
------------------------------------------------
-version 0.0.8 and onwards
------------------------------------------------
+Would like to do:
 
 limiting DaMenu expansion (preserve window width for long paths) - by shortening menu names
+AppDir Support
+Create new folder
+Ron <Rds> mentioned that Rox will be moving for ~/Choices to ~/.choices - should probably support that, or check both locations
+use existing thumbnails / create new thumbnails (a la ROX)
 
-Full Folder & Icon context menus.
 
---
-Detail view, how to handle icon mode switching now
-Ron <Rds> mentioned that Rox will be moving for ~/Choices to ~/.choices - should probably support that, or check both locations.
+version 0.0.9
+-----------------------------------------------
 
---
+Optional Directory tree, updated as needed
 
-int * MenuWidths; is for saving the lengths of the strings, to determine which should be shortened first. I think for 0.0.6 taht just replacing the title with single character should be good enough. 
-
-the other method - make another menu wih dirs a menus - well, am I going to do it? I dunno.
-
---
-
-   
-   
-   Generic detail view (Name, Size, Permissions, etc.) should be easy now with gnome_vfsmm; however, sorting them by this info is a bit more of a challenge. A ListView would probably be much better for this. This makes for some hey-my-scalp-is-bleeding type head-scratching problems, so a dummy label is in place for now.
-
-mime-type dependant icons, a la ROX.
-
+Package as appdir?
+ 
 ---
 
 @commit 11 -- With the ROX / Gnome-vfsmm work done, most of Ron's <Rds> code is gone. This would include the AppDir test. However, appdirs would never end up showing up in the main window, so this is not a huge loss as of yet. His test was for AppRun within the directory - it would require testing for that file's existance, then notifying that it is an executable and needs a unique icon.
 
 ---
 
- standard tree navigation
 
----
+-----------------------------------------------
 
-all the folder context menus...
-
----
-
-
---version 0.1.0
+--version 0.1.0 (beta?)
 
 anouncement of usuable public release ^_^;
+
+
+-----------------------------------------------
+
+--version 0.1.1 and onwards
+
+Drag and drop. 
+Re-port to windows
+
+
