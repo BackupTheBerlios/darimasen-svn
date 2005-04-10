@@ -493,14 +493,14 @@ DaIconModes::ChooseActionDialogue::ChooseActionDialogue(Glib::ustring mimeType){
 
 
   radiobutton1 = new class Gtk::RadioButton(_RadioBGroup_radiobutton1, 
-    "Set Mime For \"" + mimeType.substr(0, mimeType.find("_")) + "\"" );
+    "Set Action For \"" + mimeType.substr(0, mimeType.find("_")) + "\"" );
 
   radiobutton1->signal_clicked().connect(
       sigc::bind<Glib::ustring >( sigc::mem_fun(*this,
       &DaIconModes::ChooseActionDialogue::GetCurrentAction), mimeType.substr(0, mimeType.find("_")) ));
 
  radiobutton2 = new class Gtk::RadioButton(_RadioBGroup_radiobutton1,
-      "Set Mime For \"" + mimeType + "\"")  ;
+      "Set Action For \"" + mimeType + "\"")  ;
 
   radiobutton2->signal_clicked().connect(
       sigc::bind<Glib::ustring >( sigc::mem_fun(*this,
@@ -593,7 +593,6 @@ void DaIconModes::ChooseActionDialogue::modifyAction(){
       write_handle.create(exec1, Gnome::Vfs::OPEN_WRITE, false, 0755);
       write_handle.seek(Gnome::Vfs::SEEK_POS_START, 0);
       GnomeVFSFileSize bytes_written = write_handle.write(command.data(), command.size());
-  //  parent->set_message("New action set.");
       }
     catch(const Gnome::Vfs::exception) {
   //  parent->set_message("Couldn't write new definition.");

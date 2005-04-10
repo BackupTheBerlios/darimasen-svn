@@ -2,6 +2,7 @@
  
 
 #include "main.h"
+#include "firsttime.h"
 
 /**********************/
 
@@ -9,6 +10,33 @@ int main(int argc, char *argv[])
 {
   Gtk::Main kit(argc, argv);
   Gnome::Vfs::init();
+
+  // check for mime definitions. 
+  { 
+    Glib::ustring fuz = getenv("HOME") ;
+    fuz += "/Choices";
+    Glib::RefPtr<Gnome::Vfs::Uri> fuzz = Gnome::Vfs::Uri::create(fuz);
+    if (!fuzz->uri_exists()){
+
+  gnome_vfs_make_directory(fuz.c_str(),493);
+  
+      }
+
+
+
+   fuz += "/MIME-types";
+   Glib::RefPtr<Gnome::Vfs::Uri> fuz2 = Gnome::Vfs::Uri::create(fuz);
+    if (!fuz2->uri_exists()){
+
+  gnome_vfs_make_directory(fuz.c_str(),493);
+    dialog1_glade window;
+  Gtk::Main::run(window); 
+
+      }
+
+  }
+
+
 
   std::vector<Glib::ustring> path;
 
@@ -38,12 +66,8 @@ int main(int argc, char *argv[])
           }
         // URL is relative, but pointing to file
         else{
-          try{
-            Glib::file_get_contents(x->get_path().substr(0,x->get_path().length()-1) );
             x = x->get_parent();
             path.push_back(x->get_path()+slash);
-            }
-          catch(const Glib::Error) {/*non-existant file OR folder*/}
           }
         }
       }
@@ -58,10 +82,7 @@ int main(int argc, char *argv[])
 
   std::cout << "Tabs opened should be for:\n";
   for(int i =0; i< path.size();i++)
-      std::cout << path[i]
-                << /*" " 
-                << path[i].substr(path[i].rfind(slash, path[i].length() -2)+1)
-                <<*/ "\n";
+      std::cout << path[i] <<  "\n";
 
   Darimasen window(path);
   Gtk::Main::run(window); 

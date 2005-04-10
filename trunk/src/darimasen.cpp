@@ -392,6 +392,7 @@ void Darimasen::addTab(guint pos){
   else
     Tabber->set_show_tabs(true);
 
+
   Gtk::Image * xed = Gtk::manage(
     new Gtk::Image("/usr/share/icons/hicolor/16x16/stock/generic/stock_close.png"));
   xed->show();
@@ -511,7 +512,10 @@ void Darimasen::removeTab(guint pos){
 Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   set_title("Darimasen");
   set_default_size(500, 330);
-  set_icon_from_file( (Glib::ustring)DATADIR + (Glib::ustring)"/icons/hicolor/48x48/apps/darimasen.png"  );
+  try{
+    set_icon_from_file( (Glib::ustring)DATADIR + (Glib::ustring)"/icons/hicolor/48x48/apps/darimasen.png"  );
+  }
+  catch(const Glib::Error) {/*non-existant file OR folder*/}
   add(VerticalOrganizer);
   VerticalOrganizer.show();
 
