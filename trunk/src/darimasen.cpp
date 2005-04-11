@@ -157,7 +157,11 @@ void Darimasen::DarimasenMenu:: selection_reset(guint position, Glib::ustring pa
 //Decides the action of the menuItem, more sophisticated than the activate signal. 
 //its comment should always be somewhere.
 
-bool Darimasen::DarimasenMenu::DaMenuSelect(GdkEventButton* event, const Glib::ustring path, guint pos, bool first){
+bool Darimasen::DarimasenMenu::DaMenuSelect(
+      GdkEventButton* event,
+      const Glib::ustring path,
+      guint pos,
+      bool first){
 
   if ((event->type == GDK_BUTTON_PRESS) && (event->button == 2) ) //middle
   {

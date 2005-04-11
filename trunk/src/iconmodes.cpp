@@ -80,10 +80,10 @@ DaIconModes::~DaIconModes(){
 /**********************/
 
 bool DaIconModes::addEntry(
-    const Glib::ustring& rel_path,
-    const Glib::RefPtr<const Gnome::Vfs::FileInfo>& info,
+    Glib::ustring rel_path,
+    Glib::RefPtr<const Gnome::Vfs::FileInfo> info,
     bool recursing_will_loop,
-    bool& recurse) {
+    bool recurse) {
 
   if (info->get_type() != Gnome::Vfs::FILE_TYPE_DIRECTORY){
       sideconContainer[slotsUsed]->set_visible_window(false);
@@ -336,6 +336,48 @@ void DaIconModes::RunFile(const Glib::ustring file) {
 
 /**********************/
 
+
+void DaIconModes::RunFileAsText(const Glib::ustring file) {
+
+  // see if the file is executable 
+
+  Gnome::Vfs::Handle read_handle;
+  Gnome::Vfs::Handle exec_handle;
+  Glib::RefPtr<const Gnome::Vfs::FileInfo> info;
+  
+  try{
+    read_handle.open( parent->history[position].top() + file, Gnome::Vfs::OPEN_READ);
+    info = read_handle.get_file_info(
+      Gnome::Vfs::FILE_INFO_GET_MIME_TYPE |
+      Gnome::Vfs::FILE_INFO_FORCE_SLOW_MIME_TYPE );
+    }
+  catch(const Gnome::Vfs::exception& ex){
+    std::cout << "Does not exist.\n";
+    return;
+    }
+
+
+  Glib::ustring exec = getenv("HOME");
+  try{
+    exec += "/Choices/MIME-types/text";
+    exec_handle.open(exec, Gnome::Vfs::OPEN_READ);
+
+    exec += " \""  + parent->history[position].top() + file + "\"";
+    Glib::spawn_command_line_async(exec);
+
+    parent->set_message(exec + " was run.");
+    return;
+
+    }
+  catch(const Gnome::Vfs::exception& ex){
+    }
+
+}
+
+
+
+/**********************/
+
 void DaIconModes::SetRunAction(const Glib::ustring file) {
 
   Gnome::Vfs::Handle read_handle;
@@ -367,49 +409,64 @@ void DaIconModes::SetRunAction(const Glib::ustring file) {
 // make a generic icon action
 bool DaIconModes::on_eventbox_button_press(GdkEventButton* event, const Glib::ustring Icon){
 
-
-
   if ((event->type == GDK_BUTTON_PRESS) && (event->button == 1)  && (lastclick < event->time)){
-lastclick = event->time + 1000;
-
-     RunFile(Icon);
-     static int x;
-     return true;
+    lastclick = event->time + 1000;
+    RunFile(Icon);
+ //   static int x;
+    return true;
     }
 
   if ((event->type == GDK_BUTTON_PRESS) && (event->button == 3)){
-    Gtk::Menu::MenuList& menulist = m_Menu_Popup.items();
+    //Gtk::Menu::MenuList& menulist = m_Menu_Popup.items();
 
 
-    for( int i=9; i > 0; i--)
+    for( int i=10; i > 0; i--)
       m_Menu_Popup.items().pop_back();
-
+//std::cout << Icon << "\n";
 
         int startAtPos = 0;
     // following is needed so underscores show correctly
-    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Open \"" + underscoreSafe(Icon) + "\"",
+    m_Menu_Popup.items().push_back( Gtk::Menu_Helpers::MenuElem("Open \"" + underscoreSafe(Icon) + "\"",
       sigc::bind<Glib::ustring >(
         sigc::mem_fun(*this, &DaIconModes::RunFile),Icon)));
 
-    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Set Run Action...",
+
+    m_Menu_Popup.items().push_back( Gtk::Menu_Helpers::MenuElem("Open as text ",
+      sigc::bind<Glib::ustring >(
+        sigc::mem_fun(*this, &DaIconModes::RunFileAsText),Icon)));
+
+
+    m_Menu_Popup.items().push_back( Gtk::Menu_Helpers::SeparatorElem());
+
+
+    m_Menu_Popup.items().push_back( Gtk::Menu_Helpers::MenuElem("Set Run Action...",
       sigc::bind<Glib::ustring>(
         sigc::mem_fun(*this, &DaIconModes::SetRunAction), Icon  )));
 
-    menulist.push_back( Gtk::Menu_Helpers::MenuElem("Permissions...",
+    m_Menu_Popup.items().push_back( Gtk::Menu_Helpers::MenuElem("Permissions...",
       sigc::bind<Glib::ustring>(
         sigc::mem_fun(*this, &DaIconModes::SetPermissions), Icon  )));
 
-    menulist.push_back( Gtk::Menu_Helpers::SeparatorElem());
+    m_Menu_Popup.items().push_back( Gtk::Menu_Helpers::SeparatorElem());
+
+    m_Menu_Popup.items().push_back( Gtk::Menu_Helpers::MenuElem("Copy To...",
+      sigc::bind<Glib::ustring>(
+        sigc::mem_fun(*this, &DaIconModes::copy), Icon  )));
 
 
-// this stuff needs tab completion to be usefull.
-    //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Move To..."));
-    //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Copy To..."));
 
-    //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Delete "));
-    //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Link"));
-    //menulist.push_back( Gtk::Menu_Helpers::SeparatorElem());
-    //menulist.push_back( Gtk::Menu_Helpers::MenuElem("Properties... "));
+    m_Menu_Popup.items().push_back( Gtk::Menu_Helpers::MenuElem("Move To...",
+      sigc::bind<Glib::ustring>(
+        sigc::mem_fun(*this, &DaIconModes::move), Icon  )));
+
+    m_Menu_Popup.items().push_back( Gtk::Menu_Helpers::MenuElem("Link To...",
+      sigc::bind<Glib::ustring>(
+        sigc::mem_fun(*this, &DaIconModes::link), Icon  )));
+
+    m_Menu_Popup.items().push_back( Gtk::Menu_Helpers::MenuElem("Delete ",
+      sigc::bind<Glib::ustring>(
+        sigc::mem_fun(*this, &DaIconModes::unlinkify), Icon  )));
+
 
     m_Menu_Popup.popup(event->button, event->time);
     return true;
@@ -623,6 +680,34 @@ void DaIconModes::SetPermissions(const Glib::ustring file) {
   catch(const Gnome::Vfs::exception& ex) {
     parent->set_message("Err... Setting error?");
     }
+  }
+
+/**********************/
+
+void DaIconModes::copy(const Glib::ustring file) {
+  CopyDialogue * cp =  new CopyDialogue( parent->history[position].top() + file );
+  cp->show();
+  }
+
+/**********************/
+
+void DaIconModes::move(const Glib::ustring file) {
+  MoveDialogue * mv =  new MoveDialogue( parent->history[position].top() + file );
+  mv->show();
+  }
+
+/**********************/
+
+void DaIconModes::link(const Glib::ustring file) {
+  LinkDialogue * ln =  new LinkDialogue( parent->history[position].top() + file );
+  ln->show();
+  }
+
+/**********************/
+
+void DaIconModes::unlinkify(const Glib::ustring file) {
+  DeleteDialogue * del =  new DeleteDialogue( parent->history[position].top() + file );
+  del->show();
   }
 
 /**********************/
@@ -841,5 +926,214 @@ else
   redraw();
   }
 
+/**********************/
+
+DaIconModes::CopyDialogue::CopyDialogue(Glib::ustring file){
+   cancelbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-cancel")));
+   okbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-ok")));
+   label = Gtk::manage(new class Gtk::Label(file));
+   entry = Gtk::manage(new class Gtk::Entry());
+
+   okbutton->set_flags(Gtk::CAN_FOCUS);
+   okbutton->set_flags(Gtk::CAN_DEFAULT);
+   cancelbutton->set_flags(Gtk::CAN_FOCUS);
+
+   set_title("Copy File to");
+   set_modal(true);
+
+   get_vbox()->pack_start(*label, Gtk::PACK_SHRINK, 0);
+   get_vbox()->pack_start(*entry, Gtk::PACK_SHRINK, 0);
+
+
+   entry->set_text(file);
+
+   add_action_widget(*cancelbutton, -6);
+   add_action_widget(*okbutton, -5);
+
+
+   okbutton->signal_clicked().connect_notify(sigc::mem_fun(*this, &DaIconModes::CopyDialogue::onOk));
+   cancelbutton->signal_clicked().connect_notify(sigc::mem_fun(*this, &DaIconModes::CopyDialogue::onCancel));
+
+
+   show_all_children();
+  }
+
+/**********************/
+
+void DaIconModes::CopyDialogue::onOk(){
+  std::cout << "copying " << label->get_text()
+    << "\nto " << entry->get_text() << "\n\n";
+
+//rename(label->get_text().c_str(), entry->get_text().c_str());
+    Glib::spawn_command_line_async((Glib::ustring)"cp "  + label->get_text().c_str() + (Glib::ustring)" " + entry->get_text().c_str());
+  hide();
+  }
+
+/**********************/
+
+void DaIconModes::CopyDialogue::onCancel(){
+  hide();
+  }
+
+/**********************/
+
+DaIconModes::CopyDialogue::~CopyDialogue(){}
+
+/**********************/
+/**********************/
+
+DaIconModes::MoveDialogue::MoveDialogue(Glib::ustring file){
+   cancelbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-cancel")));
+   okbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-ok")));
+   label = Gtk::manage(new class Gtk::Label(file));
+   entry = Gtk::manage(new class Gtk::Entry());
+
+   okbutton->set_flags(Gtk::CAN_FOCUS);
+   okbutton->set_flags(Gtk::CAN_DEFAULT);
+   cancelbutton->set_flags(Gtk::CAN_FOCUS);
+
+   set_title("Move File to");
+   set_modal(true);
+
+   get_vbox()->pack_start(*label, Gtk::PACK_SHRINK, 0);
+   get_vbox()->pack_start(*entry, Gtk::PACK_SHRINK, 0);
+
+
+   entry->set_text(file);
+
+   add_action_widget(*cancelbutton, -6);
+   add_action_widget(*okbutton, -5);
+
+
+   okbutton->signal_clicked().connect_notify(sigc::mem_fun(*this, &DaIconModes::MoveDialogue::onOk));
+   cancelbutton->signal_clicked().connect_notify(sigc::mem_fun(*this, &DaIconModes::MoveDialogue::onCancel));
+
+
+   show_all_children();
+  }
+
+/**********************/
+
+void DaIconModes::MoveDialogue::onOk(){
+  std::cout << "moveing " << label->get_text()
+    << "\nto " << entry->get_text() << "\n\n";
+
+ // rename(label->get_text().c_str(), entry->get_text().c_str());
+
+    Glib::spawn_command_line_async((Glib::ustring)"mv "  + label->get_text().c_str() + (Glib::ustring)" " + entry->get_text().c_str());
+  hide();
+  }
+
+/**********************/
+
+void DaIconModes::MoveDialogue::onCancel(){
+  hide();
+  }
+
+/**********************/
+
+DaIconModes::MoveDialogue::~MoveDialogue(){}
+
+/**********************/
+/**********************/
+
+DaIconModes::LinkDialogue::LinkDialogue(Glib::ustring file){
+   cancelbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-cancel")));
+   okbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-ok")));
+   label = Gtk::manage(new class Gtk::Label(file));
+   entry = Gtk::manage(new class Gtk::Entry());
+
+   okbutton->set_flags(Gtk::CAN_FOCUS);
+   okbutton->set_flags(Gtk::CAN_DEFAULT);
+   cancelbutton->set_flags(Gtk::CAN_FOCUS);
+
+   set_title("Link File to");
+   set_modal(true);
+
+   get_vbox()->pack_start(*label, Gtk::PACK_SHRINK, 0);
+   get_vbox()->pack_start(*entry, Gtk::PACK_SHRINK, 0);
+
+
+   entry->set_text(file);
+
+   add_action_widget(*cancelbutton, -6);
+   add_action_widget(*okbutton, -5);
+
+
+   okbutton->signal_clicked().connect_notify(sigc::mem_fun(*this, &DaIconModes::LinkDialogue::onOk));
+   cancelbutton->signal_clicked().connect_notify(sigc::mem_fun(*this, &DaIconModes::LinkDialogue::onCancel));
+
+
+   show_all_children();
+  }
+
+/**********************/
+
+void DaIconModes::LinkDialogue::onOk(){
+  std::cout << "linking " << label->get_text()
+    << "\nto " << entry->get_text() << "\n\n";
+
+  //symlink(label->get_text().c_str(), entry->get_text().c_str());
+    Glib::spawn_command_line_async((Glib::ustring)"ln -s "  + label->get_text().c_str() + (Glib::ustring)" " + entry->get_text().c_str());
+  hide();
+  }
+
+/**********************/
+
+void DaIconModes::LinkDialogue::onCancel(){
+  hide();
+  }
+
+/**********************/
+
+DaIconModes::LinkDialogue::~LinkDialogue(){}
+
+/**********************/
+/**********************/
+
+DaIconModes::DeleteDialogue::DeleteDialogue(Glib::ustring file){
+   cancelbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-cancel")));
+   okbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-ok")));
+   label = Gtk::manage(new class Gtk::Label(file));
+
+   okbutton->set_flags(Gtk::CAN_FOCUS);
+   okbutton->set_flags(Gtk::CAN_DEFAULT);
+   cancelbutton->set_flags(Gtk::CAN_FOCUS);
+
+   set_title("Delete File");
+   set_modal(true);
+
+   get_vbox()->pack_start(*label, Gtk::PACK_SHRINK, 0);
+
+   add_action_widget(*cancelbutton, -6);
+   add_action_widget(*okbutton, -5);
+
+
+   okbutton->signal_clicked().connect_notify(sigc::mem_fun(*this, &DaIconModes::DeleteDialogue::onOk));
+   cancelbutton->signal_clicked().connect_notify(sigc::mem_fun(*this, &DaIconModes::DeleteDialogue::onCancel));
+
+
+   show_all_children();
+  }
+
+/**********************/
+
+void DaIconModes::DeleteDialogue::onOk(){
+  std::cout << "delete " << label->get_text() << "\n\n";
+
+ // unlink( label->get_text().c_str() );
+    Glib::spawn_command_line_async((Glib::ustring)"rm "  + label->get_text().c_str());
+  hide();
+  }
+
+/**********************/
+
+void DaIconModes::DeleteDialogue::onCancel(){
+  hide();
+  }
+
+/**********************/
+
+DaIconModes::DeleteDialogue::~DeleteDialogue(){}
 
 /**********************/

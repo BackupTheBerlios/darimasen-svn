@@ -14,6 +14,7 @@
 #include "iconmodes.h"
 #include "darimasen.h"
 #include <gtkmm/separator.h>
+#include <unistd.h>
 
 /**********************/
 
@@ -26,16 +27,15 @@ class DaIconModes : public Gtk::EventBox {
     Gtk::Image * image1;
     Gtk::Label * FileName;
     Gtk::Label * FilePermissions ;
-  Gtk::Label * FileSizeInfo;
-    public:
+    Gtk::Label * FileSizeInfo;
+  public:
     Sidecon(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, DaIconModes&);
-~Sidecon(){
-delete image1;
-delete FileName;
-delete FilePermissions;
-delete FileSizeInfo;
-
-}
+    ~Sidecon(){
+      delete image1;
+      delete FileName;
+      delete FilePermissions;
+      delete FileSizeInfo;
+      }
 
     };
 
@@ -103,17 +103,77 @@ delete FileSizeInfo;
     ~SetPermissionsDialogue();
     };
 
+  class CopyDialogue : public Gtk::Dialog {
+    class Gtk::Button * cancelbutton;
+    class Gtk::Button * okbutton;
+    class Gtk::Label * label;
+    class Gtk::Entry * entry;
+    void onOk();
+    void onCancel();
+
+  public:
+    CopyDialogue(Glib::ustring);
+    ~CopyDialogue();
+    };
+//
+  class LinkDialogue : public Gtk::Dialog {
+    class Gtk::Button * cancelbutton;
+    class Gtk::Button * okbutton;
+    class Gtk::Label * label;
+    class Gtk::Entry * entry;
+    void onOk();
+    void onCancel();
+
+  public:
+    LinkDialogue(Glib::ustring);
+    ~LinkDialogue();
+    };
+//
+  class MoveDialogue : public Gtk::Dialog {
+    class Gtk::Button * cancelbutton;
+    class Gtk::Button * okbutton;
+    class Gtk::Label * label;
+    class Gtk::Entry * entry;
+    void onOk();
+    void onCancel();
+
+  public:
+    MoveDialogue(Glib::ustring);
+    ~MoveDialogue();
+    };
+//
+  class DeleteDialogue : public Gtk::Dialog {
+    class Gtk::Button * cancelbutton;
+    class Gtk::Button * okbutton;
+    class Gtk::Label * label;
+    void onOk();
+    void onCancel();
+
+  public:
+    DeleteDialogue(Glib::ustring);
+    ~DeleteDialogue();
+    };
+//
+
   class Darimasen * parent;
 
 
 
   void RunFile(const Glib::ustring);
+  void RunFileAsText(const Glib::ustring);
+
   void SetRunAction(const Glib::ustring);
   void SetPermissions(const Glib::ustring);
+
+  void copy(const Glib::ustring);
+  void move(const Glib::ustring);
+  void link(const Glib::ustring);
+  void unlinkify(const Glib::ustring);
+
   bool on_eventbox_button_press(GdkEventButton*, const Glib::ustring);
   void on_size_allocate(Gtk::Allocation&);
   void redraw();
-  bool addEntry(const Glib::ustring&, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, bool, bool&);
+  bool addEntry(Glib::ustring, Glib::RefPtr<const Gnome::Vfs::FileInfo>, bool, bool);
   Glib::RefPtr<Gdk::Pixbuf> getIcon(Glib::ustring, guint);
 
 
