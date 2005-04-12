@@ -111,8 +111,10 @@ class DaIconModes : public Gtk::EventBox {
     void onOk();
     void onCancel();
 
+    class Darimasen * grandparent;
+
   public:
-    CopyDialogue(Glib::ustring);
+    CopyDialogue(Glib::ustring, Darimasen&);
     ~CopyDialogue();
     };
 //
@@ -124,8 +126,10 @@ class DaIconModes : public Gtk::EventBox {
     void onOk();
     void onCancel();
 
+    class Darimasen * grandparent;
+
   public:
-    LinkDialogue(Glib::ustring);
+    LinkDialogue(Glib::ustring, Darimasen&);
     ~LinkDialogue();
     };
 //
@@ -137,8 +141,10 @@ class DaIconModes : public Gtk::EventBox {
     void onOk();
     void onCancel();
 
+    class Darimasen * grandparent;
+
   public:
-    MoveDialogue(Glib::ustring);
+    MoveDialogue(Glib::ustring, Darimasen&);
     ~MoveDialogue();
     };
 //
@@ -149,8 +155,10 @@ class DaIconModes : public Gtk::EventBox {
     void onOk();
     void onCancel();
 
+    class Darimasen * grandparent;
+
   public:
-    DeleteDialogue(Glib::ustring);
+    DeleteDialogue(Glib::ustring, Darimasen&);
     ~DeleteDialogue();
     };
 //
@@ -183,7 +191,7 @@ class DaIconModes : public Gtk::EventBox {
   Gtk::Menu m_Menu_Popup;
 
 
-  unsigned short iconmode;
+//  unsigned short iconmode;
   guint32 lastclick;
   guint slotsUsed;
   guint IconsHigh;

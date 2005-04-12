@@ -6,7 +6,7 @@ evaluate the " Gtk-CRITICAL **: gtk_widget_event: assertion `WIDGET_REALIZED_FOR
 Full Folder & Icon context menus.
 Keyboard navigation of menus (Alt+1 opens root menu, Alt+2 opens first child, etc)
 
-Move, copy, delete of files
+Move, copy, delete of files needs more checking
 
 move, copy, delete of folder
 move, copy of folder contents

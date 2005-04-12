@@ -25,14 +25,14 @@ lastclick = 0;
   catch(const Gnome::Vfs::exception&){std::cout << "Miscount?\n";}
 
 
-  iconmode = 0;
+ // iconmode = 0;
 
   slotsUsed = 0;
   IconsHigh = 0;
   set_visible_window(false);
   hidden = new int[filesAtPath];
 
-  if(iconmode == 0){
+  if(parent->mode == 0){
     sideconContainer = new Gtk::EventBox*[filesAtPath];
     for(int c = 0; c < filesAtPath; c++){
       sideconContainer[c] = new Gtk::EventBox;
@@ -60,22 +60,20 @@ lastclick = 0;
 DaIconModes::~DaIconModes(){
 
   // cleanup on aisles 1, 2, 3 ... and so on.
-  if(iconmode == 0){
-  for(int c = 0; c < filesAtPath; c++){
-    Gtk::Widget * tmp = sideconContainer[c]->get_child();
-    if (tmp)
-      delete tmp;
-    }
+// there is an issue that this could be deleting while in the wrong mode - yeah.
+  if(parent->mode == 0 ){
+    for(int c = 0; c < filesAtPath; c++){
+      Gtk::Widget * tmp = sideconContainer[c]->get_child();
+      if (tmp)
+        delete tmp;
+        }
 
-  for(int c = 0; c < filesAtPath; c++){
-    delete sideconContainer[c];
-    }
-  delete sideconContainer;
-  delete hidden;
-
-
-  //delete sideconContainer; //well, valgrind --tool=addrcheck said this line was bad.
-}
+    for(int c = 0; c < filesAtPath; c++){
+      delete sideconContainer[c];
+      }
+    delete sideconContainer;
+    delete hidden;
+  }
 }
 /**********************/
 
@@ -91,7 +89,7 @@ bool DaIconModes::addEntry(
 
 hidden[slotsUsed] = (info->get_name().substr(0,1) == ".");
 
-switch(iconmode){
+switch(parent->mode){
 case 0: {
 Sidecon * tempPathS = new Sidecon( parent->history[position].top(), info, *this);
       tempPathS->show();
@@ -480,7 +478,7 @@ bool DaIconModes::on_eventbox_button_press(GdkEventButton* event, const Glib::us
 void DaIconModes::on_size_allocate(Gtk::Allocation& allocation){
 
 
-  if(iconmode == 0){
+  if(parent->mode == 0){
     int oldie = IconsHigh;
     IconsHigh = allocation.get_height() / 58;
   
@@ -492,7 +490,7 @@ redraw(); // if resize is needed
     }
 
 
-  if(iconmode == 1 ){
+  if(parent->mode == 1 ){
    
     Gtk::Widget * tmp = get_child();
 if (!tmp){
@@ -525,7 +523,7 @@ void DaIconModes::redraw(){
               Gtk::FILL, Gtk::FILL, 4, 4);
           sideconContainer[i]->show();
           y_pos++; 
-          if(iconmode == 0){
+          if(parent->mode == 0){
             if ( y_pos + 1 > IconsHigh){
               y_pos = 0;
               x_pos++;
@@ -685,28 +683,28 @@ void DaIconModes::SetPermissions(const Glib::ustring file) {
 /**********************/
 
 void DaIconModes::copy(const Glib::ustring file) {
-  CopyDialogue * cp =  new CopyDialogue( parent->history[position].top() + file );
+  CopyDialogue * cp =  new CopyDialogue( parent->history[position].top() + file , *parent);
   cp->show();
   }
 
 /**********************/
 
 void DaIconModes::move(const Glib::ustring file) {
-  MoveDialogue * mv =  new MoveDialogue( parent->history[position].top() + file );
+  MoveDialogue * mv =  new MoveDialogue( parent->history[position].top() + file , *parent);
   mv->show();
   }
 
 /**********************/
 
 void DaIconModes::link(const Glib::ustring file) {
-  LinkDialogue * ln =  new LinkDialogue( parent->history[position].top() + file );
+  LinkDialogue * ln =  new LinkDialogue( parent->history[position].top() + file , *parent);
   ln->show();
   }
 
 /**********************/
 
 void DaIconModes::unlinkify(const Glib::ustring file) {
-  DeleteDialogue * del =  new DeleteDialogue( parent->history[position].top() + file );
+  DeleteDialogue * del =  new DeleteDialogue( parent->history[position].top() + file , *parent);
   del->show();
   }
 
@@ -928,7 +926,9 @@ else
 
 /**********************/
 
-DaIconModes::CopyDialogue::CopyDialogue(Glib::ustring file){
+DaIconModes::CopyDialogue::CopyDialogue(Glib::ustring file, Darimasen& parent){
+
+grandparent = &parent;
    cancelbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-cancel")));
    okbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-ok")));
    label = Gtk::manage(new class Gtk::Label(file));
@@ -961,11 +961,16 @@ DaIconModes::CopyDialogue::CopyDialogue(Glib::ustring file){
 /**********************/
 
 void DaIconModes::CopyDialogue::onOk(){
-  std::cout << "copying " << label->get_text()
-    << "\nto " << entry->get_text() << "\n\n";
+//  std::cout << "copying " << label->get_text()
+//    << "\nto " << entry->get_text() << "\n\n";
 
 //rename(label->get_text().c_str(), entry->get_text().c_str());
-    Glib::spawn_command_line_async((Glib::ustring)"cp "  + label->get_text().c_str() + (Glib::ustring)" " + entry->get_text().c_str());
+    Glib::spawn_command_line_async((Glib::ustring)"cp \""  + label->get_text().c_str() + (Glib::ustring)"\" \"" + entry->get_text().c_str()+ "\"");
+
+  grandparent->updateView(
+    label->get_text().substr(0, label->get_text().rfind(slash,label->get_text().length())+1),
+    entry->get_text().substr(0, entry->get_text().rfind(slash,entry->get_text().length())+1));
+
   hide();
   }
 
@@ -982,7 +987,9 @@ DaIconModes::CopyDialogue::~CopyDialogue(){}
 /**********************/
 /**********************/
 
-DaIconModes::MoveDialogue::MoveDialogue(Glib::ustring file){
+DaIconModes::MoveDialogue::MoveDialogue(Glib::ustring file, Darimasen& parent){
+
+grandparent = &parent;
    cancelbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-cancel")));
    okbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-ok")));
    label = Gtk::manage(new class Gtk::Label(file));
@@ -1015,12 +1022,17 @@ DaIconModes::MoveDialogue::MoveDialogue(Glib::ustring file){
 /**********************/
 
 void DaIconModes::MoveDialogue::onOk(){
-  std::cout << "moveing " << label->get_text()
-    << "\nto " << entry->get_text() << "\n\n";
+//  std::cout << "moveing " << label->get_text()
+//    << "\nto " << entry->get_text() << "\n\n";
 
  // rename(label->get_text().c_str(), entry->get_text().c_str());
 
-    Glib::spawn_command_line_async((Glib::ustring)"mv "  + label->get_text().c_str() + (Glib::ustring)" " + entry->get_text().c_str());
+    Glib::spawn_command_line_async((Glib::ustring)"mv \""  + label->get_text().c_str() + (Glib::ustring)"\" \"" + entry->get_text().c_str()+ "\"");
+
+  grandparent->updateView(
+    label->get_text().substr(0, label->get_text().rfind(slash,label->get_text().length())+1),
+    entry->get_text().substr(0, entry->get_text().rfind(slash,entry->get_text().length())+1));
+
   hide();
   }
 
@@ -1037,7 +1049,9 @@ DaIconModes::MoveDialogue::~MoveDialogue(){}
 /**********************/
 /**********************/
 
-DaIconModes::LinkDialogue::LinkDialogue(Glib::ustring file){
+DaIconModes::LinkDialogue::LinkDialogue(Glib::ustring file, Darimasen& parent){
+
+grandparent = &parent;
    cancelbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-cancel")));
    okbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-ok")));
    label = Gtk::manage(new class Gtk::Label(file));
@@ -1070,11 +1084,16 @@ DaIconModes::LinkDialogue::LinkDialogue(Glib::ustring file){
 /**********************/
 
 void DaIconModes::LinkDialogue::onOk(){
-  std::cout << "linking " << label->get_text()
-    << "\nto " << entry->get_text() << "\n\n";
+//  std::cout << "linking " << label->get_text()
+ //   << "\nto " << entry->get_text() << "\n\n";
 
   //symlink(label->get_text().c_str(), entry->get_text().c_str());
-    Glib::spawn_command_line_async((Glib::ustring)"ln -s "  + label->get_text().c_str() + (Glib::ustring)" " + entry->get_text().c_str());
+    Glib::spawn_command_line_async((Glib::ustring)"ln -s \""  + label->get_text().c_str() + (Glib::ustring)"\" \"" + entry->get_text().c_str() + "\"");
+
+  grandparent->updateView(
+    label->get_text().substr(0, label->get_text().rfind(slash,label->get_text().length())+1),
+    entry->get_text().substr(0, entry->get_text().rfind(slash,entry->get_text().length())+1));
+
   hide();
   }
 
@@ -1091,7 +1110,9 @@ DaIconModes::LinkDialogue::~LinkDialogue(){}
 /**********************/
 /**********************/
 
-DaIconModes::DeleteDialogue::DeleteDialogue(Glib::ustring file){
+DaIconModes::DeleteDialogue::DeleteDialogue(Glib::ustring file, Darimasen& parent){
+
+grandparent = &parent;
    cancelbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-cancel")));
    okbutton = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-ok")));
    label = Gtk::manage(new class Gtk::Label(file));
@@ -1119,10 +1140,15 @@ DaIconModes::DeleteDialogue::DeleteDialogue(Glib::ustring file){
 /**********************/
 
 void DaIconModes::DeleteDialogue::onOk(){
-  std::cout << "delete " << label->get_text() << "\n\n";
+//  std::cout << "delete " << label->get_text() << "\n\n";
 
  // unlink( label->get_text().c_str() );
-    Glib::spawn_command_line_async((Glib::ustring)"rm "  + label->get_text().c_str());
+  Glib::spawn_command_line_async((Glib::ustring)"rm \""  + label->get_text().c_str() + "\"");
+
+  grandparent->updateView(
+    label->get_text().substr(0, label->get_text().rfind(slash,label->get_text().length())+1),
+    label->get_text().substr(0, label->get_text().rfind(slash,label->get_text().length())+1));
+   //std::cout << label->get_text().substr(0, label->get_text().rfind(slash,label->get_text().length())+1) ;
   hide();
   }
 

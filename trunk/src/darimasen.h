@@ -140,6 +140,8 @@ Gtk::ToolButton * NewTab;
   void fAbout();
   void fShowHidden();
   void fPrintHist();
+  void fChangeIconMode();
+
 
 
   std::vector< class DaIconModes* > IconModeList;
@@ -153,6 +155,8 @@ public:
   Gtk::CheckMenuItem * optShowHidden;
   void set_message(Glib::ustring);
   std::vector< std::stack<Glib::ustring> > history;
+  void updateView(Glib::ustring, Glib::ustring);
+  short mode;
   };
 
 /**********************/

@@ -516,6 +516,9 @@ void Darimasen::removeTab(guint pos){
 Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   set_title("Darimasen");
   set_default_size(500, 330);
+
+  mode = 0;
+
   try{
     set_icon_from_file( (Glib::ustring)DATADIR + (Glib::ustring)"/icons/hicolor/48x48/apps/darimasen.png"  );
   }
@@ -582,10 +585,10 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   BackButton->show();
   
   ChangeIconMode = new Gtk::ToolButton(Gtk::StockID("gtk-convert"));
-  //ChangeIconMode->signal_clicked().connect(sigc::mem_fun(*this, &Darimasen::fChangeIconMode));
+  ChangeIconMode->signal_clicked().connect(sigc::mem_fun(*this, &Darimasen::fChangeIconMode));
   TopBar.append(*ChangeIconMode);
-  ChangeIconMode->set_sensitive(false);
-  //ChangeIconMode->show();
+  //ChangeIconMode->set_sensitive(false);
+  ChangeIconMode->show();
    
   ViewTree = new Gtk::ToggleToolButton(Gtk::StockID("gtk-index"));
   //ViewTree->signal_clicked().connect(sigc::mem_fun(*this, &Darimasen::fViewTree));
@@ -745,4 +748,32 @@ void Darimasen::fPrintHist(){
    Info.pop();
    Info.push(in);
 }
+
+/**********************/
+
+
+// this is called on file operations - since there is more then one tab,
+// all of them should be checked to see if they should be updated.
+void Darimasen::updateView(Glib::ustring sourceDir, Glib::ustring targetDir){
+//  std::cout << sourceDir << "\n" << targetDir << "\n\n";
+
+  for(int i = 0; i < history.size(); i++){
+    if( history[i].top() == sourceDir || history[i].top() == targetDir ){
+      ChangeCurrentPath(history[i].top(),false,false);
+      }
+    }
+}
+
+/**********************/
+
+ void Darimasen::fChangeIconMode(){
+  mode = (mode + 1) % 2; // increment, mod of possibilities.
+  std::cout << "mode = " << mode << "\n"; 
+
+ // for(int i = 0; i < history.size(); i++){
+ //     ChangeCurrentPath(history[i].top(),false,false);
+ //   } 
+
+  }
+
 /**********************/
