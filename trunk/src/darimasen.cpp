@@ -170,7 +170,7 @@ bool Darimasen::DarimasenMenu::DaMenuSelect(
   }
   if ((event->type == GDK_BUTTON_PRESS) && (event->button == 1) ) //left
   {
-  parent->ChangeCurrentPath(path,true,first);
+  parent->ChangeTab(pos,path,true,first);
   return true;
   }
   if ((event->type == GDK_BUTTON_PRESS) && (event->button == 3) ) //right
@@ -462,8 +462,8 @@ else
 /**********************/
 
 // changing directories actually is making a new tab to substitute for the old one.
-void Darimasen::ChangeCurrentPath(Glib::ustring pathin, bool addPath, bool menuOnly){
-  guint nth = Tabber->get_current_page();
+void Darimasen::ChangeTab(guint nth, Glib::ustring pathin, bool addPath, bool menuOnly){
+ // guint nth = Tabber->get_current_page();
 
   if (addPath && !menuOnly){
     if (pathin.substr(pathin.length()-1) != "/")
@@ -722,7 +722,7 @@ for( int i = 0; IconModeList.size() > i; i++)
 void Darimasen::fBack(){
   history[Tabber->get_current_page()].pop();
 
-  ChangeCurrentPath(history[Tabber->get_current_page()].top(),false,false);
+  ChangeTab(Tabber->get_current_page(),history[Tabber->get_current_page()].top(),false,false);
 
   if (history[Tabber->get_current_page()].size() == 1)
     BackButton->set_sensitive(false);
@@ -755,25 +755,31 @@ void Darimasen::fPrintHist(){
 // this is called on file operations - since there is more then one tab,
 // all of them should be checked to see if they should be updated.
 void Darimasen::updateView(Glib::ustring sourceDir, Glib::ustring targetDir){
-//  std::cout << sourceDir << "\n" << targetDir << "\n\n";
+
+  guint tmp = Tabber->get_current_page();
 
   for(int i = 0; i < history.size(); i++){
     if( history[i].top() == sourceDir || history[i].top() == targetDir ){
-      ChangeCurrentPath(history[i].top(),false,false);
+      ChangeTab(i,history[i].top(),false,false);
       }
     }
+
+  Tabber->set_current_page (tmp);
 }
 
 /**********************/
 
- void Darimasen::fChangeIconMode(){
+void Darimasen::fChangeIconMode(){
   mode = (mode + 1) % 2; // increment, mod of possibilities.
   std::cout << "mode = " << mode << "\n"; 
 
- // for(int i = 0; i < history.size(); i++){
- //     ChangeCurrentPath(history[i].top(),false,false);
- //   } 
+  guint tmp = Tabber->get_current_page();
 
+  for(int i = 0; i < history.size(); i++){
+      ChangeTab(i, history[i].top(),false,false);
+      } 
+
+  Tabber->set_current_page (tmp);
   }
 
 /**********************/

@@ -133,7 +133,7 @@ Gtk::ToolButton * NewTab;
   void newTab(Glib::ustring);
   void tabberSwitched(GtkNotebookPage*, guint);
   void addTab(guint);
-  void ChangeCurrentPath(Glib::ustring path, bool, bool);
+  void ChangeTab(guint, Glib::ustring, bool, bool);
   void removeTab(guint);
   void fBack();
   void fQuit();
