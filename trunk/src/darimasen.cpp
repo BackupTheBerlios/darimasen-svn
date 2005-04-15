@@ -770,7 +770,7 @@ void Darimasen::updateView(Glib::ustring sourceDir, Glib::ustring targetDir){
 /**********************/
 
 void Darimasen::fChangeIconMode(){
-  mode = (mode + 1) % 2; // increment, mod of possibilities.
+  mode = (mode + 1) % 3; // increment, mod of possibilities.
   std::cout << "mode = " << mode << "\n"; 
 
   guint tmp = Tabber->get_current_page();

@@ -11,6 +11,10 @@ DaIconModes::DaIconModes(guint pos, Darimasen& myParent) {
   position = pos;
   mode = parent->mode;
 
+
+//Glib::RefPtr<Gnome::Vfs::VolumeMonitor> nx = Gnome::Vfs::VolumeMonitor::create();
+//Glib::ListHandle< Glib::RefPtr<Gnome::Vfs::Volume> > ny = nx->get_mounted_volumes();
+
   lastclick = 0;
   filesAtPath = 0;
   try{
@@ -33,8 +37,7 @@ DaIconModes::DaIconModes(guint pos, Darimasen& myParent) {
 
   switch(mode){
     case 0: // sidecon
-      //slotsUsed = 0;
-      //IconsHigh = 0;
+
       sideconContainer = new Gtk::EventBox*[filesAtPath];
       for(int c = 0; c < filesAtPath; c++){
         sideconContainer[c] = new Gtk::EventBox;
@@ -62,15 +65,39 @@ DaIconModes::DaIconModes(guint pos, Darimasen& myParent) {
         }
 
       try {
-          // Call on_visit() for each file.
-          // The options specify that we want to visit the files at input_uri_string,
-          // get the mime type the fast way and protect against loops.
         Gnome::Vfs::DirectoryHandle::visit( parent->history[position].top(), 
            Gnome::Vfs::FILE_INFO_GET_MIME_TYPE |
            Gnome::Vfs::FILE_INFO_FORCE_FAST_MIME_TYPE |
            Gnome::Vfs::FILE_INFO_FOLLOW_LINKS ,
            Gnome::Vfs::DIRECTORY_VISIT_LOOPCHECK,
            sigc::mem_fun(*this,&DaIconModes::addEntry));
+        }
+      catch(const Gnome::Vfs::exception& ex){/*this is required.*/}
+      break;
+
+    case 2: // Detail view
+      try {
+        m_Columns = new ModelColumns;
+        add(m_TreeView);
+        m_TreeView.show();
+        m_refTreeModel = Gtk::ListStore::create(*m_Columns);
+        m_TreeView.set_model(m_refTreeModel);
+
+
+        Gnome::Vfs::DirectoryHandle::visit( parent->history[position].top(), 
+           Gnome::Vfs::FILE_INFO_GET_MIME_TYPE |
+           Gnome::Vfs::FILE_INFO_FORCE_FAST_MIME_TYPE |
+           Gnome::Vfs::FILE_INFO_FOLLOW_LINKS ,
+           Gnome::Vfs::DIRECTORY_VISIT_LOOPCHECK,
+           sigc::mem_fun(*this,&DaIconModes::addEntry));
+
+
+
+  m_TreeView.append_column("Name", m_Columns->m_col_name);
+  m_TreeView.append_column("Size", m_Columns->m_col_size);
+  m_TreeView.append_column("Mime Type", m_Columns->m_col_mime);
+
+           m_TreeView.show_all_children();
         }
       catch(const Gnome::Vfs::exception& ex){/*this is required.*/}
       break;
@@ -98,6 +125,11 @@ DaIconModes::~DaIconModes(){
       delete sideconContainer;
       delete hidden;
     }
+  if(mode == 3){
+    delete m_Columns;
+    delete hidden;
+    }
+
   }
 
 /**********************/
@@ -109,32 +141,60 @@ bool DaIconModes::addEntry(
     bool recurse) {
 
   if (info->get_type() != Gnome::Vfs::FILE_TYPE_DIRECTORY){
-      sideconContainer[slotsUsed]->set_visible_window(false);
-      sideconContainer[slotsUsed]->show();
+    hidden[slotsUsed] = (info->get_name().substr(0,1) == ".");
 
-hidden[slotsUsed] = (info->get_name().substr(0,1) == ".");
+    switch(mode){
 
-switch(mode){
-  case 0: 
-    Sidecon * tempPathS = new Sidecon( parent->history[position].top(), info, *this);
-    tempPathS->show();
-    sideconContainer[slotsUsed]->add(*tempPathS);
-    break;
-case 1: 
-    ListIcon * tempPathL = new ListIcon( parent->history[position].top(), info, *this);
-    tempPathL->show();
-    sideconContainer[slotsUsed]->add(*tempPathL);
-    break;
-break;
-}
+      case 0: 
+        sideconContainer[slotsUsed]->set_visible_window(false);
+        sideconContainer[slotsUsed]->show();
+        Sidecon * tempPathS = new Sidecon( parent->history[position].top(), info, *this);
+        tempPathS->show();
+        sideconContainer[slotsUsed]->add(*tempPathS);
+        sideconContainer[slotsUsed]->set_events(Gdk::BUTTON_RELEASE_MASK);
+        sideconContainer[slotsUsed]->signal_button_press_event().connect(
+          sigc::bind<Glib::ustring >(
+            sigc::mem_fun(*this, &DaIconModes::on_eventbox_button_press), info->get_name() ));
+        break;
+
+      case 1: 
+        sideconContainer[slotsUsed]->set_visible_window(false);
+        sideconContainer[slotsUsed]->show();
+        ListIcon * tempPathL = new ListIcon( parent->history[position].top(), info, *this);
+        tempPathL->show();
+        sideconContainer[slotsUsed]->add(*tempPathL);
+        sideconContainer[slotsUsed]->set_events(Gdk::BUTTON_RELEASE_MASK);
+        sideconContainer[slotsUsed]->signal_button_press_event().connect(
+          sigc::bind<Glib::ustring >(
+            sigc::mem_fun(*this, &DaIconModes::on_eventbox_button_press), info->get_name() ));
+        break;
+
+      case 2: 
+        Gtk::TreeModel::Row row = *(m_refTreeModel->append());
+
+        row[m_Columns->m_col_name] = info->get_name();
 
 
-      sideconContainer[slotsUsed]->set_events(Gdk::BUTTON_RELEASE_MASK);
-      sideconContainer[slotsUsed]->signal_button_press_event().connect(
-        sigc::bind<Glib::ustring >(
-          sigc::mem_fun(*this, &DaIconModes::on_eventbox_button_press), info->get_name() ));
-      slotsUsed++;
+        if( info->get_size() < 1024 ){
+          row[m_Columns->m_col_size] = (" " + int2ustr(info->get_size()) + " B");
+          }
+        else if ( info->get_size() < (1024 * 1024) ){
+          row[m_Columns->m_col_size] = (" " + int2ustr(info->get_size() / 1024) + " KB");
+          }
+        else{
+          row[m_Columns->m_col_size] = (" " + int2ustr(info->get_size() / 1048576) + " MB");
+          }
+
+        row[m_Columns->m_col_mime] = info->get_mime_type();
+
+
+        break;
+
+      }
+
+    slotsUsed++;
     }
+
   recurse = false; 
   return true;
   }
@@ -152,7 +212,8 @@ DaIconModes::Sidecon::Sidecon(
   if (info->get_name().length() > 25){
     int last = info->get_name().rfind(".");
     if (last != -1){
-      FileName = new class Gtk::Label( " " + info->get_name().substr(0, 20) + ".." + info->get_name().substr(last) );
+      FileName = new class Gtk::Label(
+        " " + info->get_name().substr(0, 20) + ".." + info->get_name().substr(last) );
       }
     else {
       FileName = new class Gtk::Label( " " + info->get_name().substr(0,22) + "..." );
@@ -163,8 +224,6 @@ DaIconModes::Sidecon::Sidecon(
   }
                    
 
-
-//  FileName = new class Gtk::Label(shortnom);
   FileName->set_alignment(0,0.5);
   FileName->set_justify(Gtk::JUSTIFY_LEFT);
   attach(*FileName, 1, 2, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
@@ -237,80 +296,11 @@ DaIconModes::ListIcon::~ListIcon(){
   delete FileName;
   }
 
-
-/**********************
-
-DaIconModes::Detail::Detail(
-    Glib::ustring path,
-    const Glib::RefPtr<const Gnome::Vfs::FileInfo>& info){
-
-
-  filePath = path + info->get_name();
-
-  Glib::ustring shortnom = info->get_name();
-
-  if (info->get_name().length() > 25){
-
-    int last = info->get_name().rfind(".");
-
-    if (last != -1){ //fix for the missing extension bug
-      Glib::ustring ext = info->get_name().substr(last);  
-      shortnom = info->get_name().substr(0, 20) + ".." + ext;
-      }
-    else {
-      shortnom = info->get_name().substr(0,22) + "...";
-      }
-
-    }
-                   
-  resize(1,3);
-  //Gtk::Image * image1 = Gtk::manage(new class Gtk::Image(Gtk::StockID("gtk-dnd"), Gtk::IconSize(6)));
-  Gtk::Label * FileName = Gtk::manage(new class Gtk::Label(shortnom));
-
-  // this is where the mimetype info goes
-  mimeInfo = info->get_mime_type();
-  Gtk::Label * FilePermissions = Gtk::manage( new class Gtk::Label(mimeInfo));
-
-  // THis is simply file size - images an video could have more. Much later.
-  Glib::ustring size;
-  if( info->get_size() < 1024 ){
-    size = int2ustr(info->get_size()) + " B";
-    }
-  else if ( info->get_size() < (1024 * 1024) ){
-    size = int2ustr(info->get_size() / 1024) + " KB";
-    }
-  else{
-    size = int2ustr(info->get_size() / 1024 / 1024) + " MB";  std::cout << "2\n";
-    }
-
-  // ideally, this label would be 80% size of standard
-  Gtk::Label * FileSizeInfo = Gtk::manage( new class Gtk::Label(size));
-
-  FileName->set_alignment(0,0.5);
-  FileName->set_justify(Gtk::JUSTIFY_LEFT);
-  FilePermissions->set_alignment(0,0.5);
-  FilePermissions->set_justify(Gtk::JUSTIFY_LEFT);
-  FileSizeInfo->set_alignment(0,0.5);
-  FileSizeInfo->set_justify(Gtk::JUSTIFY_LEFT);
-  
-  //attach(*image1, 0, 1, 0, 3, Gtk::FILL, Gtk::FILL, 0, 0);
-  attach(*FileName, 0, 1, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-  attach(*FilePermissions, 1, 2, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-  attach(*FileSizeInfo, 2, 3, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-  
-  //image1->show();
-  FileName->show();
-  FilePermissions->show();
-  FileSizeInfo->show();
-  show();  }
-
 /**********************/
-
 
 void DaIconModes::RunFile(const Glib::ustring file) {
 
   // see if the file is executable 
-
   Gnome::Vfs::Handle read_handle;
   Gnome::Vfs::Handle exec_handle;
   Glib::RefPtr<const Gnome::Vfs::FileInfo> info;
@@ -540,33 +530,24 @@ bool DaIconModes::on_eventbox_button_press(GdkEventButton* event, const Glib::us
 
 void DaIconModes::on_size_allocate(Gtk::Allocation& allocation){
 
-int oldie = IconsHigh;
-switch (mode){
-  case 0:
-    IconsHigh = allocation.get_height() / 57;
-    if ( oldie != IconsHigh ){
-      redraw(); // if resize is needed
-      }
-    break;
-  case 1:
-    IconsHigh = allocation.get_height() / 25;
-    if ( oldie != IconsHigh ){
-      redraw(); // if resize is needed
-      }
-    break;
-  }
+  int oldie = IconsHigh;
+  switch (mode){
+    case 0:
+      IconsHigh = allocation.get_height() / 57;
+      if ( oldie != IconsHigh ){
+        redraw(); // if resize is needed
+        }
+      break;
 
-/*  case 2:
-    Gtk::Widget * tmp = get_child();
-    if (!tmp){
-      IconsHigh = 0;
-      if (tmp)
-        delete tmp; // actually DisposableTable, but segfaulted otherwise
-      Gtk::Label * x = new Gtk::Label("Details go here.");
-      x->show();
-      add(*x);
-      }
-}*/
+    case 1:
+      IconsHigh = allocation.get_height() / 25;
+      if ( oldie != IconsHigh ){
+        redraw(); // if resize is needed
+        }
+      break;
+
+    }
+
   Gtk::EventBox::on_size_allocate(allocation);
   }
 
