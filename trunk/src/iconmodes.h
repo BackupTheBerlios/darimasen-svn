@@ -15,21 +15,10 @@
 #include "darimasen.h"
 #include <gtkmm/separator.h>
 #include <unistd.h>
-#include <gtkmm/liststore.h>
 
 /**********************/
 
 class DaIconModes : public Gtk::EventBox {
-
-  class ListIcon : public Gtk::Table {
-    Glib::ustring filePath, mimeInfo;
-    DaIconModes * parent;
-    Gtk::Image * image1;
-    Gtk::Label * FileName;
-  public:
-    ListIcon(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, DaIconModes&);
-    ~ ListIcon();
-    };
 
 
   class Sidecon : public Gtk::Table {
@@ -41,27 +30,22 @@ class DaIconModes : public Gtk::EventBox {
     Gtk::Label * FileSizeInfo;
   public:
     Sidecon(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>&, DaIconModes&);
-    ~Sidecon();
-    };
-
-  class ModelColumns : public Gtk::TreeModel::ColumnRecord {
-  public:
-
-    ModelColumns(){
-     // add(m_col_icon);
-      add(m_col_name);
-      add(m_col_size);
-      add(m_col_mime);
+    ~Sidecon(){
+      delete image1;
+      delete FileName;
+      delete FilePermissions;
+      delete FileSizeInfo;
       }
 
-    //Gtk::TreeModelColumn<Gdk::Pixmap* > m_col_icon;
-    Gtk::TreeModelColumn<Glib::ustring> m_col_name;
-    Gtk::TreeModelColumn<Glib::ustring> m_col_size;
-    Gtk::TreeModelColumn<Glib::ustring> m_col_mime;
-  };
+    };
 
-
-
+/*
+  class Detail : public Gtk::Table {
+    public:
+    Glib::ustring filePath, mimeInfo;
+    Detail(Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>& );
+    };
+*/
 
   class ChooseActionDialogue : public Gtk::Dialog {
     Gtk::RadioButton::Group _RadioBGroup_radiobutton1;
@@ -204,10 +188,6 @@ class DaIconModes : public Gtk::EventBox {
 
   Gtk::EventBox ** sideconContainer;
 
-  ModelColumns * m_Columns;
-  Gtk::TreeView m_TreeView;
-  Glib::RefPtr<Gtk::ListStore> m_refTreeModel;
-
   Gtk::Menu m_Menu_Popup;
 
 
@@ -218,7 +198,7 @@ class DaIconModes : public Gtk::EventBox {
   guint position;
   guint filesAtPath;
   int * hidden;
-  short mode;
+
 
 public:
   ~DaIconModes();

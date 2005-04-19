@@ -56,44 +56,13 @@
 #include <gtkmm/layout.h>
 
 #include "iconmodes.h"
-
+#include "damenu.h"
 
 /**********************/
 
 class Darimasen : public Gtk::Window {
-  class DarimasenMenu : public Gtk::MenuBar {
 
-    class DirectoryMenu : public Gtk::Menu {
-    public:
-      DirectoryMenu(DarimasenMenu& in ){
-        Gtk::Menu::Menu();
-        }
-      };
-
-
-    Darimasen * parent;
-
-    int depth;
-
-    DirectoryMenu ** MenuArray; 
-    Gtk::MenuItem ** MenuItemArray;
-    Glib::ustring * menulevel;
-
-    void MenuForPath(int, Glib::ustring , Glib::ustring); //extension
-    bool SpecialMenuForPath(GdkEventButton* , int, Glib::ustring  , Glib::ustring); //extension
-
-    Glib::ustring CountSubdir(const Glib::ustring&);
-    bool DaMenuSelect(GdkEventButton*, const Glib::ustring,guint,bool);
-    void selection_reset(guint, Glib::ustring);
- 
-    bool * needsRebuild;
-  public:
-
-    void signal_deactivate ();
-    DarimasenMenu(const Glib::ustring&, Darimasen&, guint);
-    ~DarimasenMenu();
-
-    };
+  //class DarimasenMenu;
 
   class aboutDa : public Gtk::Window {
     Gtk::Image * image1;
@@ -109,7 +78,7 @@ class Darimasen : public Gtk::Window {
   Gtk::VBox VerticalOrganizer;
   Gtk::Toolbar TopBar;
   Gtk::ToolItem * DarimasenMenuContainer;
-  DarimasenMenu * DaMenu;
+  class DarimasenMenu * DaMenu;
   Gtk::HPaned HideTreePane;
   Gtk::ScrolledWindow TreeScroller;
   Gtk::Notebook * Tabber;
@@ -130,10 +99,10 @@ Gtk::ToolButton * NewTab;
 
 
   void fNewTab();
-  void newTab(Glib::ustring);
+
   void tabberSwitched(GtkNotebookPage*, guint);
   void addTab(guint);
-  void ChangeTab(guint, Glib::ustring, bool, bool);
+
   void removeTab(guint);
   void fBack();
   void fQuit();
@@ -146,17 +115,22 @@ Gtk::ToolButton * NewTab;
 
   std::vector< class DaIconModes* > IconModeList;
   std::vector< class Gtk::EventBox* > EventBoxList;
-
+  short mode;
 
 public:
 
   Darimasen(std::vector<Glib::ustring>);
   ~Darimasen();
+
+  short get_mode(){return mode;}
+
   Gtk::CheckMenuItem * optShowHidden;
   void set_message(Glib::ustring);
   std::vector< std::stack<Glib::ustring> > history;
   void updateView(Glib::ustring, Glib::ustring);
-  short mode;
+
+  void newTab(Glib::ustring);
+  void ChangeCurrentPath(Glib::ustring path, bool, bool);
   };
 
 /**********************/

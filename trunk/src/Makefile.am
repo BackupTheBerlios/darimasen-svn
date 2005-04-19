@@ -7,6 +7,7 @@ darimasen_SOURCES = \
 	supplimental.cpp \
         firsttime.cpp \
 	main.cpp \
+	damenu.cpp \
         prefix.c
 
 noinst_HEADERS = \
@@ -15,6 +16,7 @@ noinst_HEADERS = \
 	supplimental.h \
         firsttime.h \
 	main.h \
+	damenu.h \
         prefix.h
 
 
