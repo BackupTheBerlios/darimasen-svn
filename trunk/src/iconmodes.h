@@ -16,25 +16,48 @@ class DaIconModes : public Gtk::EventBox {
   class proto_icon {
     Glib::ustring path;    DaIconModes * parent;
 
+    void run();
+
   public:
 
     Glib::RefPtr<Gdk::Pixbuf> icon;
-    Gtk::Label * FileName;
-    Gtk::Label * ShortFileName;
-    Gtk::Label * FileMime;
-    Gtk::Label * FileSize;
+    Glib::ustring FileName;
+    Glib::ustring ShortFileName;
+    Glib::ustring FileMime;
+    Glib::ustring FileSize;
     bool hidden;
+
+    bool select(GdkEventButton*);
 
     proto_icon(DaIconModes&, Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>);
     ~proto_icon();
     };
 
-  class Sidecon : public Gtk::Table {
+  class Sidecon : public Gtk::EventBox {
+    proto_icon * source;
+
+    Gtk::Table * Arrange;
+    Gtk::Image * Icon;
+    Gtk::Label * ShortName;
+    Gtk::Label * Mime;
+    Gtk::Label * Size;
+
   public:
     Sidecon(proto_icon&);
+    ~Sidecon();
   };
 
+  class Listview : public Gtk::EventBox {
+    proto_icon * source;
 
+    Gtk::Table * Arrange;
+    Gtk::Image * Icon;
+    Gtk::Label * Name;
+
+  public:
+    Listview(proto_icon&);
+    ~Listview();
+  };
 
   Glib::RefPtr<Gdk::Pixbuf> getIcon(Glib::ustring);
   bool addEntry(Glib::ustring, Glib::RefPtr<const Gnome::Vfs::FileInfo>, bool, bool);

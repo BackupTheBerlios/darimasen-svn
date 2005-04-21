@@ -432,14 +432,11 @@ void Darimasen::updateView(Glib::ustring sourceDir, Glib::ustring targetDir){
 
 /**********************/
 
- void Darimasen::fChangeIconMode(){
+void Darimasen::fChangeIconMode(){
   mode = (mode + 1) % 2; // increment, mod of possibilities.
-  std::cout << "mode = " << mode << "\n"; 
-
- // for(int i = 0; i < history.size(); i++){
- //     ChangeCurrentPath(history[i].top(),false,false);
- //   } 
-
+  for(int i = 0; i < history.size(); i++){
+      ChangeCurrentPath(history[i].top(),false,false);
+    } 
   }
 
 /**********************/
