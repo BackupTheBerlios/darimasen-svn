@@ -221,6 +221,7 @@ DarimasenMenu::DarimasenMenu(const Glib::ustring & path, Darimasen& Myparent, gu
   depth = 0;
 
   Glib::ustring shortpath = path; //home = getenv("HOME");
+
   parent = &Myparent;
   
   int startPos = 0 , i = 0;

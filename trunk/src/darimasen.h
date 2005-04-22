@@ -57,6 +57,8 @@
 
 #include "iconmodes.h"
 #include "damenu.h"
+#include <gtkmm/menutoolbutton.h>
+
 
 /**********************/
 
@@ -91,12 +93,12 @@ class Darimasen : public Gtk::Window {
   Gtk::SeparatorToolItem * sep1;
   Gtk::SeparatorToolItem * sep2;
 
-  Gtk::ToolButton * BackButton;
+Gtk::MenuToolButton * BackButton;
 Gtk::ToolButton * ChangeIconMode;
  Gtk::ToggleToolButton * ViewTree;
 Gtk::ToolButton * NewTab;
 
-
+  Gtk::Menu * history_menu;
 
   void fNewTab();
 
@@ -117,6 +119,8 @@ Gtk::ToolButton * NewTab;
   std::vector< class Gtk::EventBox* > EventBoxList;
   short mode;
 
+  std::vector< std::vector<Glib::ustring> > history;
+
 public:
 
   Darimasen(std::vector<Glib::ustring>);
@@ -126,11 +130,22 @@ public:
 
   Gtk::CheckMenuItem * optShowHidden;
   void set_message(Glib::ustring);
-  std::vector< std::stack<Glib::ustring> > history;
+  //std::vector< std::stack<Glib::ustring> > history;
   void updateView(Glib::ustring, Glib::ustring);
 
   void newTab(Glib::ustring);
   void ChangeCurrentPath(Glib::ustring path, bool, bool);
+  
+
+
+  Glib::ustring get_history(gint, gint = 0);
+
+  void set_history(gint, Glib::ustring);
+
+  bool del_history(gint);
+
+  void buildHistoryMenu(gint);
+  void fHistoryMenu(gint, gint);
   };
 
 /**********************/

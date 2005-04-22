@@ -264,7 +264,7 @@ bool DaIconModes::addEntry(
     bool recurse) {
 
   if (info->get_type() != Gnome::Vfs::FILE_TYPE_DIRECTORY){
-    iconlist[slotsUsed++] = new proto_icon(*this, parent->history[position].top(), info);
+    iconlist[slotsUsed++] = new proto_icon(*this, parent->get_history(position), info);
     }
 
   return true;
@@ -347,7 +347,7 @@ DaIconModes::DaIconModes(
 
   try{  //count up the files in the directory. 
     Gnome::Vfs::DirectoryHandle handle;
-    handle.open((parent->history[position].top()), Gnome::Vfs::FILE_INFO_DEFAULT);
+    handle.open(parent->get_history(position), Gnome::Vfs::FILE_INFO_DEFAULT);
     bool file_exists = true;
     while(file_exists){
       handle.read_next(file_exists);
@@ -363,7 +363,7 @@ DaIconModes::DaIconModes(
   IconsHigh = 0;
   try { // make all those files into proto_icons
     Gnome::Vfs::DirectoryHandle::visit(
-      parent->history[position].top(),
+      parent->get_history(position),
       Gnome::Vfs::FILE_INFO_GET_MIME_TYPE |
       Gnome::Vfs::FILE_INFO_FORCE_FAST_MIME_TYPE |
       Gnome::Vfs::FILE_INFO_FOLLOW_LINKS ,

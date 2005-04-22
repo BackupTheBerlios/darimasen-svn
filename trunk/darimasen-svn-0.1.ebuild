@@ -19,7 +19,7 @@ IUSE=""
 SLOT="0"
 
 DEPEND=">=dev-libs/libsigc++-2.0.3
-        >=dev-cpp/gtkmm-2.4.11
+        >=dev-cpp/gtkmm-2.6.1
         >=dev-cpp/gnome-vfsmm-2.6.0
         x11-themes/gnome-icon-theme"
 RDEPEND="!x11-misc/darimasen"

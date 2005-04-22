@@ -10,10 +10,7 @@
 
 // anything prefixed with 'f' corresponds with a button. 'nuff said.
 void Darimasen::fNewTab(){
-    std::stack<Glib::ustring> empty;
-    history.push_back(empty);
-
-  history[history.size() -1].push(getenv("HOME") + slash);
+  set_history(Tabber->get_n_pages(), getenv("HOME") + slash);
   addTab(Tabber->get_n_pages());
 
   }
@@ -22,13 +19,11 @@ void Darimasen::fNewTab(){
 
 // ...and there was already one with an f.
 void Darimasen::newTab(Glib::ustring newpath){
-    std::stack<Glib::ustring> empty;
-    history.push_back(empty);
 
-if( newpath.substr(newpath.length() - 1) != slash)
-   newpath += slash;
+  if( newpath.substr(newpath.length() - 1) != slash)
+    newpath += slash;
 
-  history[history.size() -1].push(newpath);
+  set_history(Tabber->get_n_pages(), newpath);
   addTab(Tabber->get_n_pages());
 
   }
@@ -42,7 +37,7 @@ void Darimasen::tabberSwitched(GtkNotebookPage* sig, guint n){
   DarimasenMenuContainer->remove();
 
  
-  DaMenu = Gtk::manage(new class DarimasenMenu(history[n].top(), *this, n));
+  DaMenu = Gtk::manage(new class DarimasenMenu(get_history(n), *this, n));
   DarimasenMenuContainer->add(*DaMenu);
 
   if (history[n].size() == 1)
@@ -50,6 +45,7 @@ void Darimasen::tabberSwitched(GtkNotebookPage* sig, guint n){
   else
     BackButton->set_sensitive(true);
 
+  buildHistoryMenu(n);
   }
 
 /**********************/
@@ -69,12 +65,13 @@ void Darimasen::addTab(guint pos){
 
   Gtk::Label * tabNum;
 
-if ( history[pos].top() == slash)
-tabNum = Gtk::manage(new Gtk::Label(slash + " "));
-else if ( history[pos].top() == (getenv("HOME") + slash))
-tabNum = Gtk::manage(new Gtk::Label("~ "));
-else
-  tabNum = Gtk::manage(new Gtk::Label(history[pos].top().substr(history[pos].top().rfind(slash,history[pos].top().length() - 2  ) + 1)));
+  if ( get_history(pos) == slash)
+    tabNum = Gtk::manage(new Gtk::Label(slash + " "));
+  else if ( get_history(pos) == (getenv("HOME") + slash))
+    tabNum = Gtk::manage(new Gtk::Label("~ "));
+  else
+    tabNum = Gtk::manage(new Gtk::Label(
+      get_history(pos).substr(get_history(pos).rfind(slash,get_history(pos).length() - 2  ) + 1)));
 
 
   Gtk::HBox * arrangement= Gtk::manage(new Gtk::HBox()) ;
@@ -133,9 +130,9 @@ void Darimasen::ChangeCurrentPath(Glib::ustring pathin, bool addPath, bool menuO
 
   if (addPath && !menuOnly){
     if (pathin.substr(pathin.length()-1) != "/")
-      history[nth].push(pathin + slash);
+      set_history(nth, pathin + slash);
     else
-      history[nth].push(pathin); 
+      set_history(nth, pathin);
     }
 
   if  (!menuOnly){
@@ -150,7 +147,7 @@ void Darimasen::ChangeCurrentPath(Glib::ustring pathin, bool addPath, bool menuO
     }
 
   DarimasenMenuContainer->remove();
-  DaMenu = Gtk::manage( new DarimasenMenu( history[nth].top(), *this,nth));
+  DaMenu = Gtk::manage( new DarimasenMenu( get_history(nth), *this,nth));
   DarimasenMenuContainer->add(*DaMenu);
 
   }
@@ -167,8 +164,9 @@ void Darimasen::removeTab(guint pos){
 
   guint tmp = pos;
   Tabber->remove_page(pos);
+  
+  while ( del_history(pos) > 0 );
 
-  history.erase(history.begin()+pos,history.begin()+pos+1 );
   delete IconModeList[pos];
   IconModeList.erase(IconModeList.begin()+pos,IconModeList.begin()+pos+1 );
 
@@ -244,7 +242,7 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   TopBar.append(*sep2);
   sep2->show();
 
-  BackButton = new Gtk::ToolButton(Gtk::StockID("gtk-go-back"));
+  BackButton = new Gtk::MenuToolButton(Gtk::StockID("gtk-go-back"));
   BackButton->signal_clicked().connect(sigc::mem_fun(*this, &Darimasen::fBack));
   TopBar.append(*BackButton);
   BackButton->set_sensitive(false);
@@ -286,10 +284,7 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   show();
 
   for(int i = 0; i < paths.size(); i++){
-    std::stack<Glib::ustring> empty;
-    history.push_back(empty);
-    history[i].push(paths[i]);
-
+    set_history(i,paths[i]);
     addTab(Tabber->get_n_pages());
     }
  }
@@ -373,7 +368,7 @@ void Darimasen::fShowHidden(){
 
 
   DarimasenMenuContainer->remove();
-  DaMenu = Gtk::manage( new DarimasenMenu(history[Tabber->get_current_page()].top(), *this, Tabber->get_current_page()));
+  DaMenu = Gtk::manage( new DarimasenMenu(get_history(Tabber->get_current_page()), *this, Tabber->get_current_page()));
   DarimasenMenuContainer->add(*DaMenu);
 
 
@@ -386,9 +381,9 @@ for( int i = 0; IconModeList.size() > i; i++)
 /**********************/
 
 void Darimasen::fBack(){
-  history[Tabber->get_current_page()].pop();
+  del_history(Tabber->get_current_page());
 
-  ChangeCurrentPath(history[Tabber->get_current_page()].top(),false,false);
+  ChangeCurrentPath(get_history(Tabber->get_current_page()),false,false);
 
   if (history[Tabber->get_current_page()].size() == 1)
     BackButton->set_sensitive(false);
@@ -397,13 +392,13 @@ void Darimasen::fBack(){
 /**********************/
 
 void Darimasen::fPrintHist(){
-  std::vector< std::stack<Glib::ustring> > destroy = history;
+  std::vector< std::vector<Glib::ustring> > destroy = history;
   
   std::cout << "There are " << destroy.size() << " tabs here.\n";
   
   for (int i = 0; i < destroy.size(); i++){
-    for (; destroy[i].size() > 0; destroy[i].pop()){
-      std::cout << "history[" << i << "].top() = " << destroy[i].top() << "\n";
+    for (; destroy[i].size() > 0; destroy[i].pop_back()){
+      std::cout << "history[" << i << "].end() = " << destroy[i][destroy[i].size() -1] << "\n";
       }
     }
   }
@@ -424,8 +419,8 @@ void Darimasen::updateView(Glib::ustring sourceDir, Glib::ustring targetDir){
 //  std::cout << sourceDir << "\n" << targetDir << "\n\n";
 
   for(int i = 0; i < history.size(); i++){
-    if( history[i].top() == sourceDir || history[i].top() == targetDir ){
-      ChangeCurrentPath(history[i].top(),false,false);
+    if( get_history(i) == sourceDir || get_history(i) == targetDir ){
+      ChangeCurrentPath(get_history(i),false,false);
       }
     }
 }
@@ -435,8 +430,68 @@ void Darimasen::updateView(Glib::ustring sourceDir, Glib::ustring targetDir){
 void Darimasen::fChangeIconMode(){
   mode = (mode + 1) % 2; // increment, mod of possibilities.
   for(int i = 0; i < history.size(); i++){
-      ChangeCurrentPath(history[i].top(),false,false);
+      ChangeCurrentPath(get_history(i),false,false);
     } 
+  }
+
+/**********************/
+
+Glib::ustring Darimasen::get_history(gint tab, gint level){
+  return history[tab][history[tab].size()-level-1];
+  }
+
+/**********************/
+
+void Darimasen::set_history(gint tab, Glib::ustring path){
+  if (Tabber->get_n_pages() == tab){
+    std::vector<Glib::ustring> empty;
+    history.push_back(empty);
+    history[tab].push_back(path);
+    }
+  else {
+    history[tab].push_back(path);
+    }
+  }
+
+/**********************/
+
+bool Darimasen::del_history(gint tab){
+  history[tab].pop_back();
+  if ( history[tab].size() == 0 ){
+    history.erase(history.begin()+tab,history.begin()+tab+1 );
+    return 0;
+    }
+  return history[tab].size();
+  }
+
+/**********************/
+
+void Darimasen::buildHistoryMenu(gint tab){
+  if(BackButton->get_menu() != NULL){
+    delete BackButton->get_menu();
+    }
+
+  history_menu = new Gtk::Menu();
+  
+  BackButton->set_menu(*history_menu);
+
+  for( int i = 1; i <  history[tab].size(); i++){
+    history_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(
+      get_history(tab,i),sigc::bind<gint,gint>(sigc::mem_fun(*this, &Darimasen::fHistoryMenu), tab, i)));
+    }
+
+  }
+
+/**********************/
+
+void Darimasen::fHistoryMenu(gint tab, gint iterations){
+  for(int i = 0; i < iterations; i++)
+    del_history(Tabber->get_current_page());
+
+  ChangeCurrentPath(get_history(Tabber->get_current_page()),false,false);
+
+  if (history[Tabber->get_current_page()].size() == 1)
+    BackButton->set_sensitive(false);
   }
 
 /**********************/

@@ -17,7 +17,7 @@ AM_BINRELOC
 
 AC_LANG_CPLUSPLUS
 
-PKG_CHECK_MODULES([PKG], [sigc++-2.0 >= 2.0 gtkmm-2.4 >= 2.4.0 gnome-vfsmm-2.6 >= 2.5.0])
+PKG_CHECK_MODULES([PKG], [sigc++-2.0 >= 2.0 gtkmm-2.4 >= 2.6.0 gnome-vfsmm-2.6 >= 2.5.0])
 AC_SUBST([PKG_CFLAGS])
 AC_SUBST([PKG_LIBS])
 
