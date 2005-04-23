@@ -8,6 +8,9 @@
 #include <libgnomevfsmm.h>
 #include <gtkmm/table.h>
 #include <gdkmm/pixbuf.h>
+#include <gtkmm/entry.h>
+#include <gtkmm/messagedialog.h>
+#include <gtkmm/separator.h>
 
 /**********************/
 
@@ -16,7 +19,10 @@ class DaIconModes : public Gtk::EventBox {
   class proto_icon {
     Glib::ustring path;    DaIconModes * parent;
 
-    void run();
+    void run() const;
+    void runAsText() const;
+    void SetRunAction() const;
+    void SetPermissions() const;
 
   public:
 
@@ -59,6 +65,63 @@ class DaIconModes : public Gtk::EventBox {
     ~Listview();
   };
 
+  class ChooseActionDialogue : public Gtk::Dialog {
+    Gtk::RadioButton::Group _RadioBGroup_radiobutton1;
+    Gtk::Button *cancelbutton1, *okbutton1;
+    Gtk::RadioButton *radiobutton1, *radiobutton2;
+    Gtk::Label       * label1;
+    Gtk::Entry       * entry1;
+    Gtk::VBox        * vbox1;
+    Glib::ustring mime;
+    void cancled();
+    void modifyAction();
+    void GetCurrentAction(Glib::ustring);
+
+    public:
+
+    ChooseActionDialogue(Glib::ustring);
+    ~ChooseActionDialogue(){
+
+      delete cancelbutton1;
+      delete okbutton1;
+      delete label1;
+      delete entry1;
+      delete vbox1;
+      delete radiobutton1;
+      delete radiobutton2;
+      }
+    };
+
+
+  class SetPermissionsDialogue : public Gtk::Dialog {
+    Glib::ustring fullPath;
+    Gtk::Button * button1;
+    Gtk::Button * button2;
+
+    Gtk::CheckButton * u_r, * u_w, * u_x;
+    Gtk::CheckButton * g_r, * g_w, * g_x;
+    Gtk::CheckButton * o_r, * o_w, * o_x;
+    
+    Gnome::Vfs::Handle info;
+
+    Gtk::VSeparator * extra;
+    Gtk::CheckButton * sticky, * GID, * UID;
+
+    Gtk::Label * user, * group, * others;
+    Gtk::Label * read, * write, * run;
+    Gtk::Label * explaination;
+
+    Gtk::Table * layout;
+    void cancled();
+    void apply(Glib::RefPtr<Gnome::Vfs::FileInfo>);
+
+    public:
+
+    SetPermissionsDialogue(Glib::RefPtr<Gnome::Vfs::FileInfo> , Glib::ustring);
+    ~SetPermissionsDialogue();
+    };
+
+
   Glib::RefPtr<Gdk::Pixbuf> getIcon(Glib::ustring);
   bool addEntry(Glib::ustring, Glib::RefPtr<const Gnome::Vfs::FileInfo>, bool, bool);
   void on_size_allocate(Gtk::Allocation&);
@@ -72,6 +135,7 @@ class DaIconModes : public Gtk::EventBox {
   proto_icon ** iconlist;
   guint slotsUsed;
   guint IconsHigh;
+  Gtk::Menu prompt;
 
 
 public:

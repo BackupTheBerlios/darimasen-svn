@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
   Gtk::Main::run(*window); 
 
 delete window;
+  //Gnome::Vfs::shutdown();
   return 0;
 }
 

@@ -4,10 +4,10 @@
 
 /**********************/
 
-void DaIconModes::proto_icon::run(){
-  std::cout << path << FileName << "\n";
+void DaIconModes::proto_icon::run() const{
 
-Glib::RefPtr<const Gnome::Vfs::FileInfo> info;
+  // double checking the file exists
+  Glib::RefPtr<const Gnome::Vfs::FileInfo> info;
   Gnome::Vfs::Handle read_handle;
   try{
     read_handle.open( path + FileName, Gnome::Vfs::OPEN_READ);
@@ -25,7 +25,8 @@ Glib::RefPtr<const Gnome::Vfs::FileInfo> info;
   Glib::ustring exec = getenv("HOME");
   try{
     exec += "/Choices/MIME-types/";
-    exec += FileMime.replace(FileMime.find("/"),1,"_");
+    Glib::ustring tmp = FileMime;
+    exec += tmp.replace(tmp.find("/"),1,"_");
     exec_handle.open(exec, Gnome::Vfs::OPEN_READ);
 
     exec += " \""  + path + FileName + "\"";
@@ -67,26 +68,102 @@ Glib::RefPtr<const Gnome::Vfs::FileInfo> info;
 
 
   //Handle the response:
-  switch(dialog.run())
-  {
+  switch(dialog.run()) {
     case(Gtk::RESPONSE_OK):
-    {
-      Glib::ustring exec = getenv("HOME");
-      exec += "/Choices/MIME-types/text";
-      exec += " \""  + path + FileName + "\"";
-      Glib::spawn_command_line_async(exec);
-    parent->parent->set_message(exec + " was opened as a text file.");
-      return;
+      {
+        Glib::ustring exec = getenv("HOME");
+        exec += "/Choices/MIME-types/text";
+        exec += " \""  + path + FileName + "\"";
+        Glib::spawn_command_line_async(exec);
+        parent->parent->set_message(exec + " was opened as a text file.");
+        return;
+        }
       break;
-    }
     default:
-    {
-    parent->parent->set_message("Well, that was usefull.");
+      parent->parent->set_message("Well, that was usefull.");
       break;
     }
   }
 
-  
+/**********************/
+
+void DaIconModes::proto_icon::runAsText() const{
+
+  // double checking the file exists
+  Glib::RefPtr<const Gnome::Vfs::FileInfo> info;
+  Gnome::Vfs::Handle read_handle;
+  try{
+    read_handle.open( path + FileName, Gnome::Vfs::OPEN_READ);
+    info = read_handle.get_file_info(
+      Gnome::Vfs::FILE_INFO_GET_MIME_TYPE |
+      Gnome::Vfs::FILE_INFO_FORCE_SLOW_MIME_TYPE );
+    }
+  catch(const Gnome::Vfs::exception& ex){
+    std::cout << "Does not exist.\n";
+    return;
+    }
+
+  Gnome::Vfs::Handle exec_handle;
+  Glib::ustring exec = getenv("HOME");
+  try{
+    exec += "/Choices/MIME-types/text";
+    exec_handle.open(exec, Gnome::Vfs::OPEN_READ);
+    exec += " \""  + path + FileName + "\"";
+    Glib::spawn_command_line_async(exec);
+
+    parent->parent->set_message(exec + " was run.");
+    return;
+    }
+  catch(const Gnome::Vfs::exception& ex){}
+  }
+
+/**********************/
+
+void DaIconModes::proto_icon::SetRunAction() const{
+
+  Gnome::Vfs::Handle read_handle;
+  Glib::RefPtr<const Gnome::Vfs::FileInfo> info;
+  Glib::ustring exec_subtype;
+  Glib::ustring exec_mimetype;
+
+  try {
+    read_handle.open( path + FileName, Gnome::Vfs::OPEN_READ);
+    info = read_handle.get_file_info(
+        Gnome::Vfs::FILE_INFO_GET_MIME_TYPE |
+        Gnome::Vfs::FILE_INFO_FORCE_SLOW_MIME_TYPE );
+
+    exec_subtype  = info->get_mime_type();
+    exec_subtype  = exec_subtype.replace( exec_subtype.find("/"), 1, "_" );
+    exec_mimetype = exec_subtype.substr( 0, exec_subtype.rfind("_") );
+
+    ChooseActionDialogue * chooseAction;
+    chooseAction = new ChooseActionDialogue(exec_subtype);
+    chooseAction->show();
+    }
+  catch(const Gnome::Vfs::exception& ex) {
+    parent->parent->set_message("Err... Setting error?");
+    }
+  }
+
+/**********************/
+
+void DaIconModes::proto_icon::SetPermissions() const{
+
+
+  Gnome::Vfs::Handle read_handle;
+  Glib::RefPtr<Gnome::Vfs::FileInfo> info;
+
+  try {
+    read_handle.open( path + FileName, Gnome::Vfs::OPEN_READ);
+    info = read_handle.get_file_info(Gnome::Vfs::FILE_INFO_GET_ACCESS_RIGHTS);
+
+    SetPermissionsDialogue * setPermissions;
+    setPermissions = new SetPermissionsDialogue(info,path);
+    setPermissions->show();
+    }
+  catch(const Gnome::Vfs::exception& ex) {
+    parent->parent->set_message("Err... Setting error?");
+    }
   }
 
 /**********************/
@@ -98,6 +175,34 @@ bool DaIconModes::proto_icon::select(GdkEventButton* event){
     run();
     return true;
     }
+  if ((event->type == GDK_BUTTON_PRESS) && (event->button == 3)){
+
+    for( int i=5; i > 0; i--)
+      parent->prompt.items().pop_back();
+
+    parent->prompt.items().push_back(
+      Gtk::Menu_Helpers::MenuElem("Open \"" + FileName + "\"",
+        sigc::mem_fun(*this,&DaIconModes::proto_icon::run)));
+
+    parent->prompt.items().push_back(
+      Gtk::Menu_Helpers::MenuElem("Open as text ",
+        sigc::mem_fun(*this, &DaIconModes::proto_icon::runAsText)));
+
+    parent->prompt.items().push_back(
+      Gtk::Menu_Helpers::SeparatorElem());
+
+    parent->prompt.items().push_back(
+      Gtk::Menu_Helpers::MenuElem("Set Run Action...",
+        sigc::mem_fun(*this, &DaIconModes::proto_icon::SetRunAction)));
+
+    parent->prompt.items().push_back(
+      Gtk::Menu_Helpers::MenuElem("Permissions...",
+        sigc::mem_fun(*this, &DaIconModes::proto_icon::SetPermissions)));
+
+
+    parent->prompt.popup(event->button, event->time);
+    }
+
 
 
   }
@@ -210,6 +315,287 @@ DaIconModes::Listview::Listview(proto_icon & in){
 DaIconModes::Listview::~Listview(){
 
   }
+
+/**********************/
+
+DaIconModes::ChooseActionDialogue::ChooseActionDialogue(Glib::ustring mimeType){
+
+  mime = mimeType;
+  cancelbutton1 = new class Gtk::Button(Gtk::StockID("gtk-close"));
+  okbutton1 = new class Gtk::Button(Gtk::StockID("gtk-apply"));
+  label1 = new class Gtk::Label("Enter a Shell command:");
+  entry1 = new class Gtk::Entry();
+  vbox1  = new class Gtk::VBox(false, 0);
+
+
+  radiobutton1 = new class Gtk::RadioButton(_RadioBGroup_radiobutton1, 
+    "Set Action For \"" + mimeType.substr(0, mimeType.find("_")) + "\"" );
+
+  radiobutton1->signal_clicked().connect(
+      sigc::bind<Glib::ustring >( sigc::mem_fun(*this,
+      &DaIconModes::ChooseActionDialogue::GetCurrentAction), mimeType.substr(0, mimeType.find("_")) ));
+
+  radiobutton2 = new class Gtk::RadioButton(_RadioBGroup_radiobutton1,
+      "Set Action For \"" + mimeType + "\"")  ;
+
+  radiobutton2->signal_clicked().connect(
+      sigc::bind<Glib::ustring >( sigc::mem_fun(*this,
+      &DaIconModes::ChooseActionDialogue::GetCurrentAction), mimeType ));
+
+  cancelbutton1->set_flags(Gtk::CAN_FOCUS);
+  cancelbutton1->set_flags(Gtk::CAN_DEFAULT);
+  cancelbutton1->signal_clicked().connect(
+      sigc::mem_fun(*this, &DaIconModes::ChooseActionDialogue::cancled) );
+  okbutton1->set_flags(Gtk::CAN_FOCUS);
+  okbutton1->set_flags(Gtk::CAN_DEFAULT);
+  okbutton1->signal_clicked().connect(
+      sigc::mem_fun(*this, &DaIconModes::ChooseActionDialogue::modifyAction) );
+  get_action_area()->property_layout_style().set_value(Gtk::BUTTONBOX_END);
+  radiobutton1->set_flags(Gtk::CAN_FOCUS);
+  radiobutton1->set_mode(true);
+  radiobutton1->set_active(false);
+  radiobutton2->set_flags(Gtk::CAN_FOCUS);
+  radiobutton2->set_mode(true);
+  radiobutton2->set_active(true);
+  label1->set_padding(2,4);
+  label1->set_justify(Gtk::JUSTIFY_LEFT);
+  entry1->set_flags(Gtk::CAN_FOCUS);
+  entry1->set_has_frame(true);
+  vbox1->pack_start(*radiobutton1, Gtk::PACK_SHRINK, 0);
+  vbox1->pack_start(*radiobutton2, Gtk::PACK_SHRINK, 0);
+  vbox1->pack_start(*label1, Gtk::PACK_SHRINK, 0);
+  vbox1->pack_start(*entry1, Gtk::PACK_SHRINK, 0);
+  get_vbox()->set_homogeneous(false);
+  get_vbox()->set_spacing(5);
+  get_vbox()->set_border_width(6);
+  get_vbox()->pack_start(*vbox1);
+  set_border_width(6);
+  set_title("Set Run Action");
+  set_modal(true);
+  property_window_position().set_value(Gtk::WIN_POS_CENTER_ON_PARENT);
+  set_resizable(true);
+  property_destroy_with_parent().set_value(false);
+  set_has_separator(false);
+  add_action_widget(*cancelbutton1, Gtk::RESPONSE_CANCEL);
+  add_action_widget(*okbutton1, Gtk::RESPONSE_OK);
+  set_default_response(Gtk::RESPONSE_OK);
+
+  show_all_children();
+  }
+
+/**********************/
+
+void DaIconModes::ChooseActionDialogue::GetCurrentAction(Glib::ustring mimeType){
+
+  Glib::ustring contents, exec1 = getenv("HOME");
+  exec1 += (Glib::ustring)("/Choices/MIME-types/");
+  exec1 += mimeType;
+
+  try {
+    contents = Glib::file_get_contents(exec1);
+    contents = contents.substr(contents.find("exec ") + 5);
+    contents = contents.substr(0,contents.find("\n"));
+    }
+  catch(const Glib::Error) {
+    contents = "* \"$@\"" ;
+    }
+  entry1->set_text(contents);
+}
+
+/**********************/
+
+void DaIconModes::ChooseActionDialogue::cancled(){
+  hide();
+  return;
+  }
+
+/**********************/
+
+void DaIconModes::ChooseActionDialogue::modifyAction(){
+
+  if ( entry1->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
+    Glib::ustring command = "#! /bin/sh\nexec ";
+    command += entry1->get_text();
+    command += "\n";
+
+    try {
+      Glib::ustring exec1 = getenv("HOME");
+      exec1 += (Glib::ustring)("/Choices/MIME-types/");
+      if(radiobutton2->get_active()) exec1 += mime;
+      if(radiobutton1->get_active())exec1 += mime.substr(0, mime.find("_"));
+      Gnome::Vfs::Handle write_handle;
+
+      // Now write the data we read out to the output uri
+      write_handle.create(exec1, Gnome::Vfs::OPEN_WRITE, false, 0755);
+      write_handle.seek(Gnome::Vfs::SEEK_POS_START, 0);
+      GnomeVFSFileSize bytes_written = write_handle.write(command.data(), command.size());
+      }
+    catch(const Gnome::Vfs::exception) {
+  //  parent->set_message("Couldn't write new definition.");
+      hide();
+      return;
+      }
+    }
+  hide();
+  return;
+  }
+
+/**********************/
+
+DaIconModes::SetPermissionsDialogue::SetPermissionsDialogue(
+    Glib::RefPtr<Gnome::Vfs::FileInfo> info, Glib::ustring path){
+fullPath = path;
+  set_title("Set file permissions");
+  set_modal(true);
+
+   read = new class Gtk::Label("R");
+   write = new class Gtk::Label("W");
+   run = new class Gtk::Label("X");
+   user = new class Gtk::Label("User");
+   group = new class Gtk::Label("Group");
+   others = new class Gtk::Label("Everybody");
+
+   explaination = new class Gtk::Label("for \""+ info->get_name() + "\"...");
+
+   layout = new class Gtk::Table(5, 6, false);
+
+   u_r = new class Gtk::CheckButton("");
+   if((info->get_permissions() & Gnome::Vfs::PERM_USER_READ) != 0)  u_r->set_active(true);
+   u_w = new class Gtk::CheckButton("");
+   if((info->get_permissions() & Gnome::Vfs::PERM_USER_WRITE) != 0)  u_w->set_active(true);
+   u_x = new class Gtk::CheckButton("");
+   if((info->get_permissions() & Gnome::Vfs::PERM_USER_EXEC) != 0)  u_x->set_active(true);
+   g_r = new class Gtk::CheckButton("");
+   if((info->get_permissions() & Gnome::Vfs::PERM_GROUP_READ) != 0)  g_r->set_active(true);
+   g_w = new class Gtk::CheckButton("");
+   if((info->get_permissions() & Gnome::Vfs::PERM_GROUP_WRITE) != 0)  g_w->set_active(true);
+   g_x = new class Gtk::CheckButton("");
+   if((info->get_permissions() & Gnome::Vfs::PERM_GROUP_EXEC) != 0)  g_x->set_active(true);
+   o_r = new class Gtk::CheckButton("");
+   if((info->get_permissions() & Gnome::Vfs::PERM_OTHER_READ) != 0)  o_r->set_active(true);
+   o_w = new class Gtk::CheckButton("");
+   if((info->get_permissions() & Gnome::Vfs::PERM_OTHER_WRITE) != 0)  o_w->set_active(true);
+   o_x = new class Gtk::CheckButton("");
+   if((info->get_permissions() & Gnome::Vfs::PERM_OTHER_EXEC) != 0)  o_x->set_active(true);
+
+   extra = new  Gtk::VSeparator;
+
+   sticky = new class Gtk::CheckButton("Sticky");
+   if((info->get_permissions() & Gnome::Vfs::PERM_STICKY) != 0)  sticky->set_active(true);
+   GID = new class Gtk::CheckButton("Group ID");
+   if((info->get_permissions() & Gnome::Vfs::PERM_SGID) != 0)  GID->set_active(true);
+   UID = new class Gtk::CheckButton("User ID");
+   if((info->get_permissions() & Gnome::Vfs::PERM_SUID) != 0)  UID->set_active(true);
+
+   layout->attach(*u_r, 1, 2, 2, 3, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*u_w, 2, 3, 2, 3, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*u_x, 3, 4, 2, 3, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*g_r, 1, 2, 3, 4, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*g_w, 2, 3, 3, 4, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*g_x, 3, 4, 3, 4, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*o_r, 1, 2, 4, 5, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*o_w, 2, 3, 4, 5, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*o_x, 3, 4, 4, 5, Gtk::FILL, Gtk::FILL, 0, 0);
+
+   layout->attach(*extra,4,5,1,5, Gtk::FILL | Gtk::EXPAND, Gtk::FILL, 10, 0);
+
+   layout->attach(*sticky, 5, 6, 2, 3, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*GID, 5, 6, 3, 4, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*UID, 5, 6, 4, 5, Gtk::FILL, Gtk::FILL, 0, 0);
+
+   layout->attach(*read, 1, 2, 1, 2, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*write, 2, 3, 1, 2, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*run, 3, 4, 1, 2, Gtk::FILL, Gtk::FILL, 0, 0);
+   layout->attach(*user, 0, 1, 2, 3, Gtk::FILL , Gtk::FILL, 0, 0);
+   layout->attach(*group, 0, 1, 3, 4, Gtk::FILL , Gtk::FILL, 0, 0);
+   layout->attach(*others, 0, 1, 4, 5, Gtk::FILL , Gtk::FILL, 0, 0);
+   layout->attach(*explaination, 0, 6, 0, 1, Gtk::FILL | Gtk::EXPAND, Gtk::FILL, 10, 0);
+
+
+  get_vbox()->pack_start(*layout);
+  button1 = new class Gtk::Button(Gtk::StockID("gtk-cancel"));
+  button1->signal_clicked().connect(
+      sigc::mem_fun(*this, &DaIconModes::SetPermissionsDialogue::cancled) );
+
+
+  button2 = new class Gtk::Button(Gtk::StockID("gtk-apply"));
+  button2->signal_clicked().connect(
+    sigc::bind<Glib::RefPtr<Gnome::Vfs::FileInfo> >(
+      sigc::mem_fun(*this, &DaIconModes::SetPermissionsDialogue::apply), info ));
+
+
+  get_action_area()->property_layout_style().set_value(Gtk::BUTTONBOX_END);
+  add_action_widget(*button1, -6);
+  add_action_widget(*button2, -10);
+
+  set_modal(true);
+  show_all_children();
+  show();
+  }
+
+/**********************/
+
+void DaIconModes::SetPermissionsDialogue::cancled(){
+  hide();
+  }
+
+/**********************/
+
+void DaIconModes::SetPermissionsDialogue::apply(Glib::RefPtr<Gnome::Vfs::FileInfo> info){
+
+  // *nix and *BSD only, blah blah blah.
+  int permissions = 0;
+
+
+
+  if(UID->get_active()) permissions += 2048;
+  if(GID->get_active()) permissions += 1024;
+  if(sticky->get_active()) permissions += 512;
+
+  if(u_r->get_active()) permissions += 256;
+  if(u_w->get_active()) permissions += 128;
+  if(u_x->get_active()) permissions += 64;
+
+  if(g_r->get_active()) permissions += 32;
+  if(g_w->get_active()) permissions += 16;
+  if(g_x->get_active()) permissions += 8;
+
+  if(o_r->get_active()) permissions += 4;
+  if(o_w->get_active()) permissions += 2;
+  if(o_x->get_active()) permissions += 1;
+
+  chmod((fullPath + info->get_name()).c_str(), permissions);
+
+  hide();
+  }
+
+/**********************/
+
+DaIconModes::SetPermissionsDialogue::~SetPermissionsDialogue(){
+      delete read;
+      delete write;
+      delete run;
+      delete user;
+      delete group;
+      delete others;
+      delete explaination;
+      delete layout;
+      delete u_r;
+      delete u_w;
+      delete u_x;
+      delete g_r;
+      delete g_w;
+      delete g_x;
+      delete o_r;
+      delete o_w;
+      delete o_x;
+      delete extra;
+      delete sticky;
+      delete GID;
+      delete UID;
+      delete button1;
+      delete button2;
+      }
 
 /**********************/
 
