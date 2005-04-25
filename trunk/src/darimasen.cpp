@@ -112,14 +112,14 @@ void Darimasen::addTab(guint pos){
     EventBoxList[pos] = MainEventBox;
     }
 
-  Gtk::ScrolledWindow * MainScroller = Gtk::manage(new Gtk::ScrolledWindow);
-  MainScroller->show();
-  MainScroller->set_shadow_type(Gtk::SHADOW_NONE);
-  MainScroller->add(*MainEventBox);
+ // Gtk::ScrolledWindow * MainScroller = Gtk::manage(new Gtk::ScrolledWindow);
+ // MainScroller->show();
+ // MainScroller->set_shadow_type(Gtk::SHADOW_NONE);
+ // MainScroller->add(*MainEventBox);
   MainEventBox->add(*foo);
-  MainScroller->set_policy(Gtk::POLICY_ALWAYS, Gtk::POLICY_AUTOMATIC);
+ // MainScroller->set_policy(Gtk::POLICY_ALWAYS, Gtk::POLICY_ALWAYS);
   foo->show();
-  Tabber->insert_page( *MainScroller, *arrangement, pos);
+  Tabber->insert_page( *MainEventBox, *arrangement, pos);
 
   }
 /**********************/

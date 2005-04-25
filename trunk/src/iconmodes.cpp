@@ -2,7 +2,7 @@
 
 #include "iconmodes.h"
 
-/**********************/
+/**********************
 
 void DaIconModes::proto_icon::run() const{
 
@@ -85,7 +85,7 @@ void DaIconModes::proto_icon::run() const{
     }
   }
 
-/**********************/
+/**********************
 
 void DaIconModes::proto_icon::runAsText() const{
 
@@ -117,7 +117,7 @@ void DaIconModes::proto_icon::runAsText() const{
   catch(const Gnome::Vfs::exception& ex){}
   }
 
-/**********************/
+/**********************
 
 void DaIconModes::proto_icon::SetRunAction() const{
 
@@ -145,7 +145,7 @@ void DaIconModes::proto_icon::SetRunAction() const{
     }
   }
 
-/**********************/
+/**********************
 
 void DaIconModes::proto_icon::SetPermissions() const{
 
@@ -166,7 +166,7 @@ void DaIconModes::proto_icon::SetPermissions() const{
     }
   }
 
-/**********************/
+/**********************
 
 bool DaIconModes::proto_icon::select(GdkEventButton* event){
 
@@ -207,7 +207,7 @@ bool DaIconModes::proto_icon::select(GdkEventButton* event){
 
   }
 
-/**********************/
+/**********************
 
 DaIconModes::proto_icon::proto_icon(
       DaIconModes& getParent,
@@ -246,13 +246,13 @@ DaIconModes::proto_icon::proto_icon(
   hidden = (getFile->get_name().substr(0,1) == ".");
   };
 
-/**********************/
+/**********************
 
 DaIconModes::proto_icon::~proto_icon(){
   std::cout << "proto deleted";
   }
 
-/**********************/
+/**********************
 
 DaIconModes::Sidecon::Sidecon(proto_icon & in){
 
@@ -282,13 +282,13 @@ DaIconModes::Sidecon::Sidecon(proto_icon & in){
 
   }
 
-/**********************/
+/**********************
 
 DaIconModes::Sidecon::~Sidecon(){
 
   }
 
-/**********************/
+/**********************
 
 DaIconModes::Listview::Listview(proto_icon & in){
 
@@ -310,7 +310,7 @@ DaIconModes::Listview::Listview(proto_icon & in){
 
   }
 
-/**********************/
+/**********************
 
 DaIconModes::Listview::~Listview(){
 
@@ -649,8 +649,37 @@ bool DaIconModes::addEntry(
     bool recursing_will_loop,
     bool recurse) {
 
-  if (info->get_type() != Gnome::Vfs::FILE_TYPE_DIRECTORY){
-    iconlist[slotsUsed++] = new proto_icon(*this, parent->get_history(position), info);
+if (info->get_type() != Gnome::Vfs::FILE_TYPE_DIRECTORY){
+filesAtPath++;
+    Gtk::TreeModel::Row row = *(m_refTreeModel->append());
+
+    row[iconlist->m_col_icon] = getIcon(info->get_mime_type());
+
+    row[iconlist->m_col_name] = info->get_name();
+
+
+	Glib::ustring sized;
+        if( info->get_size() < 1024 ){
+          sized = (int2ustr(info->get_size()) + " B");
+          }
+        else if ( info->get_size() < (1024 * 1024) ){
+          sized = (int2ustr(info->get_size() / 1024) + " KB");
+          }
+        else{
+          sized = (int2ustr(info->get_size() / 1048576) + " MB");
+          }
+          row[iconlist->m_col_size] = sized;
+
+
+        row[iconlist->m_col_mime] = info->get_mime_type();
+
+
+
+        row[iconlist->m_col_all] = (info->get_name().substr(0,25) + "\n" + sized + "\n" + info->get_mime_type().substr(0,25));
+
+
+//  if (info->get_type() != Gnome::Vfs::FILE_TYPE_DIRECTORY){
+//    iconlist[slotsUsed++] = new proto_icon(*this, parent->get_history(position), info);
     }
 
   return true;
@@ -662,23 +691,28 @@ void DaIconModes::on_size_allocate(Gtk::Allocation& allocation){
 
   int oldie = IconsHigh;
 
-  switch(mode){
-    case 0:
-      IconsHigh = allocation.get_height() / 57;
-      break;
-    case 1:
-      IconsHigh = allocation.get_height() / 25;
-      break;
-    }
-  if ( oldie != IconsHigh ){ //if resize is needed
-    Gtk::Widget * tmp = get_child();
-    redraw();
-    }
+ // switch(mode){
+   // case 0:
+    //  IconsHigh = 
+      m_TreeView.set_columns(filesAtPath/(allocation.get_height() / 60) + 1);
 
+//std::cout << allocation.get_height() << "\n"
+//<< allocation.get_height() /57 << "\n"
+// << filesAtPath/(allocation.get_height() / 57) << "\n";
+   //   break;
+  //  case 1:
+    //  IconsHigh = allocation.get_height() / 25;
+    //  break;
+    //}
+ // if ( oldie != IconsHigh ){ //if resize is needed
+ //   Gtk::Widget * tmp = get_child();
+  // // redraw();
+  //  }
+//*/
   Gtk::EventBox::on_size_allocate(allocation);
   }
 
-/**********************/
+/**********************
 
 void DaIconModes::redraw(){
   Gtk::Widget * tmp = get_child();
@@ -699,7 +733,7 @@ void DaIconModes::redraw(){
           Sidecon * tmpSidecon = new Sidecon(*iconlist[i]);
           DisposableTable->attach( *tmpSidecon, x_pos, x_pos+1, y_pos, y_pos+1,Gtk::FILL, Gtk::FILL, 4, 4);
           break;
-        case 1:
+        case 1:/*
           Listview * tmpListview = new Listview(*iconlist[i]);
           DisposableTable->attach( *tmpListview, x_pos, x_pos+1, y_pos, y_pos+1,Gtk::FILL, Gtk::FILL, 4, 4);
           break;
@@ -729,8 +763,10 @@ DaIconModes::DaIconModes(
   mode = parent->get_mode();
 
   lastclick = 0;  // a double-click detector. 
-  filesAtPath = 0; // count files in directory
 
+
+  filesAtPath = 0; // count files in directory
+/*
   try{  //count up the files in the directory. 
     Gnome::Vfs::DirectoryHandle handle;
     handle.open(parent->get_history(position), Gnome::Vfs::FILE_INFO_DEFAULT);
@@ -740,13 +776,38 @@ DaIconModes::DaIconModes(
       filesAtPath++;
       }
     }
-  catch(const Gnome::Vfs::exception&){}
+  catch(const Gnome::Vfs::exception&){} */
 
   set_visible_window(false);
 
-  iconlist = new proto_icon*[filesAtPath];
-  slotsUsed = 0;
-  IconsHigh = 0;
+
+ Gtk::ScrolledWindow * MainScroller = Gtk::manage(new Gtk::ScrolledWindow);
+ MainScroller->show();
+ //MainScroller->set_shadow_type(Gtk::SHADOW_NONE);
+// MainScroller->add(*MainEventBox);
+ // MainEventBox->add(*foo);
+  MainScroller->set_policy(Gtk::POLICY_ALWAYS, Gtk::POLICY_NEVER);
+add(*MainScroller);
+        iconlist = new proto_icon;
+        MainScroller->add(m_TreeView);
+        m_TreeView.show();
+        m_refTreeModel = Gtk::ListStore::create(*iconlist);
+        m_TreeView.set_model(m_refTreeModel);
+   // row[iconlist->m_col_icon] 
+
+//  m_TreeView.append_column("", iconlist->m_col_icon);
+//  m_TreeView.append_column("Name", iconlist->m_col_name);
+//  m_TreeView.append_column("Size", iconlist->m_col_size);
+//  m_TreeView.append_column("Mime Type", iconlist->m_col_mime);
+
+  m_TreeView.set_text_column(iconlist->m_col_all);
+  m_TreeView.set_pixbuf_column(iconlist->m_col_icon);
+  m_TreeView.set_orientation(Gtk::ORIENTATION_HORIZONTAL );
+           m_TreeView.show_all_children();
+
+//  iconlist = new proto_icon*[filesAtPath];
+//  slotsUsed = 0;
+//  IconsHigh = 0;
   try { // make all those files into proto_icons
     Gnome::Vfs::DirectoryHandle::visit(
       parent->get_history(position),
@@ -757,6 +818,8 @@ DaIconModes::DaIconModes(
       sigc::mem_fun(*this,&DaIconModes::addEntry));
     }
   catch(const Gnome::Vfs::exception& ex){}
+
+  m_TreeView.set_item_width( m_TreeView.get_icon_width()+ 235);
 
   }
 
@@ -776,7 +839,7 @@ if (parent->optShowHidden->get_active())
 else
     parent->set_message("Hidden Files are hidden again");
 
-  redraw();
+//  redraw();
   }
 
 /**********************/

@@ -11,11 +11,13 @@
 #include <gtkmm/entry.h>
 #include <gtkmm/messagedialog.h>
 #include <gtkmm/separator.h>
-
+#include <gtkmm/liststore.h>
+#include <gtkmm/iconview.h>
 /**********************/
 
 class DaIconModes : public Gtk::EventBox {
 
+/*
   class proto_icon {
     Glib::ustring path;    DaIconModes * parent;
 
@@ -64,6 +66,27 @@ class DaIconModes : public Gtk::EventBox {
     Listview(proto_icon&);
     ~Listview();
   };
+*/
+
+  class proto_icon : public Gtk::TreeModel::ColumnRecord {
+  public:
+
+    proto_icon(){
+      add(m_col_icon);
+      add(m_col_name);
+      add(m_col_size);
+      add(m_col_mime);
+      add(m_col_all);
+      }
+
+    Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf> > m_col_icon;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_name;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_size;
+    Gtk::TreeModelColumn<Glib::ustring> m_col_mime;
+
+    Gtk::TreeModelColumn<Glib::ustring> m_col_all;
+  };
+
 
   class ChooseActionDialogue : public Gtk::Dialog {
     Gtk::RadioButton::Group _RadioBGroup_radiobutton1;
@@ -98,18 +121,14 @@ class DaIconModes : public Gtk::EventBox {
     Gtk::Button * button1;
     Gtk::Button * button2;
 
-    Gtk::CheckButton * u_r, * u_w, * u_x;
-    Gtk::CheckButton * g_r, * g_w, * g_x;
-    Gtk::CheckButton * o_r, * o_w, * o_x;
+    Gtk::CheckButton * u_r, * u_w, * u_x,* g_r, * g_w, * g_x, * o_r, * o_w, * o_x;
     
     Gnome::Vfs::Handle info;
 
     Gtk::VSeparator * extra;
     Gtk::CheckButton * sticky, * GID, * UID;
 
-    Gtk::Label * user, * group, * others;
-    Gtk::Label * read, * write, * run;
-    Gtk::Label * explaination;
+    Gtk::Label * user, * group, * others, * read, * write, * run, * explaination;
 
     Gtk::Table * layout;
     void cancled();
@@ -132,11 +151,17 @@ class DaIconModes : public Gtk::EventBox {
   guint32 lastclick;
   guint filesAtPath;
   gshort mode;
-  proto_icon ** iconlist;
+
+
+  proto_icon * iconlist;
+
+
   guint slotsUsed;
   guint IconsHigh;
   Gtk::Menu prompt;
-
+ // Gtk::TreeView m_TreeView;
+  Gtk::IconView m_TreeView;
+  Glib::RefPtr<Gtk::ListStore> m_refTreeModel;
 
 public:
   ~DaIconModes();
