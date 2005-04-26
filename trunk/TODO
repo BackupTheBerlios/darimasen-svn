@@ -2,6 +2,8 @@ version 0.0.8
 
 Must do:
 
+add a routine to update tab numbers when tabs get deleted.
+
 evaluate the " Gtk-CRITICAL **: gtk_widget_event: assertion `WIDGET_REALIZED_FOR_EVENT (widget, event)' failed" messages
 Full Folder & Icon context menus.
 Keyboard navigation of menus (Alt+1 opens root menu, Alt+2 opens first child, etc)

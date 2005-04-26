@@ -17,57 +17,6 @@
 
 class DaIconModes : public Gtk::EventBox {
 
-/*
-  class proto_icon {
-    Glib::ustring path;    DaIconModes * parent;
-
-    void run() const;
-    void runAsText() const;
-    void SetRunAction() const;
-    void SetPermissions() const;
-
-  public:
-
-    Glib::RefPtr<Gdk::Pixbuf> icon;
-    Glib::ustring FileName;
-    Glib::ustring ShortFileName;
-    Glib::ustring FileMime;
-    Glib::ustring FileSize;
-    bool hidden;
-
-    bool select(GdkEventButton*);
-
-    proto_icon(DaIconModes&, Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>);
-    ~proto_icon();
-    };
-
-  class Sidecon : public Gtk::EventBox {
-    proto_icon * source;
-
-    Gtk::Table * Arrange;
-    Gtk::Image * Icon;
-    Gtk::Label * ShortName;
-    Gtk::Label * Mime;
-    Gtk::Label * Size;
-
-  public:
-    Sidecon(proto_icon&);
-    ~Sidecon();
-  };
-
-  class Listview : public Gtk::EventBox {
-    proto_icon * source;
-
-    Gtk::Table * Arrange;
-    Gtk::Image * Icon;
-    Gtk::Label * Name;
-
-  public:
-    Listview(proto_icon&);
-    ~Listview();
-  };
-*/
-
   class proto_icon : public Gtk::TreeModel::ColumnRecord {
   public:
 
@@ -144,24 +93,44 @@ class DaIconModes : public Gtk::EventBox {
   Glib::RefPtr<Gdk::Pixbuf> getIcon(Glib::ustring);
   bool addEntry(Glib::ustring, Glib::RefPtr<const Gnome::Vfs::FileInfo>, bool, bool);
   void on_size_allocate(Gtk::Allocation&);
-  void redraw();
+
 
   class Darimasen * parent;
-  guint position;
+  gint position;
   guint32 lastclick;
-  guint filesAtPath;
+  gint filesAtPath;
   gshort mode;
 
-
   proto_icon * iconlist;
-
-
-  guint slotsUsed;
-  guint IconsHigh;
-  Gtk::Menu prompt;
- // Gtk::TreeView m_TreeView;
   Gtk::IconView m_TreeView;
   Glib::RefPtr<Gtk::ListStore> m_refTreeModel;
+
+void icon_selected(GdkEventButton*, Glib::ustring);
+
+/*
+int on_model_sort(const Gtk::TreeModel::iterator& a, const Gtk::TreeModel::iterator& b)
+{
+  ///* We need this function because we want to sort
+   //* folders before files.
+   
+
+  Gtk::TreeModel::Row row_a = *a;
+  Gtk::TreeModel::Row row_b = *b;
+  
+  const bool a_is_dir = row_a[iconlist->is_directory];
+  const bool b_is_dir = row_b[m_columns.is_directory];
+    
+  if(!a_is_dir && b_is_dir)
+    return 1;
+  else if (a_is_dir && !b_is_dir)
+    return -1;
+  else
+  {
+    Glib::ustring name_a = row_a[m_columns.display_name];
+    return name_a.compare( row_b[m_columns.display_name] );
+  }
+}
+*/
 
 public:
   ~DaIconModes();
