@@ -11,31 +11,64 @@
 #include <gtkmm/entry.h>
 #include <gtkmm/messagedialog.h>
 #include <gtkmm/separator.h>
-#include <gtkmm/liststore.h>
-#include <gtkmm/iconview.h>
+
 /**********************/
 
 class DaIconModes : public Gtk::EventBox {
 
-  class proto_icon : public Gtk::TreeModel::ColumnRecord {
+  class proto_icon {
+    Glib::ustring path;    DaIconModes * parent;
+
+    void run() const;
+    void runAsText() const;
+    void SetRunAction() const;
+    void SetPermissions() const;
+    void copy();
+    void move();
+    void link();
+    void unlinkify();
+
   public:
 
-    proto_icon(){
-      add(m_col_icon);
-      add(m_col_name);
-      add(m_col_size);
-      add(m_col_mime);
-      add(m_col_all);
-      }
+    Glib::RefPtr<Gdk::Pixbuf> icon;
+    Glib::ustring FileName;
+    Glib::ustring ShortFileName;
+    Glib::ustring FileMime;
+    Glib::ustring FileSize;
+    bool hidden;
 
-    Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf> > m_col_icon;
-    Gtk::TreeModelColumn<Glib::ustring> m_col_name;
-    Gtk::TreeModelColumn<Glib::ustring> m_col_size;
-    Gtk::TreeModelColumn<Glib::ustring> m_col_mime;
+    void press_select(GdkEventButton*);
+    void release_select(GdkEventButton*);
 
-    Gtk::TreeModelColumn<Glib::ustring> m_col_all;
+    proto_icon(DaIconModes&, Glib::ustring, const Glib::RefPtr<const Gnome::Vfs::FileInfo>);
+    ~proto_icon();
+    };
+
+  class Sidecon : public Gtk::EventBox {
+    proto_icon * source;
+
+    Gtk::Table * Arrange;
+    Gtk::Image * Icon;
+    Gtk::Label * ShortName;
+    Gtk::Label * Mime;
+    Gtk::Label * Size;
+
+  public:
+    Sidecon(proto_icon&);
+    ~Sidecon();
   };
 
+  class Listview : public Gtk::EventBox {
+    proto_icon * source;
+
+    Gtk::Table * Arrange;
+    Gtk::Image * Icon;
+    Gtk::Label * Name;
+
+  public:
+    Listview(proto_icon&);
+    ~Listview();
+  };
 
   class ChooseActionDialogue : public Gtk::Dialog {
     Gtk::RadioButton::Group _RadioBGroup_radiobutton1;
@@ -70,14 +103,18 @@ class DaIconModes : public Gtk::EventBox {
     Gtk::Button * button1;
     Gtk::Button * button2;
 
-    Gtk::CheckButton * u_r, * u_w, * u_x,* g_r, * g_w, * g_x, * o_r, * o_w, * o_x;
+    Gtk::CheckButton * u_r, * u_w, * u_x;
+    Gtk::CheckButton * g_r, * g_w, * g_x;
+    Gtk::CheckButton * o_r, * o_w, * o_x;
     
     Gnome::Vfs::Handle info;
 
     Gtk::VSeparator * extra;
     Gtk::CheckButton * sticky, * GID, * UID;
 
-    Gtk::Label * user, * group, * others, * read, * write, * run, * explaination;
+    Gtk::Label * user, * group, * others;
+    Gtk::Label * read, * write, * run;
+    Gtk::Label * explaination;
 
     Gtk::Table * layout;
     void cancled();
@@ -89,48 +126,80 @@ class DaIconModes : public Gtk::EventBox {
     ~SetPermissionsDialogue();
     };
 
+  class CopyDialogue : public Gtk::Dialog {
+    class Gtk::Button * cancelbutton;
+    class Gtk::Button * okbutton;
+    class Gtk::Label * label;
+    class Gtk::Entry * entry;
+    void onOk();
+    void onCancel();
+
+    class Darimasen * grandparent;
+
+  public:
+    CopyDialogue(Glib::ustring, Darimasen&);
+    ~CopyDialogue();
+    };
+//
+  class LinkDialogue : public Gtk::Dialog {
+    class Gtk::Button * cancelbutton;
+    class Gtk::Button * okbutton;
+    class Gtk::Label * label;
+    class Gtk::Entry * entry;
+    void onOk();
+    void onCancel();
+
+    class Darimasen * grandparent;
+
+  public:
+    LinkDialogue(Glib::ustring, Darimasen&);
+    ~LinkDialogue();
+    };
+//
+  class MoveDialogue : public Gtk::Dialog {
+    class Gtk::Button * cancelbutton;
+    class Gtk::Button * okbutton;
+    class Gtk::Label * label;
+    class Gtk::Entry * entry;
+    void onOk();
+    void onCancel();
+
+    class Darimasen * grandparent;
+
+  public:
+    MoveDialogue(Glib::ustring, Darimasen&);
+    ~MoveDialogue();
+    };
+//
+  class DeleteDialogue : public Gtk::Dialog {
+    class Gtk::Button * cancelbutton;
+    class Gtk::Button * okbutton;
+    class Gtk::Label * label;
+    void onOk();
+    void onCancel();
+
+    class Darimasen * grandparent;
+
+  public:
+    DeleteDialogue(Glib::ustring, Darimasen&);
+    ~DeleteDialogue();
+    };
 
   Glib::RefPtr<Gdk::Pixbuf> getIcon(Glib::ustring);
   bool addEntry(Glib::ustring, Glib::RefPtr<const Gnome::Vfs::FileInfo>, bool, bool);
   void on_size_allocate(Gtk::Allocation&);
-
+  void redraw();
 
   class Darimasen * parent;
-  gint position;
+  guint position;
   guint32 lastclick;
-  gint filesAtPath;
+  guint filesAtPath;
   gshort mode;
+  proto_icon ** iconlist;
+  guint slotsUsed;
+  guint IconsHigh;
+  Gtk::Menu prompt;
 
-  proto_icon * iconlist;
-  Gtk::IconView m_TreeView;
-  Glib::RefPtr<Gtk::ListStore> m_refTreeModel;
-
-void icon_selected(GdkEventButton*, Glib::ustring);
-
-/*
-int on_model_sort(const Gtk::TreeModel::iterator& a, const Gtk::TreeModel::iterator& b)
-{
-  ///* We need this function because we want to sort
-   //* folders before files.
-   
-
-  Gtk::TreeModel::Row row_a = *a;
-  Gtk::TreeModel::Row row_b = *b;
-  
-  const bool a_is_dir = row_a[iconlist->is_directory];
-  const bool b_is_dir = row_b[m_columns.is_directory];
-    
-  if(!a_is_dir && b_is_dir)
-    return 1;
-  else if (a_is_dir && !b_is_dir)
-    return -1;
-  else
-  {
-    Glib::ustring name_a = row_a[m_columns.display_name];
-    return name_a.compare( row_b[m_columns.display_name] );
-  }
-}
-*/
 
 public:
   ~DaIconModes();
