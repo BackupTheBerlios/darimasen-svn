@@ -6,17 +6,21 @@
 
 void DaIconModes::proto_icon::run() const{
 
-  // double checking the file exists
-  Glib::RefPtr<const Gnome::Vfs::FileInfo> info;
-  Gnome::Vfs::Handle read_handle;
-  try{
-    read_handle.open( path + FileName, Gnome::Vfs::OPEN_READ);
-    info = read_handle.get_file_info(
-      Gnome::Vfs::FILE_INFO_GET_MIME_TYPE );
-    }
-  catch(const Gnome::Vfs::exception& ex){
-    std::cout << "Does not exist.\n";
-    return;
+  Glib::RefPtr<Gnome::Vfs::Uri> x = Gnome::Vfs::Uri::create(path + FileName);
+
+  if (!x->uri_exists()){
+    std::cout << "Is not a file - ";
+    x = Gnome::Vfs::Uri::create(path);
+    if (!x->uri_exists()){
+      std::cout << "is not an appdir either. Bogus.\n";
+      }
+    else {
+      std::cout << "it is a appdir.\n";
+    Glib::spawn_command_line_async(path + "AppRun");
+
+    parent->parent->set_message(path + " was executed.");
+	return;
+      }
     }
 
   Gnome::Vfs::Handle exec_handle;
@@ -221,7 +225,11 @@ void DaIconModes::proto_icon::press_select(GdkEventButton* event){
         sigc::mem_fun(*this, &DaIconModes::proto_icon::unlinkify)));
 
 
-    parent->prompt.popup(event->button, event->time);
+
+ // Glib::RefPtr<Gnome::Vfs::Uri> x = Gnome::Vfs::Uri::create( path + ".DirIcon");
+    if (FileMime != "AppDir"){
+      parent->prompt.popup(event->button, event->time);
+      }
     }
   }
 
@@ -235,7 +243,17 @@ DaIconModes::proto_icon::proto_icon(
   path = getPath;
   parent = &getParent;
 
-  icon = parent->getIcon(getFile->get_mime_type());
+  Glib::RefPtr<Gnome::Vfs::Uri> x = Gnome::Vfs::Uri::create(
+    getPath + ".DirIcon");
+  if (x->uri_exists()){
+    icon = Gdk::Pixbuf::create_from_file(getPath + ".DirIcon");
+    FileMime = "AppDir";
+    }
+  else {
+
+    icon = parent->getIcon(getFile->get_mime_type());
+    FileMime = getFile->get_mime_type();
+    }
 
   FileName = getFile->get_name();
 
@@ -252,7 +270,7 @@ DaIconModes::proto_icon::proto_icon(
   ShortFileName = getFile->get_name();
   }
 
-  FileMime = getFile->get_mime_type();
+
 
   guint size = getFile->get_size();
   if(size < 1024)
@@ -674,6 +692,15 @@ bool DaIconModes::addEntry(
 
   if (info->get_type() != Gnome::Vfs::FILE_TYPE_DIRECTORY){
     iconlist[slotsUsed++] = new proto_icon(*this, parent->get_history(position), info);
+    }
+  else {
+    Glib::RefPtr<Gnome::Vfs::Uri> x = Gnome::Vfs::Uri::create(
+      parent->get_history(position) + info->get_name() + slash + ".DirIcon");
+      if (x->uri_exists()){
+        //std::cout<< x->get_path() << "\n";
+        iconlist[slotsUsed++] = new proto_icon(
+          *this, parent->get_history(position) + info->get_name() + slash, info);
+        }
     }
 
   return true;

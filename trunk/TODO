@@ -5,7 +5,7 @@ Must do:
 add a routine to update tab numbers when tabs get deleted.
 
 evaluate the " Gtk-CRITICAL **: gtk_widget_event: assertion `WIDGET_REALIZED_FOR_EVENT (widget, event)' failed" messages
-Full Folder & Icon context menus.
+Full Folder context menu.
 Keyboard navigation of menus (Alt+1 opens root menu, Alt+2 opens first child, etc)
 
 Move, copy, delete of files needs more checking
@@ -13,13 +13,12 @@ Move, copy, delete of files needs more checking
 move, copy, delete of folder
 move, copy of folder contents
 
-Traditional List and detail views
+detail view
 
 
 Would like to do:
 
 limiting DaMenu expansion (preserve window width for long paths) - by shortening menu names
-AppDir Support
 Create new folder
 Ron <Rds> mentioned that Rox will be moving for ~/Choices to ~/.choices - should probably support that, or check both locations
 use existing thumbnails / create new thumbnails (a la ROX)
