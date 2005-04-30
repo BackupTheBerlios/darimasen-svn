@@ -10,7 +10,6 @@
 #include <libgnomevfsmm.h>
 #include <vector>
 #include "darimasen.h"
-#include <prefix.h>
 
 /**********************/
 

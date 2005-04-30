@@ -7,8 +7,7 @@ darimasen_SOURCES = \
 	supplimental.cpp \
         firsttime.cpp \
 	main.cpp \
-	damenu.cpp \
-        prefix.c
+	damenu.cpp 
 
 noinst_HEADERS = \
 	darimasen.h \
@@ -16,10 +15,8 @@ noinst_HEADERS = \
 	supplimental.h \
         firsttime.h \
 	main.h \
-	damenu.h \
-        prefix.h
+	damenu.h 
 
-
-AM_CXXFLAGS = -I../.. @PKG_CFLAGS@ @BINRELOC_CFLAGS@
+AM_CXXFLAGS = -I../.. @PKG_CFLAGS@
 
 darimasen_LDADD = -lpthread @LIBS@ @PKG_LIBS@ 

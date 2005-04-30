@@ -232,7 +232,8 @@ DaIconModes::proto_icon::proto_icon(
       Glib::ustring getPath,
       const Glib::RefPtr<const Gnome::Vfs::FileInfo> getFile) {
 
-  path = getPath;  parent = &getParent;
+  path = getPath;
+  parent = &getParent;
 
   icon = parent->getIcon(getFile->get_mime_type());
 
@@ -717,13 +718,15 @@ void DaIconModes::redraw(){
   for(int i = 0; i < slotsUsed; i++){
     if(  !iconlist[i]->hidden || parent->optShowHidden->get_active()){
       switch(mode){
-        case 0:
+        case 0: {
           Sidecon * tmpSidecon = new Sidecon(*iconlist[i]);
           DisposableTable->attach( *tmpSidecon, x_pos, x_pos+1, y_pos, y_pos+1,Gtk::FILL, Gtk::FILL, 4, 4);
+            }
           break;
-        case 1:
+        case 1: {
           Listview * tmpListview = new Listview(*iconlist[i]);
           DisposableTable->attach( *tmpListview, x_pos, x_pos+1, y_pos, y_pos+1,Gtk::FILL, Gtk::FILL, 4, 4);
+            }
           break;
         }
 
@@ -838,11 +841,7 @@ grandparent = &parent;
 /**********************/
 
 void DaIconModes::CopyDialogue::onOk(){
-//  std::cout << "copying " << label->get_text()
-//    << "\nto " << entry->get_text() << "\n\n";
-
-//rename(label->get_text().c_str(), entry->get_text().c_str());
-    Glib::spawn_command_line_async((Glib::ustring)"cp \""  + label->get_text().c_str() + (Glib::ustring)"\" \"" + entry->get_text().c_str()+ "\"");
+  Glib::spawn_command_line_async((Glib::ustring)"cp \""  + label->get_text().c_str() + (Glib::ustring)"\" \"" + entry->get_text().c_str()+ "\"");
 
   grandparent->updateView(
     label->get_text().substr(0, label->get_text().rfind(slash,label->get_text().length())+1),
@@ -899,12 +898,7 @@ grandparent = &parent;
 /**********************/
 
 void DaIconModes::MoveDialogue::onOk(){
-//  std::cout << "moveing " << label->get_text()
-//    << "\nto " << entry->get_text() << "\n\n";
-
- // rename(label->get_text().c_str(), entry->get_text().c_str());
-
-    Glib::spawn_command_line_async((Glib::ustring)"mv \""  + label->get_text().c_str() + (Glib::ustring)"\" \"" + entry->get_text().c_str()+ "\"");
+  Glib::spawn_command_line_async((Glib::ustring)"mv \""  + label->get_text().c_str() + (Glib::ustring)"\" \"" + entry->get_text().c_str()+ "\"");
 
   grandparent->updateView(
     label->get_text().substr(0, label->get_text().rfind(slash,label->get_text().length())+1),
@@ -961,11 +955,7 @@ grandparent = &parent;
 /**********************/
 
 void DaIconModes::LinkDialogue::onOk(){
-//  std::cout << "linking " << label->get_text()
- //   << "\nto " << entry->get_text() << "\n\n";
-
-  //symlink(label->get_text().c_str(), entry->get_text().c_str());
-    Glib::spawn_command_line_async((Glib::ustring)"ln -s \""  + label->get_text().c_str() + (Glib::ustring)"\" \"" + entry->get_text().c_str() + "\"");
+  Glib::spawn_command_line_async((Glib::ustring)"ln -s \""  + label->get_text().c_str() + (Glib::ustring)"\" \"" + entry->get_text().c_str() + "\"");
 
   grandparent->updateView(
     label->get_text().substr(0, label->get_text().rfind(slash,label->get_text().length())+1),
@@ -1017,9 +1007,6 @@ grandparent = &parent;
 /**********************/
 
 void DaIconModes::DeleteDialogue::onOk(){
-//  std::cout << "delete " << label->get_text() << "\n\n";
-
- // unlink( label->get_text().c_str() );
   Glib::spawn_command_line_async((Glib::ustring)"rm \""  + label->get_text().c_str() + "\"");
 
   grandparent->updateView(

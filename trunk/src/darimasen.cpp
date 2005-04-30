@@ -184,9 +184,14 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   mode = 0;
 
   try{
-    set_icon_from_file( (Glib::ustring)DATADIR + (Glib::ustring)"/icons/hicolor/48x48/apps/darimasen.png"  );
-  }
-  catch(const Glib::Error) {/*non-existant file OR folder*/}
+    set_icon_from_file( "/usr/share/icons/hicolor/48x48/apps/darimasen.png"  );
+    }
+  catch(const Glib::Error) {
+    try{
+      set_icon_from_file( "../pixmaps/48x48/darimasen.png"  );
+      }
+    catch(const Glib::Error) {}
+    }
   add(VerticalOrganizer);
   VerticalOrganizer.show();
 
@@ -336,8 +341,18 @@ bool Darimasen::aboutDa::ch0wned(GdkEventButton*){
 /**********************/
 
 Darimasen::aboutDa::aboutDa(){
-  image1 = new class Gtk::Image(  Gdk::Pixbuf::create_from_file( 
-    (Glib::ustring)DATADIR + (Glib::ustring)"/pixmaps/darimasenInfo.svg" ) );
+  try{
+    image1 = new class Gtk::Image(  Gdk::Pixbuf::create_from_file( 
+      "/usr/share/pixmaps/darimasenInfo.svg" ) );
+    }
+  catch(const Glib::Error) {
+    try{
+      set_icon_from_file( "../pixmaps/darimasenInfo.svg"  );
+      }
+  catch(const Glib::Error) {}
+    }
+
+
   closer = new Gtk::EventBox;
   closer->add(*image1);
   closer->signal_button_press_event().connect(

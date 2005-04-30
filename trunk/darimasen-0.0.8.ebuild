@@ -23,7 +23,7 @@ RDEPEND="!x11-misc/darimasen-svn"
 
 src_compile() {
 
-	./configure --prefix=/usr ${myconf} || die
+	econf || die
 	emake || die
 }
 
