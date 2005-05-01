@@ -1,11 +1,11 @@
-/* Darimasen - main.cpp - Copyright (C) 2004 - 2005 Sudrien, GPL */
- 
-
+ /* Darimasen - main.cpp - Copyright (C) 2004 - 2005 Sudrien, GPL */
+   
+  
 #include "main.h"
 #include "firsttime.h"
-
+  
 /**********************/
-
+  
 int main(int argc, char *argv[])
 {
   Gtk::Main kit(argc, argv);
@@ -14,27 +14,33 @@ int main(int argc, char *argv[])
   // check for mime definitions. 
   { 
     Glib::ustring fuz = getenv("HOME") ;
+    Glib::ustring altfuz = fuz;
     fuz += "/Choices";
     Glib::RefPtr<Gnome::Vfs::Uri> fuzz = Gnome::Vfs::Uri::create(fuz);
-    if (!fuzz->uri_exists()){
+    //support ./choices as well
+    altfuz += "/.choices";
+    Glib::RefPtr<Gnome::Vfs::Uri> altfuzz = Gnome::Vfs::Uri::create(altfuz);  
 
-  gnome_vfs_make_directory(fuz.c_str(),493);
-  
+    //make .choices default - if people don't have Rox they'd
+    // probably prefer not to have their homedir cluttered  
+    if (!fuzz->uri_exists() && !altfuzz->uri_exists()){
+      gnome_vfs_make_directory(altfuz.c_str(),493);
       }
 
-
+    //check which choices dir to use, use .choices if Choices isn't there      
+    if (!fuzz->uri_exists()){
+   	fuz = altfuz;
+        
+    }
 
    fuz += "/MIME-types";
    Glib::RefPtr<Gnome::Vfs::Uri> fuz2 = Gnome::Vfs::Uri::create(fuz);
     if (!fuz2->uri_exists()){
-
-  gnome_vfs_make_directory(fuz.c_str(),493);
-    dialog1_glade window;
-  Gtk::Main::run(window); 
-
+      gnome_vfs_make_directory(fuz.c_str(),493);
+      dialog1_glade window;
+      Gtk::Main::run(window); 
       }
-
-  }
+    }
 
 
 
@@ -45,7 +51,7 @@ int main(int argc, char *argv[])
       Glib::ustring tmp = argv[i];
       if(tmp.substr(tmp.length()-1,1) != slash )
         tmp += slash;
-        Glib::RefPtr<Gnome::Vfs::Uri> x = Gnome::Vfs::Uri::create(tmp);
+       Glib::RefPtr<Gnome::Vfs::Uri> x = Gnome::Vfs::Uri::create(tmp);
       // case that URL is Absolute, and works:
       if (x->uri_exists()){
         path.push_back(x->get_path());
@@ -74,11 +80,11 @@ int main(int argc, char *argv[])
     }
 
   if(path.empty())
-#ifdef WIN32
+  #ifdef WIN32
   path.push_back(getenv("USERPROFILE") + slash);
-#else
+  #else
   path.push_back(getenv("HOME") + slash);
-#endif
+  #endif
 
   std::cout << "Tabs opened should be for:\n";
   for(int i =0; i< path.size();i++)
@@ -87,9 +93,9 @@ int main(int argc, char *argv[])
   Darimasen * window = new Darimasen(path);
   Gtk::Main::run(*window); 
 
-delete window;
-  //Gnome::Vfs::shutdown();
+  delete window;
   return 0;
-}
+  }
+
 
 /**********************/

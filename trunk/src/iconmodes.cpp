@@ -25,9 +25,12 @@ void DaIconModes::proto_icon::run() const{
 
   Gnome::Vfs::Handle exec_handle;
 
-  Glib::ustring exec = getenv("HOME");
+//check the choices dir
+Glib::ustring choicesdir = getchoicesdir();
+Glib::ustring exec = getenv("HOME");
   try{
-    exec += "/Choices/MIME-types/";
+    exec += choicesdir;
+    exec += "/MIME-types/";
     Glib::ustring tmp = FileMime;
     exec += tmp.replace(tmp.find("/"),1,"_");
     exec_handle.open(exec, Gnome::Vfs::OPEN_READ);
@@ -75,7 +78,8 @@ void DaIconModes::proto_icon::run() const{
     case(Gtk::RESPONSE_OK):
       {
         Glib::ustring exec = getenv("HOME");
-        exec += "/Choices/MIME-types/text";
+	exec += choicesdir;
+        exec += "/MIME-types/text";
         exec += " \""  + path + FileName + "\"";
         Glib::spawn_command_line_async(exec);
         parent->parent->set_message(exec + " was opened as a text file.");
@@ -105,10 +109,12 @@ void DaIconModes::proto_icon::runAsText() const{
     return;
     }
 
+  Glib::ustring choicesdir = getchoicesdir();
   Gnome::Vfs::Handle exec_handle;
   Glib::ustring exec = getenv("HOME");
   try{
-    exec += "/Choices/MIME-types/text";
+    exec += choicesdir;
+    exec += "/MIME-types/text";
     exec_handle.open(exec, Gnome::Vfs::OPEN_READ);
     exec += " \""  + path + FileName + "\"";
     Glib::spawn_command_line_async(exec);
@@ -428,8 +434,10 @@ DaIconModes::ChooseActionDialogue::ChooseActionDialogue(Glib::ustring mimeType){
 
 void DaIconModes::ChooseActionDialogue::GetCurrentAction(Glib::ustring mimeType){
 
+  Glib::ustring choicesdir = getchoicesdir();
   Glib::ustring contents, exec1 = getenv("HOME");
-  exec1 += (Glib::ustring)("/Choices/MIME-types/");
+  exec1 += choicesdir;
+  exec1 += (Glib::ustring)("/MIME-types/");
   exec1 += mimeType;
 
   try {
@@ -461,7 +469,9 @@ void DaIconModes::ChooseActionDialogue::modifyAction(){
 
     try {
       Glib::ustring exec1 = getenv("HOME");
-      exec1 += (Glib::ustring)("/Choices/MIME-types/");
+      Glib::ustring choicesdir = getchoicesdir();
+      exec1 += choicesdir;
+      exec1 += (Glib::ustring)("/MIME-types/");
       if(radiobutton2->get_active()) exec1 += mime;
       if(radiobutton1->get_active())exec1 += mime.substr(0, mime.find("_"));
       Gnome::Vfs::Handle write_handle;

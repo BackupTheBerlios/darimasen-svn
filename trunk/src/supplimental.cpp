@@ -31,3 +31,15 @@ Glib::ustring underscoreSafe(Glib::ustring x){
   }
 
 /**********************/
+
+//check which choices dir to use
+Glib::ustring getchoicesdir(){
+  Glib::RefPtr<Gnome::Vfs::Uri> choicespath = Gnome::Vfs::Uri::create(
+    (Glib::ustring)getenv("HOME") + "/Choices");
+  if (choicespath->uri_exists()){
+    return "/Choices";
+    }
+  return "/.choices";
+  }
+
+/**********************/

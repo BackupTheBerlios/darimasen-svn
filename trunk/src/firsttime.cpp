@@ -90,10 +90,13 @@ dialog1_glade::dialog1_glade(
 
 void dialog1_glade::confirm(){
 
+Glib::ustring choicesdir="/.choices";
+
+
   if ( entry1->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
     Glib::ustring command = "#! /bin/sh\nexec " + entry1->get_text() + "\n";
     try {
-      Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)("/Choices/MIME-types/text"));
+      Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)(choicesdir + "/MIME-types/text"));
       Gnome::Vfs::Handle write_handle;
       write_handle.create(exec1, Gnome::Vfs::OPEN_WRITE, false, 0755);
       write_handle.seek(Gnome::Vfs::SEEK_POS_START, 0);
@@ -105,7 +108,7 @@ void dialog1_glade::confirm(){
   if ( entry2->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
     Glib::ustring command = "#! /bin/sh\nexec " + entry2->get_text() + "\n";
     try {
-      Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)("/Choices/MIME-types/audio"));
+      Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)(choicesdir + "/MIME-types/audio"));
       Gnome::Vfs::Handle write_handle;
       write_handle.create(exec1, Gnome::Vfs::OPEN_WRITE, false, 0755);
       write_handle.seek(Gnome::Vfs::SEEK_POS_START, 0);
@@ -117,7 +120,7 @@ void dialog1_glade::confirm(){
   if ( entry3->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
     Glib::ustring command = "#! /bin/sh\nexec " + entry3->get_text() + "\n";
     try {
-      Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)("/Choices/MIME-types/video"));
+      Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)(choicesdir + "/MIME-types/video"));
       Gnome::Vfs::Handle write_handle;
       write_handle.create(exec1, Gnome::Vfs::OPEN_WRITE, false, 0755);
       write_handle.seek(Gnome::Vfs::SEEK_POS_START, 0);
@@ -129,7 +132,7 @@ void dialog1_glade::confirm(){
   if ( entry4->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
     Glib::ustring command = "#! /bin/sh\nexec " + entry4->get_text() + "\n";
     try {
-      Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)("/Choices/MIME-types/image"));
+      Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)(choicesdir + "/MIME-types/image"));
       Gnome::Vfs::Handle write_handle;
       write_handle.create(exec1, Gnome::Vfs::OPEN_WRITE, false, 0755);
       write_handle.seek(Gnome::Vfs::SEEK_POS_START, 0);

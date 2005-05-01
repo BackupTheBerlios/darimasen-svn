@@ -12,6 +12,7 @@
 
 Glib::ustring int2ustr(int);
 Glib::ustring underscoreSafe(Glib::ustring);
+Glib::ustring getchoicesdir();
 
 /**********************/
 
