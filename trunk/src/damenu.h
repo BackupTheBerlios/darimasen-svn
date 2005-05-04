@@ -25,21 +25,22 @@
 
   class DarimasenMenu : public Gtk::MenuBar {
 
-    class DirectoryMenu : public Gtk::Menu {
-    public:
-      DirectoryMenu(DarimasenMenu& in ){
-        Gtk::Menu::Menu();
-        }
-      };
-
-
     class Darimasen * parent;
 
     int depth;
 
-    DirectoryMenu ** MenuArray; 
+    Gtk::Menu ** MenuArray; 
     Gtk::MenuItem ** MenuItemArray;
     Glib::ustring * menulevel;
+
+    Gtk::Menu prompt;
+
+    void copy(Glib::ustring);
+    void move(Glib::ustring);
+    void link(Glib::ustring);
+    void unlinkify(Glib::ustring);
+
+    void bookmark(Glib::ustring);
 
     void MenuForPath(int, Glib::ustring , Glib::ustring); //extension
     bool SpecialMenuForPath(GdkEventButton* , int, Glib::ustring  , Glib::ustring); //extension

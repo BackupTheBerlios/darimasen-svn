@@ -83,7 +83,7 @@ class Darimasen : public Gtk::Window {
   class DarimasenMenu * DaMenu;
   Gtk::HPaned HideTreePane;
   Gtk::ScrolledWindow TreeScroller;
-  Gtk::Notebook * Tabber;
+
   Gtk::Statusbar Info;
 
   Gtk::ToolItem * CompactMenuContainer;
@@ -146,6 +146,7 @@ public:
 
   void buildHistoryMenu(gint);
   void fHistoryMenu(gint, gint);
+  Gtk::Notebook * Tabber;
   };
 
 /**********************/

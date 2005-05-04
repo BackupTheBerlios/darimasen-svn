@@ -67,7 +67,7 @@ MenuItemArray[position]->signal_activate().connect_notify(sigc::bind<guint,Glib:
         Glib::ustring SubSubCount;
         if(ext == ""){
           subdir = Gtk::manage( new Gtk::MenuItem(refFileInfo->get_name() + slash + " "));
-          subdir->set_events(Gdk::BUTTON_RELEASE_MASK);
+         // subdir->set_events(Gdk::BUTTON_RELEASE_MASK);
 
           subdir->signal_button_press_event().connect(
             sigc::bind<Glib::ustring,guint,bool>(
@@ -127,7 +127,7 @@ bool DarimasenMenu::SpecialMenuForPath(GdkEventButton* event,
 
   MenuItemArray[position]->remove_submenu();
   delete MenuArray[position];
-  MenuArray[position] =  new DirectoryMenu(*this);
+  MenuArray[position] =  new Gtk::Menu();
   MenuItemArray[position]->set_submenu(*MenuArray[position]);
   MenuForPath(position, path, ext);
   MenuItemArray[position]->select();
@@ -144,7 +144,7 @@ void DarimasenMenu:: selection_reset(guint position, Glib::ustring path){
   if ( needsRebuild[position] ){
     MenuItemArray[position]->remove_submenu();
     delete MenuArray[position];
-    MenuArray[position] =  new DirectoryMenu(*this);
+    MenuArray[position] =  new Gtk::Menu();
     MenuItemArray[position]->set_submenu(*MenuArray[position]);
     MenuForPath(position, path, "");
     MenuItemArray[position]->select();
@@ -176,9 +176,55 @@ bool DarimasenMenu::DaMenuSelect(
   }
   if ((event->type == GDK_BUTTON_PRESS) && (event->button == 3) ) //right
   {
-    Gtk::Menu * m_Menu_Popup = Gtk::manage( new Gtk::Menu);
-    m_Menu_Popup->items().push_back( Gtk::Menu_Helpers::MenuElem("Open In new Tab"));
-    m_Menu_Popup->popup(event->button, event->time);
+
+    for( int i=10; i > 0; i--)
+      prompt.items().pop_back();
+
+
+    prompt.items().push_back(
+      Gtk::Menu_Helpers::MenuElem("Opening " + path + " from here consistantly leads to errors"));
+
+    prompt.items().push_back(
+      Gtk::Menu_Helpers::MenuElem("Open In new Tab",
+        sigc::bind<Glib::ustring>(
+          sigc::mem_fun(*parent,&Darimasen::newTab),path)));
+
+    prompt.items().push_back(
+      Gtk::Menu_Helpers::SeparatorElem());
+
+    prompt.items().push_back(
+      Gtk::Menu_Helpers::MenuElem("Copy...",
+        sigc::bind<Glib::ustring>(
+          sigc::mem_fun(*this,&DarimasenMenu::copy),path)));
+
+    prompt.items().push_back(
+      Gtk::Menu_Helpers::MenuElem("Move...",
+        sigc::bind<Glib::ustring>(
+          sigc::mem_fun(*this,&DarimasenMenu::move),path)));
+
+    prompt.items().push_back(
+      Gtk::Menu_Helpers::MenuElem("Link...",
+        sigc::bind<Glib::ustring>(
+          sigc::mem_fun(*this,&DarimasenMenu::link),path)));
+
+    prompt.items().push_back(
+      Gtk::Menu_Helpers::MenuElem("Delete...",
+        sigc::bind<Glib::ustring>(
+          sigc::mem_fun(*this,&DarimasenMenu::unlinkify),path)));
+
+    prompt.items().push_back(
+      Gtk::Menu_Helpers::SeparatorElem());
+
+    prompt.items().push_back(
+      Gtk::Menu_Helpers::MenuElem("Add to location menu",
+        sigc::bind<Glib::ustring>(
+          sigc::mem_fun(*this,&DarimasenMenu::bookmark),path)));
+
+  //  prompt.signal_selection_done().connect_notify(sigc::mem_fun(prompt,&Gtk::Menu::hide));
+  //  prompt.signal_selection_done().connect_notify(sigc::mem_fun(*MenuArray[pos],&Gtk::Menu::hide));
+    prompt.signal_selection_done().connect_notify(sigc::mem_fun(*MenuItemArray[pos],&Gtk::MenuItem::deselect));
+	
+    prompt.popup(event->button, event->time);
   return true;
    }
 
@@ -186,6 +232,16 @@ bool DarimasenMenu::DaMenuSelect(
 
   //DaFileLister(); //5:45pm, 24 Dec 2004, it worked! // leave this comment    
   }
+
+
+/**********************/
+
+    void DarimasenMenu::copy(Glib::ustring path){}
+    void DarimasenMenu::move(Glib::ustring path){}
+    void DarimasenMenu::link(Glib::ustring path){}
+    void DarimasenMenu::unlinkify(Glib::ustring path){}
+
+    void DarimasenMenu::bookmark(Glib::ustring path){}
 
 /**********************/
 
@@ -248,11 +304,11 @@ DarimasenMenu::DarimasenMenu(const Glib::ustring & path, Darimasen& Myparent, gu
     };
   menulevel[depth] = ".";
 
-  MenuArray = new DirectoryMenu*[depth+1];
+  MenuArray = new Gtk::Menu*[depth+1];
   MenuItemArray = new Gtk::MenuItem*[depth+1];
 
   for(int c = 0; c < depth+1; c++){
-    MenuArray[c] =  new DirectoryMenu(*this);
+    MenuArray[c] =  new Gtk::Menu();
     }
  
     Glib::ustring subin = CountSubdir(path);
