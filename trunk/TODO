@@ -8,7 +8,7 @@ evaluate the " Gtk-CRITICAL **: gtk_widget_event: assertion `WIDGET_REALIZED_FOR
 Full Folder context menu.
 Keyboard navigation of menus (Alt+1 opens root menu, Alt+2 opens first child, etc)
 
-Move, copy, delete of files needs more checking
+Move, copy, delete of files needs more checking (or at least feedback)
 
 move, copy, delete of folder
 move, copy of folder contents
@@ -20,8 +20,8 @@ Would like to do:
 
 limiting DaMenu expansion (preserve window width for long paths) - by shortening menu names
 Create new folder
-Ron <Rds> mentioned that Rox will be moving for ~/Choices to ~/.choices - should probably support that, or check both locations
 use existing thumbnails / create new thumbnails (a la ROX)
+files in APPDIR root folder are not appdirs - check if file name is in path...
 
 
 version 0.0.9
@@ -32,11 +32,6 @@ Optional Directory tree, updated as needed
 Package as appdir?
  
 ---
-
-@commit 11 -- With the ROX / Gnome-vfsmm work done, most of Ron's <Rds> code is gone. This would include the AppDir test. However, appdirs would never end up showing up in the main window, so this is not a huge loss as of yet. His test was for AppRun within the directory - it would require testing for that file's existance, then notifying that it is an executable and needs a unique icon.
-
----
-
 
 -----------------------------------------------
 
@@ -49,7 +44,8 @@ anouncement of usuable public release ^_^;
 
 --version 0.1.1 and onwards
 
-Drag and drop. 
-Re-port to windows
+Drag and drop - into menu, between tabs, copy/paste/link popup, multiple selection
+Re-port to windows?
+Consider DnD holding box - a "Drop stack". 
 
 

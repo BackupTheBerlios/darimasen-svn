@@ -90,10 +90,9 @@ int main(int argc, char *argv[])
   for(int i =0; i< path.size();i++)
       std::cout << path[i] <<  "\n";
 
-  Darimasen * window = new Darimasen(path);
-  Gtk::Main::run(*window); 
+  Darimasen window(path);
+  Gtk::Main::run(window); 
 
-  delete window;
   return 0;
   }
 

@@ -256,7 +256,6 @@ DaIconModes::proto_icon::proto_icon(
     FileMime = "AppDir";
     }
   else {
-
     icon = parent->getIcon(getFile->get_mime_type());
     FileMime = getFile->get_mime_type();
     }
@@ -292,7 +291,7 @@ DaIconModes::proto_icon::proto_icon(
 /**********************/
 
 DaIconModes::proto_icon::~proto_icon(){
-  std::cout << "proto deleted";
+  icon.clear();
   }
 
 /**********************/
@@ -652,13 +651,12 @@ DaIconModes::SetPermissionsDialogue::~SetPermissionsDialogue(){
 
 Glib::RefPtr<Gdk::Pixbuf> DaIconModes::getIcon(Glib::ustring mimeGiven){
   int i;
-  static std::vector <Glib::ustring> mimeList;
-  static std::vector < Glib::RefPtr<Gdk::Pixbuf> > unsizedImg;
 
 
-  for(i = 0; i< mimeList.size(); i++){
-    if( mimeGiven == mimeList[i] ){
-      return unsizedImg[i];
+
+  for(i = 0; i< parent->mimeList.size(); i++){
+    if( mimeGiven == parent->mimeList[i] ){
+      return parent->unsizedImg[i];
       }
     }
    // pic doesn't exist.
@@ -683,13 +681,13 @@ Glib::RefPtr<Gdk::Pixbuf> DaIconModes::getIcon(Glib::ustring mimeGiven){
      }
     }
 
-  mimeList.push_back(mimeGiven);
+  parent->mimeList.push_back(mimeGiven);
 
   Glib::RefPtr<Gdk::Pixbuf> xe = Gdk::Pixbuf::create_from_file(ico);
 
-  unsizedImg.push_back(xe);
+  parent->unsizedImg.push_back(xe);
 
-  return unsizedImg[i]; 
+  return parent->unsizedImg[i]; 
   }
 
 /**********************/
@@ -746,7 +744,7 @@ void DaIconModes::redraw(){
   if (tmp)
     delete tmp; // actually DisposableTable, but segfaulted otherwise
 
-  Gtk::Table * DisposableTable = new Gtk::Table((filesAtPath)/IconsHigh+1,IconsHigh);
+  Gtk::Table * DisposableTable = new Gtk::Table((slotsUsed)/IconsHigh+1,IconsHigh);
   add(*DisposableTable);
 
   int y_pos = 0;
@@ -825,6 +823,8 @@ DaIconModes::DaIconModes(
 
 DaIconModes::~DaIconModes(){
 
+  while( slotsUsed > 0)
+    delete iconlist[--slotsUsed];
   }
 
 /**********************/

@@ -113,7 +113,7 @@ Gtk::ToolButton * NewTab;
   void fPrintHist();
   void fChangeIconMode();
 
-
+Glib::RefPtr<Gdk::Pixbuf> windowIcon;
 
   std::vector< class DaIconModes* > IconModeList;
   std::vector< class Gtk::EventBox* > EventBoxList;
@@ -121,7 +121,13 @@ Gtk::ToolButton * NewTab;
 
   std::vector< std::vector<Glib::ustring> > history;
 
+
+
+
 public:
+
+  std::vector <Glib::ustring> mimeList;
+  std::vector < Glib::RefPtr<Gdk::Pixbuf> > unsizedImg;
 
   Darimasen(std::vector<Glib::ustring>);
   ~Darimasen();

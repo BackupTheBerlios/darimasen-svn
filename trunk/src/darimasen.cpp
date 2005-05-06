@@ -35,8 +35,6 @@ void Darimasen::tabberSwitched(GtkNotebookPage* sig, guint n){
 
 
   DarimasenMenuContainer->remove();
-
- 
   DaMenu = Gtk::manage(new class DarimasenMenu(get_history(n), *this, n));
   DarimasenMenuContainer->add(*DaMenu);
 
@@ -59,23 +57,23 @@ void Darimasen::addTab(guint pos){
     Tabber->set_show_tabs(true);
 
 
-  Gtk::Image * xed = Gtk::manage(
-    new Gtk::Image("/usr/share/icons/hicolor/16x16/stock/generic/stock_close.png"));
+  Gtk::Image * xed = 
+    new Gtk::Image("/usr/share/icons/hicolor/16x16/stock/generic/stock_close.png");
   xed->show();
 
   Gtk::Label * tabNum;
 
   if ( get_history(pos) == slash)
-    tabNum = Gtk::manage(new Gtk::Label(slash + " "));
+    tabNum = new Gtk::Label(slash + " ");
   else if ( get_history(pos) == (getenv("HOME") + slash))
-    tabNum = Gtk::manage(new Gtk::Label("~ "));
+    tabNum = new Gtk::Label("~ ");
   else
-    tabNum = Gtk::manage(new Gtk::Label(
-      get_history(pos).substr(get_history(pos).rfind(slash,get_history(pos).length() - 2  ) + 1)));
+    tabNum = new Gtk::Label(
+      get_history(pos).substr(get_history(pos).rfind(slash,get_history(pos).length() - 2  ) + 1));
 
 
-  Gtk::HBox * arrangement= Gtk::manage(new Gtk::HBox()) ;
-  Gtk::Button * closeButton = Gtk::manage( new Gtk::Button());
+  Gtk::HBox * arrangement= new Gtk::HBox() ;
+  Gtk::Button * closeButton = new Gtk::Button();
 
   closeButton->add(*xed);
   closeButton->set_relief(Gtk::RELIEF_NONE); 
@@ -99,7 +97,7 @@ void Darimasen::addTab(guint pos){
   MainEventBox->show();
 
   DaIconModes * foo;
-  foo = Gtk::manage(new class DaIconModes(  pos, *this));
+  foo = new class DaIconModes(pos, *this);
 
   if ( IconModeList.size() == pos ){
     IconModeList.push_back(foo);
@@ -112,7 +110,7 @@ void Darimasen::addTab(guint pos){
     EventBoxList[pos] = MainEventBox;
     }
 
-  Gtk::ScrolledWindow * MainScroller = Gtk::manage(new Gtk::ScrolledWindow);
+  Gtk::ScrolledWindow * MainScroller = new Gtk::ScrolledWindow;
   MainScroller->show();
   MainScroller->set_shadow_type(Gtk::SHADOW_NONE);
   MainScroller->add(*MainEventBox);
@@ -184,11 +182,13 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
   mode = 0;
 
   try{
-    set_icon_from_file( "/usr/share/icons/hicolor/48x48/apps/darimasen.png"  );
+     windowIcon = Gdk::Pixbuf::create_from_file("/usr/share/icons/hicolor/48x48/apps/darimasen.png");
+    set_icon(windowIcon);
     }
   catch(const Glib::Error) {
     try{
-      set_icon_from_file( "../pixmaps/48x48/darimasen.png"  );
+      windowIcon = Gdk::Pixbuf::create_from_file("../pixmaps/48x48/darimasen.png");
+      set_icon(windowIcon);
       }
     catch(const Glib::Error) {}
     }
@@ -317,10 +317,18 @@ void Darimasen::fQuit(){
   delete CompactMenu;
   delete CompactMenuContainer;
 
+  windowIcon.clear();
   for (int i=0; i < IconModeList.size(); i++){
      delete IconModeList[i];
      delete EventBoxList[i];
      }
+
+// had no effect
+//  for(int i=0; i < unsizedImg.size(); i++){
+    //mimeList[i].clear();
+ //   unsizedImg[i].clear();
+  //  }
+
 
   hide();
   }
