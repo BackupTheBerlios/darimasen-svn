@@ -36,7 +36,7 @@ Glib::ustring exec = getenv("HOME");
     exec_handle.open(exec, Gnome::Vfs::OPEN_READ);
 
     exec += " \""  + path + FileName + "\"";
-    Glib::spawn_command_line_async(exec);
+    goruncommand(exec,path);
 
     parent->parent->set_message(exec + " was run.");
     return;
@@ -50,7 +50,7 @@ Glib::ustring exec = getenv("HOME");
     exec = exec.substr(0, exec.rfind("_"));
     exec_handle.open(exec, Gnome::Vfs::OPEN_READ);
     exec += " \""  + path + FileName + "\"";
-    Glib::spawn_command_line_async(exec);
+    goruncommand(exec,path);
 
     parent->parent->set_message(exec + " was run.");
     return;
@@ -61,7 +61,7 @@ Glib::ustring exec = getenv("HOME");
   try{
     if (Gnome::Vfs::Mime::can_be_executable(FileMime)){
       parent->parent->set_message( "Running " + path + FileName);
-      Glib::spawn_command_line_async( path + FileName );
+      goruncommand(exec,path);
       return;
       }
    }

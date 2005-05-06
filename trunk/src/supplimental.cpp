@@ -43,3 +43,12 @@ Glib::ustring getchoicesdir(){
   }
 
 /**********************/
+
+void goruncommand(Glib::ustring exec, Glib::ustring path){
+//execute a command in the correct working directory
+    Glib::ArrayHandle<std::string> cmd_args = Glib::shell_parse_argv(exec);
+    Glib::spawn_async(path, cmd_args, Glib::SPAWN_SEARCH_PATH);
+
+  }
+  
+/**********************/ 

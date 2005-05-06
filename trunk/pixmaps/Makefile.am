@@ -2,7 +2,7 @@ SUBDIRS = \
 	scalable 48x48
 
 appsicondir = \
-        $(datadir)/pixmaps/
+        $(datadir)/pixmaps
 
 appsicon_DATA = \
         darimasenInfo.svg

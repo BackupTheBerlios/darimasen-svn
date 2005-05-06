@@ -1,5 +1,5 @@
 appsicondir = \
-	$(datadir)/icons/hicolor/scalable/apps/
+	$(datadir)/icons/hicolor/scalable/apps
 
 appsicon_DATA = \
 	darimasen.svg \
