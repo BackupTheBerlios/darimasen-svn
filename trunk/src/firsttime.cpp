@@ -11,21 +11,19 @@ dialog1_glade::dialog1_glade(
    image1 = Gtk::manage(new class Gtk::Image(Gtk::StockID("gtk-dialog-question"), Gtk::IconSize(6)));
    label1 = Gtk::manage(new class Gtk::Label("It looks like this is your first time\n"
 		"running Darimasen.\n\n"
-		"It would be a good time to set up\n"
+		"This is a good time to set up\n"
 		"some default \"Run Actions\"\n\n"
 		"Simply replace the wildcard (*)\n"
-		"with your prefered program."));
+		"with your preferred program."));
    hbox1 = Gtk::manage(new class Gtk::HBox(false, 0));
-   label2 = Gtk::manage(new class Gtk::Label("Text Files:"));
-   label3 = Gtk::manage(new class Gtk::Label("Music FIles:"));
-   label4 = Gtk::manage(new class Gtk::Label("Video Files:\n"
-		""));
-   label5 = Gtk::manage(new class Gtk::Label("Image files:\n"
-		""));
-   entry1 = Gtk::manage(new class Gtk::Entry());
-   entry2 = Gtk::manage(new class Gtk::Entry());
-   entry3 = Gtk::manage(new class Gtk::Entry());
-   entry4 = Gtk::manage(new class Gtk::Entry());
+   textlabel = Gtk::manage(new class Gtk::Label("Text Files:"));
+   musiclabel = Gtk::manage(new class Gtk::Label("Music Files:"));
+   videolabel = Gtk::manage(new class Gtk::Label("Video Files:"));
+   imagelabel = Gtk::manage(new class Gtk::Label("Image Files:"));
+   textentry = Gtk::manage(new class Gtk::Entry());
+   musicentry = Gtk::manage(new class Gtk::Entry());
+   videoentry = Gtk::manage(new class Gtk::Entry());
+   imageentry = Gtk::manage(new class Gtk::Entry());
    table1 = Gtk::manage(new class Gtk::Table(2, 2, false));
    hbox2 = Gtk::manage(new class Gtk::HBox(false, 0));
    vbox1 = Gtk::manage(new class Gtk::VBox(false, 0));
@@ -44,30 +42,31 @@ dialog1_glade::dialog1_glade(
    hbox1->pack_start(*image1, Gtk::PACK_SHRINK, 0);
    hbox1->pack_start(*label1);
 
-   entry1->set_flags(Gtk::CAN_FOCUS);
-   entry1->set_text("* \"$@\"");
+   textlabel->set_alignment(0.96,0.5);
 
-   entry2->set_flags(Gtk::CAN_FOCUS);
-   entry2->set_text("* \"$@\"");
+   textentry->set_flags(Gtk::CAN_FOCUS);
+   textentry->set_text("* \"$@\"");
 
-   entry3->set_flags(Gtk::CAN_FOCUS);
-   entry3->set_text("* \"$@\"");
+   musicentry->set_flags(Gtk::CAN_FOCUS);
+   musicentry->set_text("* \"$@\"");
 
+   videoentry->set_flags(Gtk::CAN_FOCUS);
+   videoentry->set_text("* \"$@\"");
 
-   entry4->set_flags(Gtk::CAN_FOCUS);
-   entry4->set_text("* \"$@\"");
+   imageentry->set_flags(Gtk::CAN_FOCUS);
+   imageentry->set_text("* \"$@\"");
 
    table1->set_border_width(2);
    table1->set_row_spacings(5);
    table1->set_col_spacings(4);
-   table1->attach(*label2, 0, 1, 0, 1, Gtk::FILL);
-   table1->attach(*label3, 0, 1, 1, 2, Gtk::FILL);
-   table1->attach(*label4, 0, 1, 2, 3, Gtk::FILL);
-   table1->attach(*label5, 0, 1, 3, 4, Gtk::FILL);
-   table1->attach(*entry1, 1, 2, 0, 1, Gtk::EXPAND|Gtk::FILL);
-   table1->attach(*entry2, 1, 2, 1, 2, Gtk::EXPAND|Gtk::FILL);
-   table1->attach(*entry3, 1, 2, 2, 3, Gtk::EXPAND|Gtk::FILL);
-   table1->attach(*entry4, 1, 2, 3, 4, Gtk::EXPAND|Gtk::FILL);
+   table1->attach(*textlabel, 0, 1, 0, 1, Gtk::FILL);
+   table1->attach(*musiclabel, 0, 1, 1, 2, Gtk::FILL);
+   table1->attach(*videolabel, 0, 1, 2, 3, Gtk::FILL);
+   table1->attach(*imagelabel, 0, 1, 3, 4, Gtk::FILL);
+   table1->attach(*textentry, 1, 2, 0, 1, Gtk::EXPAND|Gtk::FILL);
+   table1->attach(*musicentry, 1, 2, 1, 2, Gtk::EXPAND|Gtk::FILL);
+   table1->attach(*videoentry, 1, 2, 2, 3, Gtk::EXPAND|Gtk::FILL);
+   table1->attach(*imageentry, 1, 2, 3, 4, Gtk::EXPAND|Gtk::FILL);
    hbox2->pack_start(*table1);
    vbox1->pack_start(*hbox1);
    vbox1->pack_start(*hbox2);
@@ -93,8 +92,8 @@ void dialog1_glade::confirm(){
 Glib::ustring choicesdir="/.choices";
 
 
-  if ( entry1->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
-    Glib::ustring command = "#! /bin/sh\nexec " + entry1->get_text() + "\n";
+  if ( textentry->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
+    Glib::ustring command = "#! /bin/sh\nexec " + textentry->get_text() + "\n";
     try {
       Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)(choicesdir + "/MIME-types/text"));
       Gnome::Vfs::Handle write_handle;
@@ -105,8 +104,8 @@ Glib::ustring choicesdir="/.choices";
     catch(const Gnome::Vfs::exception) {}
 }
 
-  if ( entry2->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
-    Glib::ustring command = "#! /bin/sh\nexec " + entry2->get_text() + "\n";
+  if ( musicentry->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
+    Glib::ustring command = "#! /bin/sh\nexec " + musicentry->get_text() + "\n";
     try {
       Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)(choicesdir + "/MIME-types/audio"));
       Gnome::Vfs::Handle write_handle;
@@ -117,8 +116,8 @@ Glib::ustring choicesdir="/.choices";
     catch(const Gnome::Vfs::exception) {}
 }
 
-  if ( entry3->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
-    Glib::ustring command = "#! /bin/sh\nexec " + entry3->get_text() + "\n";
+  if ( videoentry->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
+    Glib::ustring command = "#! /bin/sh\nexec " + videoentry->get_text() + "\n";
     try {
       Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)(choicesdir + "/MIME-types/video"));
       Gnome::Vfs::Handle write_handle;
@@ -129,8 +128,8 @@ Glib::ustring choicesdir="/.choices";
     catch(const Gnome::Vfs::exception) {}
 }
 
-  if ( entry4->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
-    Glib::ustring command = "#! /bin/sh\nexec " + entry4->get_text() + "\n";
+  if ( imageentry->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
+    Glib::ustring command = "#! /bin/sh\nexec " + imageentry->get_text() + "\n";
     try {
       Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)(choicesdir + "/MIME-types/image"));
       Gnome::Vfs::Handle write_handle;
