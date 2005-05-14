@@ -1,5 +1,7 @@
 /* Darimasen - iconmodes.cpp - Copyright (C) 2004 - 2005 Sudrien, GPL */
 
+/**********************/
+
 #include "iconmodes.h"
 
 /**********************/
@@ -27,7 +29,7 @@ void DaIconModes::proto_icon::run() const{
 
 //check the choices dir
 Glib::ustring choicesdir = getchoicesdir();
-Glib::ustring exec = getenv("HOME");
+Glib::ustring exec = Glib::get_home_dir();
   try{
     exec += choicesdir;
     exec += "/MIME-types/";
@@ -38,7 +40,7 @@ Glib::ustring exec = getenv("HOME");
     exec += " \""  + path + FileName + "\"";
     goruncommand(exec,path);
 
-    parent->parent->set_message(exec + " was run.");
+    parent->parent->set_message(FileName + " was run as " + FileMime);
     return;
 
     }
@@ -52,7 +54,7 @@ Glib::ustring exec = getenv("HOME");
     exec += " \""  + path + FileName + "\"";
     goruncommand(exec,path);
 
-    parent->parent->set_message(exec + " was run.");
+    parent->parent->set_message(FileName + " was run as " + FileMime.substr(0,FileMime.find("/")));
     return;
     }
   catch(const Gnome::Vfs::exception& ex){
@@ -77,12 +79,12 @@ Glib::ustring exec = getenv("HOME");
   switch(dialog.run()) {
     case(Gtk::RESPONSE_OK):
       {
-        Glib::ustring exec = getenv("HOME");
+        Glib::ustring exec = Glib::get_home_dir();
 	exec += choicesdir;
         exec += "/MIME-types/text";
         exec += " \""  + path + FileName + "\"";
         Glib::spawn_command_line_async(exec);
-        parent->parent->set_message(exec + " was opened as a text file.");
+        parent->parent->set_message(FileName + " was run as a text file.");
         return;
         }
       break;
@@ -111,7 +113,7 @@ void DaIconModes::proto_icon::runAsText() const{
 
   Glib::ustring choicesdir = getchoicesdir();
   Gnome::Vfs::Handle exec_handle;
-  Glib::ustring exec = getenv("HOME");
+  Glib::ustring exec = Glib::get_home_dir();
   try{
     exec += choicesdir;
     exec += "/MIME-types/text";
@@ -119,7 +121,7 @@ void DaIconModes::proto_icon::runAsText() const{
     exec += " \""  + path + FileName + "\"";
     Glib::spawn_command_line_async(exec);
 
-    parent->parent->set_message(exec + " was run.");
+    parent->parent->set_message(exec + " was run as text");
     return;
     }
   catch(const Gnome::Vfs::exception& ex){}
@@ -249,9 +251,8 @@ DaIconModes::proto_icon::proto_icon(
   path = getPath;
   parent = &getParent;
 
-  Glib::RefPtr<Gnome::Vfs::Uri> x = Gnome::Vfs::Uri::create(
-    getPath + ".DirIcon");
-  if (x->uri_exists()){
+  Glib::RefPtr<Gnome::Vfs::Uri> x = Gnome::Vfs::Uri::create( getPath + ".DirIcon");
+  if (x->uri_exists() && Glib::str_has_suffix(getPath,getFile->get_name() + slash)){
     icon = Gdk::Pixbuf::create_from_file(getPath + ".DirIcon");
     FileMime = "AppDir";
     }
@@ -433,9 +434,9 @@ DaIconModes::ChooseActionDialogue::ChooseActionDialogue(Glib::ustring mimeType){
 
 void DaIconModes::ChooseActionDialogue::GetCurrentAction(Glib::ustring mimeType){
 
-  Glib::ustring choicesdir = getchoicesdir();
-  Glib::ustring contents, exec1 = getenv("HOME");
-  exec1 += choicesdir;
+  //Glib::ustring choicesdir = getchoicesdir();
+  Glib::ustring contents, exec1 = Glib::get_home_dir();
+  exec1 += getchoicesdir();
   exec1 += (Glib::ustring)("/MIME-types/");
   exec1 += mimeType;
 
@@ -467,7 +468,7 @@ void DaIconModes::ChooseActionDialogue::modifyAction(){
     command += "\n";
 
     try {
-      Glib::ustring exec1 = getenv("HOME");
+      Glib::ustring exec1 = Glib::get_home_dir();
       Glib::ustring choicesdir = getchoicesdir();
       exec1 += choicesdir;
       exec1 += (Glib::ustring)("/MIME-types/");
@@ -705,7 +706,6 @@ bool DaIconModes::addEntry(
     Glib::RefPtr<Gnome::Vfs::Uri> x = Gnome::Vfs::Uri::create(
       parent->get_history(position) + info->get_name() + slash + ".DirIcon");
       if (x->uri_exists()){
-        //std::cout<< x->get_path() << "\n";
         iconlist[slotsUsed++] = new proto_icon(
           *this, parent->get_history(position) + info->get_name() + slash, info);
         }
@@ -755,12 +755,20 @@ void DaIconModes::redraw(){
       switch(mode){
         case 0: {
           Sidecon * tmpSidecon = new Sidecon(*iconlist[i]);
-          DisposableTable->attach( *tmpSidecon, x_pos, x_pos+1, y_pos, y_pos+1,Gtk::FILL, Gtk::FILL, 4, 4);
+          Gtk::Alignment * alignment1 = Gtk::manage(
+            new class Gtk::Alignment(Gtk::ALIGN_LEFT, Gtk::ALIGN_CENTER, 0, 0));
+          alignment1->add(*tmpSidecon);
+          DisposableTable->attach( *alignment1, x_pos, x_pos+1, y_pos, y_pos+1,
+            Gtk::FILL, Gtk::FILL , 4, 4);
             }
           break;
         case 1: {
           Listview * tmpListview = new Listview(*iconlist[i]);
-          DisposableTable->attach( *tmpListview, x_pos, x_pos+1, y_pos, y_pos+1,Gtk::FILL, Gtk::FILL, 4, 4);
+          Gtk::Alignment * alignment1 = Gtk::manage(
+            new class Gtk::Alignment(Gtk::ALIGN_LEFT, Gtk::ALIGN_CENTER, 0, 0));
+          alignment1->add(*tmpListview);
+          DisposableTable->attach( *alignment1, x_pos, x_pos+1, y_pos, y_pos+1,
+            Gtk::FILL, Gtk::FILL, 4, 4);
             }
           break;
         }

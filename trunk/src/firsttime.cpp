@@ -1,5 +1,7 @@
 /* Darimasen - firsttime.cpp - Copyright (C) 2004 - 2005 Sudrien, GPL */
 
+/**********************/
+
 #include "firsttime.h"
 
 /**********************/
@@ -10,7 +12,7 @@ dialog1_glade::dialog1_glade(
    okbutton1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-ok")));
    image1 = Gtk::manage(new class Gtk::Image(Gtk::StockID("gtk-dialog-question"), Gtk::IconSize(6)));
    label1 = Gtk::manage(new class Gtk::Label("It looks like this is your first time\n"
-		"running Darimasen.\n\n"
+		"running Darimasen (and have not used ROX).\n\n"
 		"This is a good time to set up\n"
 		"some default \"Run Actions\"\n\n"
 		"Simply replace the wildcard (*)\n"
@@ -95,7 +97,7 @@ Glib::ustring choicesdir="/.choices";
   if ( textentry->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
     Glib::ustring command = "#! /bin/sh\nexec " + textentry->get_text() + "\n";
     try {
-      Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)(choicesdir + "/MIME-types/text"));
+      Glib::ustring exec1 = (Glib::get_home_dir() +  (Glib::ustring)(choicesdir + "/MIME-types/text"));
       Gnome::Vfs::Handle write_handle;
       write_handle.create(exec1, Gnome::Vfs::OPEN_WRITE, false, 0755);
       write_handle.seek(Gnome::Vfs::SEEK_POS_START, 0);
@@ -107,7 +109,7 @@ Glib::ustring choicesdir="/.choices";
   if ( musicentry->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
     Glib::ustring command = "#! /bin/sh\nexec " + musicentry->get_text() + "\n";
     try {
-      Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)(choicesdir + "/MIME-types/audio"));
+      Glib::ustring exec1 = (Glib::get_home_dir() +  (Glib::ustring)(choicesdir + "/MIME-types/audio"));
       Gnome::Vfs::Handle write_handle;
       write_handle.create(exec1, Gnome::Vfs::OPEN_WRITE, false, 0755);
       write_handle.seek(Gnome::Vfs::SEEK_POS_START, 0);
@@ -119,7 +121,7 @@ Glib::ustring choicesdir="/.choices";
   if ( videoentry->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
     Glib::ustring command = "#! /bin/sh\nexec " + videoentry->get_text() + "\n";
     try {
-      Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)(choicesdir + "/MIME-types/video"));
+      Glib::ustring exec1 = (Glib::get_home_dir() +  (Glib::ustring)(choicesdir + "/MIME-types/video"));
       Gnome::Vfs::Handle write_handle;
       write_handle.create(exec1, Gnome::Vfs::OPEN_WRITE, false, 0755);
       write_handle.seek(Gnome::Vfs::SEEK_POS_START, 0);
@@ -131,7 +133,7 @@ Glib::ustring choicesdir="/.choices";
   if ( imageentry->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
     Glib::ustring command = "#! /bin/sh\nexec " + imageentry->get_text() + "\n";
     try {
-      Glib::ustring exec1 = (getenv("HOME") +  (Glib::ustring)(choicesdir + "/MIME-types/image"));
+      Glib::ustring exec1 = (Glib::get_home_dir() +  (Glib::ustring)(choicesdir + "/MIME-types/image"));
       Gnome::Vfs::Handle write_handle;
       write_handle.create(exec1, Gnome::Vfs::OPEN_WRITE, false, 0755);
       write_handle.seek(Gnome::Vfs::SEEK_POS_START, 0);

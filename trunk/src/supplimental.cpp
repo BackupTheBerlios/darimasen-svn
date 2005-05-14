@@ -1,7 +1,8 @@
 /* Darimasen - supplimental.cpp - Copyright (C) 2004 - 2005 Sudrien, GPL */
 
-#include "supplimental.h"
+/**********************/
 
+#include "supplimental.h"
 /**********************/
 
 Glib::ustring int2ustr(int x){
@@ -34,21 +35,33 @@ Glib::ustring underscoreSafe(Glib::ustring x){
 
 //check which choices dir to use
 Glib::ustring getchoicesdir(){
-  Glib::RefPtr<Gnome::Vfs::Uri> choicespath = Gnome::Vfs::Uri::create(
-    (Glib::ustring)getenv("HOME") + "/Choices");
-  if (choicespath->uri_exists()){
-    return "/Choices";
-    }
-  return "/.choices";
+  if (Gnome::Vfs::Uri::create(Glib::get_home_dir() + "/Choices")->uri_exists()) return "/Choices";
+  else return "/.choices";
   }
 
 /**********************/
 
-void goruncommand(Glib::ustring exec, Glib::ustring path){
 //execute a command in the correct working directory
-    Glib::ArrayHandle<std::string> cmd_args = Glib::shell_parse_argv(exec);
-    Glib::spawn_async(path, cmd_args, Glib::SPAWN_SEARCH_PATH);
-
+void goruncommand(Glib::ustring exec, Glib::ustring path){
+    Glib::spawn_async(path, Glib::shell_parse_argv(exec), Glib::SPAWN_SEARCH_PATH);
   }
   
+/**********************/
+
+Glib::ustring trim_whitespace(const Glib::ustring& text)
+{
+  Glib::ustring::const_iterator pbegin (text.begin());
+  Glib::ustring::const_iterator pend   (text.end());
+
+  while(pbegin != pend && Glib::Unicode::isspace(*pbegin))
+    ++pbegin;
+
+  Glib::ustring::const_iterator temp (pend);
+
+  while(pbegin != temp && Glib::Unicode::isspace(*--temp))
+    pend = temp;
+
+  return Glib::ustring(pbegin, pend);
+}
+
 /**********************/ 

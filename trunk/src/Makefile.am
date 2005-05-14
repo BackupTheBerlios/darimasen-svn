@@ -7,16 +7,16 @@ darimasen_SOURCES = \
 	supplimental.cpp \
         firsttime.cpp \
 	main.cpp \
-	damenu.cpp 
-
+	damenu.cpp \
+        optionsManager.cpp
 noinst_HEADERS = \
 	darimasen.h \
 	iconmodes.h \
 	supplimental.h \
         firsttime.h \
 	main.h \
-	damenu.h 
-
+	damenu.h \
+        optionsManager.h
 AM_CXXFLAGS = -I../.. @PKG_CFLAGS@
 
 darimasen_LDADD = -lpthread @LIBS@ @PKG_LIBS@ 

@@ -5,12 +5,20 @@
 
 /**********************/
 
-#include <gtkmm/main.h>
-#include <glibmm/ustring.h>
-#include <libgnomevfsmm.h>
 #include <vector>
-#include "darimasen.h"
+#include <iostream>
+#include <libgnomevfsmm.h>
+#include <gtkmm.h>
 
+#include "supplimental.h"
+
+/**********************
+
+#include "darimasen.h"
+#include "optionsManager.h"
+#include "supplimental.h"
+#include "iconmodes.h"
+#include "damenu.h"
 /**********************/
 
 #ifdef WIN32

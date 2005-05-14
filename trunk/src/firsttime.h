@@ -4,14 +4,6 @@
 #define FIRSTTIME_H
 
 #include "main.h"
-#include <gtkmm/dialog.h>
-#include <gtkmm/button.h>
-#include <gtkmm/buttonbox.h>
-#include <gtkmm/image.h>
-#include <gtkmm/label.h>
-#include <gtkmm/box.h>
-#include <gtkmm/entry.h>
-#include <gtkmm/table.h>
 
 /**********************/
 

@@ -1,9 +1,12 @@
- /* Darimasen - main.cpp - Copyright (C) 2004 - 2005 Sudrien, GPL */
+/* Darimasen - main.cpp - Copyright (C) 2004 - 2005 Sudrien, GPL */
    
+/**********************/
   
 #include "main.h"
+
 #include "firsttime.h"
-  
+#include "darimasen.h"
+
 /**********************/
   
 int main(int argc, char *argv[])
@@ -13,7 +16,7 @@ int main(int argc, char *argv[])
 
   // check for mime definitions. 
   { 
-    Glib::ustring fuz = getenv("HOME") ;
+    Glib::ustring fuz = Glib::get_home_dir() ;
     Glib::ustring altfuz = fuz;
     fuz += "/Choices";
     Glib::RefPtr<Gnome::Vfs::Uri> fuzz = Gnome::Vfs::Uri::create(fuz);
@@ -30,18 +33,23 @@ int main(int argc, char *argv[])
     //check which choices dir to use, use .choices if Choices isn't there      
     if (!fuzz->uri_exists()){
    	fuz = altfuz;
-        
     }
 
-   fuz += "/MIME-types";
-   Glib::RefPtr<Gnome::Vfs::Uri> fuz2 = Gnome::Vfs::Uri::create(fuz);
+   // make actions folder if needed
+   Glib::RefPtr<Gnome::Vfs::Uri> fuz2 = Gnome::Vfs::Uri::create(fuz + "/MIME-types");
     if (!fuz2->uri_exists()){
-      gnome_vfs_make_directory(fuz.c_str(),493);
-      dialog1_glade window;
+      gnome_vfs_make_directory((fuz + "/MIME-types").c_str(),493);
+      dialog1_glade window; 
       Gtk::Main::run(window); 
       }
-    }
+    
 
+   // make our own settings folder if needed
+   Glib::RefPtr<Gnome::Vfs::Uri> fuz3 = Gnome::Vfs::Uri::create(fuz + "/Darimasen");
+    if (!fuz3->uri_exists()){
+      gnome_vfs_make_directory((fuz + "/Darimasen").c_str(),493);
+      }
+    }
 
 
   std::vector<Glib::ustring> path;
@@ -80,11 +88,8 @@ int main(int argc, char *argv[])
     }
 
   if(path.empty())
-  #ifdef WIN32
-  path.push_back(getenv("USERPROFILE") + slash);
-  #else
-  path.push_back(getenv("HOME") + slash);
-  #endif
+    path.push_back(Glib::get_home_dir() + slash);
+
 
   std::cout << "Tabs opened should be for:\n";
   for(int i =0; i< path.size();i++)

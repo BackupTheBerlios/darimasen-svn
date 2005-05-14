@@ -6,7 +6,6 @@
 /**********************/
 
 #include "main.h"
-#include <iostream>
 
 /**********************/
 
@@ -14,6 +13,7 @@ Glib::ustring int2ustr(int);
 Glib::ustring underscoreSafe(Glib::ustring);
 Glib::ustring getchoicesdir();
 void goruncommand(Glib::ustring, Glib::ustring);
+Glib::ustring trim_whitespace(const Glib::ustring&);
 
 /**********************/
 

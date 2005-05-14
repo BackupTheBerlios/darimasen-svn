@@ -1,10 +1,8 @@
-
 /* Darimasen - damenu.cpp - Copyright (C) 2004 - 2005 Sudrien, GPL */
 
 /**********************/
 
 #include "damenu.h"
-
 
 /**********************/
 
@@ -457,15 +455,15 @@ DarimasenMenu::DarimasenMenu(const Glib::ustring & path, Darimasen& Myparent, gu
 
   depth = 0;
 
-  Glib::ustring shortpath = path; //home = getenv("HOME");
+  Glib::ustring shortpath = path; //home = Glib::get_home_dir();
 
   parent = &Myparent;
   
   int startPos = 0 , i = 0;
 
 
-  if ( path.find(getenv("HOME")) != Glib::ustring::npos ){
-    shortpath.replace(0,((Glib::ustring)getenv("HOME")).length(),"~");
+  if ( path.find(Glib::get_home_dir()) != Glib::ustring::npos ){
+    shortpath.replace(0,((Glib::ustring)Glib::get_home_dir()).length(),"~");
     }
 
   while ( (shortpath.find(slash,startPos) != Glib::ustring::npos) ) {
@@ -547,7 +545,7 @@ DarimasenMenu::DarimasenMenu(const Glib::ustring & path, Darimasen& Myparent, gu
           subdir2->signal_button_press_event().connect(
             sigc::bind<Glib::ustring,guint,bool>(
               sigc::mem_fun(*this, &DarimasenMenu::DaMenuSelect),
-                getenv("HOME"),pos,false));
+                Glib::get_home_dir(),pos,false));
 
     Gtk::SeparatorMenuItem * sep = Gtk::manage( new Gtk::SeparatorMenuItem());
     MenuArray[0]->attach(*sep, 0 ,1, 2, 3);

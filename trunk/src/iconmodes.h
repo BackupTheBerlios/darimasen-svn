@@ -4,13 +4,8 @@
 #define ICONMODES_H
 
 
+#include "main.h"
 #include "darimasen.h"
-#include <libgnomevfsmm.h>
-#include <gtkmm/table.h>
-#include <gdkmm/pixbuf.h>
-#include <gtkmm/entry.h>
-#include <gtkmm/messagedialog.h>
-#include <gtkmm/separator.h>
 
 /**********************/
 

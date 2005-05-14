@@ -3,14 +3,12 @@
 /**********************/
 
 #include "darimasen.h"
-#include <iostream>
-
 
 /**********************/
 
 // anything prefixed with 'f' corresponds with a button. 'nuff said.
 void Darimasen::fNewTab(){
-  set_history(Tabber->get_n_pages(), getenv("HOME") + slash);
+  set_history(Tabber->get_n_pages(), Glib::get_home_dir() + slash);
   addTab(Tabber->get_n_pages());
 
   }
@@ -65,7 +63,7 @@ void Darimasen::addTab(guint pos){
 
   if ( get_history(pos) == slash)
     tabNum = new Gtk::Label(slash + " ");
-  else if ( get_history(pos) == (getenv("HOME") + slash))
+  else if ( get_history(pos) == (Glib::get_home_dir() + slash))
     tabNum = new Gtk::Label("~ ");
   else
     tabNum = new Gtk::Label(
@@ -292,6 +290,9 @@ Darimasen::Darimasen(std::vector<Glib::ustring> paths){
     set_history(i,paths[i]);
     addTab(Tabber->get_n_pages());
     }
+
+
+myOptions = new optionsQuery(Glib::get_home_dir() + getchoicesdir() + "/Darimasen/Options");
  }
 
 /**********************/
@@ -328,7 +329,7 @@ void Darimasen::fQuit(){
     //mimeList[i].clear();
  //   unsizedImg[i].clear();
   //  }
-
+  delete myOptions;
 
   hide();
   }

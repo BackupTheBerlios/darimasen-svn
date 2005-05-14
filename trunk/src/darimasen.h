@@ -20,45 +20,13 @@
 
 /**********************/
 
-#include <gtkmm/window.h>
-#include <stack>
-#include <gtkmm/box.h>
-#include <gtkmm/toolbar.h>
-#include <gtkmm/separatortoolitem.h>
-#include <gtkmm/toggletoolbutton.h>
-#include <gtkmm/toolbutton.h>
-#include <gtkmm/menubar.h>
-#include <gtkmm/paned.h>
-#include <gtkmm/scrolledwindow.h>
-#include <gtkmm/eventbox.h>
-#include <gtkmm/statusbar.h>
-#include <gtkmm/menu.h>
-#include <gtkmm/stock.h>
-
-
 #include "main.h"
 #include <sys/types.h>
-#include <gtkmm/eventbox.h>
-
-#include <gtkmm/menuitem.h>
-
-
-#include "supplimental.h"
-#include <iostream>
-#include <gtkmm/scrollbar.h>
-#include <gtkmm/treemodel.h>
-#include <gtkmm/treestore.h>
-#include <gtkmm/treeview.h>
-#include <gtkmm/notebook.h>
-
-#include <gdkmm/pixbufloader.h>
-
-#include <gtkmm/layout.h>
-
-#include "iconmodes.h"
-#include "damenu.h"
 #include <gtkmm/menutoolbutton.h>
 
+#include "optionsManager.h"
+#include "damenu.h"
+#include "iconmodes.h"
 
 /**********************/
 
@@ -121,7 +89,7 @@ Glib::RefPtr<Gdk::Pixbuf> windowIcon;
 
   std::vector< std::vector<Glib::ustring> > history;
 
-
+class optionsQuery * myOptions;
 
 
 public:

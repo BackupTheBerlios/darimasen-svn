@@ -1,11 +1,8 @@
-SUBDIRS = \
-	scalable 16x16 48x48
-
 appsicondir = \
-        $(datadir)/pixmaps
+	$(datadir)/icons/hicolor/16x16/apps
 
 appsicon_DATA = \
-        darimasenInfo.svg
+        darimasen.png
 
 EXTRA_DIST = \
         $(appsicon_DATA)
