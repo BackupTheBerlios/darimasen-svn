@@ -7,33 +7,33 @@
 
 /**********************/
 
+class firsttime : public Gtk::Dialog{  
 
-class dialog1_glade : public Gtk::Dialog
-{  
-
-
-        class Gtk::Button * okbutton1;
-        class Gtk::Image * image1;
-        class Gtk::Label * label1;
-        class Gtk::HBox * hbox1;
-        class Gtk::Label * textlabel;
-        class Gtk::Label * imagelabel;
-        class Gtk::Label * videolabel;
-        class Gtk::Label * musiclabel;
-        class Gtk::Entry * textentry;
-        class Gtk::Entry * imageentry;
-        class Gtk::Entry * videoentry;
-        class Gtk::Entry * musicentry;
-        class Gtk::Table * table1;
-        class Gtk::HBox * hbox2;
-        class Gtk::VBox * vbox1;
-
-        void confirm();
-      
 public:
         
-        dialog1_glade();
-};
+  firsttime();
+
+private:
+
+  Gtk::Button * okbutton1;
+  Gtk::Image * image1;
+  Gtk::Label * label1;
+  Gtk::HBox * hbox1;
+  Gtk::Label * textlabel;
+  Gtk::Label * imagelabel;
+  Gtk::Label * videolabel;
+  Gtk::Label * musiclabel;
+  Gtk::Entry * textentry;
+  Gtk::Entry * imageentry;
+  Gtk::Entry * videoentry;
+  Gtk::Entry * musicentry;
+  Gtk::Table * table1;
+  Gtk::HBox * hbox2;
+  Gtk::VBox * vbox1;
+
+  void confirm();
+  };
+
 
 /**********************/
 

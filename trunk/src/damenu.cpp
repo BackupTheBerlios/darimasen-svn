@@ -57,7 +57,7 @@ MenuItemArray[position]->signal_activate().connect_notify(sigc::bind<guint,Glib:
     while(file_exists) {
       Glib::RefPtr<Gnome::Vfs::FileInfo> refFileInfo = handle.read_next(file_exists);
       if (refFileInfo->get_type() == Gnome::Vfs::FILE_TYPE_DIRECTORY
-          && ( (refFileInfo->get_name().substr(0,1) != ".") || parent->optShowHidden->get_active() )
+          && ( (refFileInfo->get_name().substr(0,1) != ".") || parent->get_hidden())
           && refFileInfo->get_name() != "."
           && refFileInfo->get_name() != ".."
           ){ 
@@ -436,7 +436,7 @@ Glib::ustring DarimasenMenu::CountSubdir(const Glib::ustring& path){
 
       Glib::RefPtr<Gnome::Vfs::FileInfo> refFileInfo = handle.read_next(file_exists);
       if (refFileInfo->get_type() == Gnome::Vfs::FILE_TYPE_DIRECTORY
-        && ( (refFileInfo->get_name().substr(0,1) != ".") || parent->optShowHidden->get_active())
+        && ( (refFileInfo->get_name().substr(0,1) != ".") || parent->get_hidden())
         && refFileInfo->get_name() != "."
         && refFileInfo->get_name() != ".."){
         j++;
@@ -505,14 +505,14 @@ DarimasenMenu::DarimasenMenu(const Glib::ustring & path, Darimasen& Myparent, gu
   for(i = depth - 1; i>0; i--){
     crop = crop.substr(0, crop.rfind(slash,crop.length()-2)) + slash;
 
-    MenuItemArray[i] = new Gtk::MenuItem(underscoreSafe(menulevel[i]) );
+    MenuItemArray[i] = new Gtk::MenuItem(underscore_safe(menulevel[i]) );
     MenuItemArray[i]->show();
     MenuItemArray[i]->set_submenu(*MenuArray[i]);
     prepend(*MenuItemArray[i]);
     MenuForPath(i, crop, "");
     }
 
-  MenuItemArray[i] = new Gtk::MenuItem(underscoreSafe(menulevel[i] ));
+  MenuItemArray[i] = new Gtk::MenuItem(underscore_safe(menulevel[i] ));
   MenuItemArray[i]->show();
   prepend(*MenuItemArray[i]);
 

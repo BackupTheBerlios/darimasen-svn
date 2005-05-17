@@ -10,40 +10,40 @@
 
 /**********************/
 
-  class DarimasenMenu : public Gtk::MenuBar {
+class DarimasenMenu : public Gtk::MenuBar {
 
-    class Darimasen * parent;
+public:
 
-    int depth;
+  DarimasenMenu(const Glib::ustring&, class Darimasen&, guint);
+  ~DarimasenMenu();
 
-    Gtk::Menu ** MenuArray; 
-    Gtk::MenuItem ** MenuItemArray;
-    Glib::ustring * menulevel;
+private:
 
-    Gtk::Menu prompt;
+  class Darimasen * parent;
+  int depth;
+  Gtk::Menu ** MenuArray; 
+  Gtk::MenuItem ** MenuItemArray;
+  Glib::ustring * menulevel;
+  Gtk::Menu prompt;
 
-    void copy(Glib::ustring);
-    void move(Glib::ustring);
-    void link(Glib::ustring);
-    void unlinkify(Glib::ustring);
 
-    void bookmark(Glib::ustring);
+  void bookmark(Glib::ustring);
+  void copy(Glib::ustring);
+  Glib::ustring CountSubdir(const Glib::ustring&);
+  bool DaMenuSelect(GdkEventButton*, const Glib::ustring,guint,bool);
+  void link(Glib::ustring);
+  void MenuForPath(int, Glib::ustring , Glib::ustring);
+  void move(Glib::ustring);
+  bool * needsRebuild;
+  bool SpecialMenuForPath(GdkEventButton* , int, Glib::ustring  , Glib::ustring);
+  void selection_reset(guint, Glib::ustring);
+  void unlinkify(Glib::ustring);
 
-    void MenuForPath(int, Glib::ustring , Glib::ustring); //extension
-    bool SpecialMenuForPath(GdkEventButton* , int, Glib::ustring  , Glib::ustring); //extension
+public:
 
-    Glib::ustring CountSubdir(const Glib::ustring&);
-    bool DaMenuSelect(GdkEventButton*, const Glib::ustring,guint,bool);
-    void selection_reset(guint, Glib::ustring);
- 
-    bool * needsRebuild;
-  public:
+  void signal_deactivate ();
 
-    void signal_deactivate ();
-    DarimasenMenu(const Glib::ustring&, class Darimasen&, guint);
-    ~DarimasenMenu();
-
-    };
+  };
 
 /**********************/
 

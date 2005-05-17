@@ -6,9 +6,8 @@
 
 /**********************/
 
-dialog1_glade::dialog1_glade(
-)
-{  
+firsttime::firsttime(){  
+
    okbutton1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-ok")));
    image1 = Gtk::manage(new class Gtk::Image(Gtk::StockID("gtk-dialog-question"), Gtk::IconSize(6)));
    label1 = Gtk::manage(new class Gtk::Label("It looks like this is your first time\n"
@@ -80,19 +79,18 @@ dialog1_glade::dialog1_glade(
    add_action_widget(*okbutton1, -5);
 
 
-   okbutton1->signal_clicked().connect(sigc::mem_fun(*this, &dialog1_glade::confirm));
+   okbutton1->signal_clicked().connect(sigc::mem_fun(*this, &firsttime::confirm));
 
 
    show_all_children();
-}
+  }
 
 
 /**********************/
 
-void dialog1_glade::confirm(){
+void firsttime::confirm(){
 
-Glib::ustring choicesdir="/.choices";
-
+  Glib::ustring choicesdir="/.choices";
 
   if ( textentry->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
     Glib::ustring command = "#! /bin/sh\nexec " + textentry->get_text() + "\n";
@@ -104,7 +102,7 @@ Glib::ustring choicesdir="/.choices";
       GnomeVFSFileSize bytes_written = write_handle.write(command.data(), command.size());
       }
     catch(const Gnome::Vfs::exception) {}
-}
+    }
 
   if ( musicentry->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
     Glib::ustring command = "#! /bin/sh\nexec " + musicentry->get_text() + "\n";
@@ -116,7 +114,7 @@ Glib::ustring choicesdir="/.choices";
       GnomeVFSFileSize bytes_written = write_handle.write(command.data(), command.size());
       }
     catch(const Gnome::Vfs::exception) {}
-}
+    }
 
   if ( videoentry->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
     Glib::ustring command = "#! /bin/sh\nexec " + videoentry->get_text() + "\n";
@@ -128,7 +126,7 @@ Glib::ustring choicesdir="/.choices";
       GnomeVFSFileSize bytes_written = write_handle.write(command.data(), command.size());
       }
     catch(const Gnome::Vfs::exception) {}
-}
+    }
 
   if ( imageentry->get_text() != "* \"$@\""){ //don't intentionally make a broken script.
     Glib::ustring command = "#! /bin/sh\nexec " + imageentry->get_text() + "\n";
@@ -140,15 +138,9 @@ Glib::ustring choicesdir="/.choices";
       GnomeVFSFileSize bytes_written = write_handle.write(command.data(), command.size());
       }
     catch(const Gnome::Vfs::exception) {}
-}
+    }
 
-      hide();
-      return;
-      }
-    
-
-
-
-
+  hide();
+  }
 
 /**********************/

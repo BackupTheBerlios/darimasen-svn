@@ -10,10 +10,14 @@
 /**********************/
 
 Glib::ustring int2ustr(int);
-Glib::ustring underscoreSafe(Glib::ustring);
-Glib::ustring getchoicesdir();
-void goruncommand(Glib::ustring, Glib::ustring);
+
+Glib::ustring get_choices_dir();
+
+void exec_command(Glib::ustring, Glib::ustring);
+
 Glib::ustring trim_whitespace(const Glib::ustring&);
+
+Glib::ustring underscore_safe(Glib::ustring);
 
 /**********************/
 

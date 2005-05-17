@@ -12,13 +12,6 @@
 
 #include "supplimental.h"
 
-/**********************
-
-#include "darimasen.h"
-#include "optionsManager.h"
-#include "supplimental.h"
-#include "iconmodes.h"
-#include "damenu.h"
 /**********************/
 
 #ifdef WIN32
@@ -27,7 +20,7 @@ const Glib::ustring slash = "\\";
 const Glib::ustring slash = "/";
 #endif
 
-const unsigned short AvailableModes = 2;
+//const unsigned short AvailableModes = 2;
 
 /**********************/
 

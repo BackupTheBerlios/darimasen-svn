@@ -14,46 +14,30 @@ int main(int argc, char *argv[])
   Gtk::Main kit(argc, argv);
   Gnome::Vfs::init();
 
-  // check for mime definitions. 
-  { 
-    Glib::ustring fuz = Glib::get_home_dir() ;
-    Glib::ustring altfuz = fuz;
-    fuz += "/Choices";
-    Glib::RefPtr<Gnome::Vfs::Uri> fuzz = Gnome::Vfs::Uri::create(fuz);
-    //support ./choices as well
-    altfuz += "/.choices";
-    Glib::RefPtr<Gnome::Vfs::Uri> altfuzz = Gnome::Vfs::Uri::create(altfuz);  
-
-    //make .choices default - if people don't have Rox they'd
-    // probably prefer not to have their homedir cluttered  
-    if (!fuzz->uri_exists() && !altfuzz->uri_exists()){
-      gnome_vfs_make_directory(altfuz.c_str(),493);
+  //The new get_choices_dir() really speeds this up...
+  //Glib::get_home_dir() + get_choices_dir(); -- will be ~/Choices if exists, ~/.choices otherwise
+  {
+    // make .choices if nothing available
+    if (!Gnome::Vfs::Uri::create(Glib::get_home_dir() + get_choices_dir())->uri_exists()){
+      gnome_vfs_make_directory((Glib::get_home_dir() + get_choices_dir()).c_str(),493);
       }
 
-    //check which choices dir to use, use .choices if Choices isn't there      
-    if (!fuzz->uri_exists()){
-   	fuz = altfuz;
-    }
-
-   // make actions folder if needed
-   Glib::RefPtr<Gnome::Vfs::Uri> fuz2 = Gnome::Vfs::Uri::create(fuz + "/MIME-types");
-    if (!fuz2->uri_exists()){
-      gnome_vfs_make_directory((fuz + "/MIME-types").c_str(),493);
-      dialog1_glade window; 
-      Gtk::Main::run(window); 
+    // make MIME-types if nothing available, set up basics
+    if (!Gnome::Vfs::Uri::create(Glib::get_home_dir() + get_choices_dir() + "/MIME-types")->uri_exists()){
+      gnome_vfs_make_directory((Glib::get_home_dir() + get_choices_dir() + "/MIME-types").c_str(),493);
+      firsttime window; 
+      Gtk::Main::run(window);
       }
-    
 
-   // make our own settings folder if needed
-   Glib::RefPtr<Gnome::Vfs::Uri> fuz3 = Gnome::Vfs::Uri::create(fuz + "/Darimasen");
-    if (!fuz3->uri_exists()){
-      gnome_vfs_make_directory((fuz + "/Darimasen").c_str(),493);
+    // make our own settings folder if nothing available
+    if (!Gnome::Vfs::Uri::create(Glib::get_home_dir() + get_choices_dir() + "/Darimasen")->uri_exists()){
+      gnome_vfs_make_directory((Glib::get_home_dir() + get_choices_dir() + "/Darimasen").c_str(),493);
       }
     }
-
 
   std::vector<Glib::ustring> path;
 
+  // parse all the possible paths on the command line
   for( int i=1; i < argc; i++){
     if((argv[i][0]!='-') && (argv[i-1][0]!='-')){ // some quick anti-argument logic
       Glib::ustring tmp = argv[i];

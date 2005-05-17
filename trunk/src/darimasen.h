@@ -32,95 +32,85 @@
 
 class Darimasen : public Gtk::Window {
 
-  //class DarimasenMenu;
-
-  class aboutDa : public Gtk::Window {
-    Gtk::Image * image1;
-    Gtk::EventBox * closer;
-    bool ch0wned(GdkEventButton*);
-  public:
-    aboutDa();
-    ~aboutDa();
-
-
-    };
-  
-  Gtk::VBox VerticalOrganizer;
-  Gtk::Toolbar TopBar;
-  Gtk::ToolItem * DarimasenMenuContainer;
-  class DarimasenMenu * DaMenu;
-  Gtk::HPaned HideTreePane;
-  Gtk::ScrolledWindow TreeScroller;
-
-  Gtk::Statusbar Info;
-
-  Gtk::ToolItem * CompactMenuContainer;
-  Gtk::MenuBar * CompactMenu;
-  Gtk::Menu * m_Menu_File;
-
-  Gtk::SeparatorToolItem * sep1;
-  Gtk::SeparatorToolItem * sep2;
-
-Gtk::MenuToolButton * BackButton;
-Gtk::ToolButton * ChangeIconMode;
- Gtk::ToggleToolButton * ViewTree;
-Gtk::ToolButton * NewTab;
-
-  Gtk::Menu * history_menu;
-
-  void fNewTab();
-
-  void tabberSwitched(GtkNotebookPage*, guint);
-  void addTab(guint);
-
-  void removeTab(guint);
-  void fBack();
-  void fQuit();
-  void fAbout();
-  void fShowHidden();
-  void fPrintHist();
-  void fChangeIconMode();
-
-Glib::RefPtr<Gdk::Pixbuf> windowIcon;
-
-  std::vector< class DaIconModes* > IconModeList;
-  std::vector< class Gtk::EventBox* > EventBoxList;
-  short mode;
-
-  std::vector< std::vector<Glib::ustring> > history;
-
-class optionsQuery * myOptions;
-
-
 public:
-
-  std::vector <Glib::ustring> mimeList;
-  std::vector < Glib::RefPtr<Gdk::Pixbuf> > unsizedImg;
 
   Darimasen(std::vector<Glib::ustring>);
   ~Darimasen();
 
-  short get_mode(){return mode;}
+private:
 
+  Glib::RefPtr<Gdk::Pixbuf> windowIcon;
+  short mode;
+
+
+  Gtk::VBox VerticalOrganizer;
+  Gtk::Toolbar TopBar;
+
+  Gtk::ToolItem * CompactMenuContainer;
+  Gtk::MenuBar * CompactMenu;
+  Gtk::Menu * m_Menu_File;
   Gtk::CheckMenuItem * optShowHidden;
-  void set_message(Glib::ustring);
-  //std::vector< std::stack<Glib::ustring> > history;
-  void updateView(Glib::ustring, Glib::ustring);
 
-  void newTab(Glib::ustring);
-  void ChangeCurrentPath(Glib::ustring path, bool, bool);
-  
+  Gtk::SeparatorToolItem * sep1;
+
+  Gtk::ToolItem * DarimasenMenuContainer;
+  class DarimasenMenu * DaMenu;
+
+  Gtk::SeparatorToolItem * sep2;
+
+  Gtk::MenuToolButton * BackButton;
+  Gtk::Menu * history_menu;
+  Gtk::ToolButton * ChangeIconMode;
+  //Gtk::ToggleToolButton * ViewTree;
+  Gtk::ToolButton * NewTab;
+
+  Gtk::HPaned HideTreePane;
+  Gtk::ScrolledWindow TreeScroller;
+  Gtk::Notebook * Tabber;
+
+  Gtk::Statusbar Info;
 
 
-  Glib::ustring get_history(gint, gint = 0);
+  std::vector< class DaIconModes* > IconModeList;
+  std::vector< class Gtk::EventBox* > EventBoxList;
+  std::vector< std::vector<Glib::ustring> > history;
+  std::vector <Glib::ustring> mimeList;
+  std::vector <Glib::RefPtr<Gdk::Pixbuf> > unsizedImg;
 
-  void set_history(gint, Glib::ustring);
+  class optionsQuery * myOptions;
 
-  bool del_history(gint);
+Gtk::Window * about;
+
+  void addTab(guint);
+  void fAbout();
+  bool fAbout_ch0wned(GdkEventButton*);
+  void fBack();
+  void fChangeIconMode();
+  void fNewTab();
+  void fPrintHist();
+  void fQuit();
+  void fShowHidden();
+  void removeTab(DaIconModes*&);
+  void tabberSwitched(GtkNotebookPage*, guint);
+
+
+public:
+
 
   void buildHistoryMenu(gint);
+  //rework so the bools mean somthing consistant
+  void ChangeCurrentPath(Glib::ustring path, bool, bool);
+  bool del_history(gint);
+  bool get_hidden();
+  Glib::ustring get_history(gint, gint = 0);
+  Glib::RefPtr<Gdk::Pixbuf> get_icon(Glib::ustring mime);
+  short get_mode();
   void fHistoryMenu(gint, gint);
-  Gtk::Notebook * Tabber;
+  void newTab(Glib::ustring);
+  void set_message(Glib::ustring);
+  void set_history(gint, Glib::ustring);
+  void updateView(Glib::ustring, Glib::ustring);
+
   };
 
 /**********************/

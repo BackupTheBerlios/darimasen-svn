@@ -2,28 +2,24 @@ version 0.0.8
 
 Must do:
 
-add a routine to update tab numbers when tabs get deleted.
-
-evaluate the " Gtk-CRITICAL **: gtk_widget_event: assertion `WIDGET_REALIZED_FOR_EVENT (widget, event)' failed" messages
-Full Folder context menu.
-Keyboard navigation of menus (Alt+1 opens root menu, Alt+2 opens first child, etc)
-
 Move, copy, delete of files needs more checking (or at least feedback)
-
 move, copy, delete of folder
 move, copy of folder contents
-
 detail view
 
 
 Would like to do:
 
+Keyboard navigation of menus (Alt+1 opens root menu, Alt+2 opens first child, etc)
 set unreadable folders insensitive, etc.
-limiting DaMenu expansion (preserve window width for long paths) - by shortening menu names
 Create new folder
-use existing thumbnails / create new thumbnails (a la ROX)
-files in APPDIR root folder are not appdirs - check if file name is in path...
 
+
+nicities:
+When deleting a file (or any other operation that leaves you in the same dir
+ in the current window), keep the scrolled position in the same place if possible.
+limiting DaMenu expansion (preserve window width for long paths) - by shortening menu names
+use existing thumbnails / create new thumbnails (a la ROX)
 
 version 0.0.9
 -----------------------------------------------
@@ -31,8 +27,6 @@ version 0.0.9
 Optional Directory tree, updated as needed
 
 Package as appdir?
- 
----
 
 -----------------------------------------------
 
