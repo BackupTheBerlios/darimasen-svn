@@ -181,7 +181,7 @@ bool DarimasenMenu::DaMenuSelect(
 
 
     prompt.items().push_back(
-      Gtk::Menu_Helpers::MenuElem("Opening " + path + " from here consistantly leads to errors"));
+      Gtk::Menu_Helpers::MenuElem("Opening " + path + " from here consistently leads to errors"));
 
     prompt.items().push_back(
       Gtk::Menu_Helpers::MenuElem("Open In new Tab",

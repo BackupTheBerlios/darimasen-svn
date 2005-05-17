@@ -207,7 +207,7 @@ Glib::ustring exec = Glib::get_home_dir();
         }
       break;
     default:
-      parent->parent->set_message("Well, that was usefull.");
+      parent->parent->set_message("Well, that was useful.");
       break;
     }
   }
@@ -580,6 +580,9 @@ DaIconModes::setPermissionsDialogue::setPermissionsDialogue(Glib::RefPtr<Gnome::
    user = new class Gtk::Label("User");
    group = new class Gtk::Label("Group");
    others = new class Gtk::Label("Everybody");
+
+   user->set_alignment(0.96,0.5);
+   group->set_alignment(0.96,0.5);
 
    explaination = new class Gtk::Label("for \""+ info->get_name() + "\"...");
 

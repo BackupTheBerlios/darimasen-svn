@@ -11,7 +11,8 @@ firsttime::firsttime(){
    okbutton1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-ok")));
    image1 = Gtk::manage(new class Gtk::Image(Gtk::StockID("gtk-dialog-question"), Gtk::IconSize(6)));
    label1 = Gtk::manage(new class Gtk::Label("It looks like this is your first time\n"
-		"running Darimasen (and have not used ROX).\n\n"
+		"running Darimasen (and you \n"
+		"have not used ROX).\n\n"
 		"This is a good time to set up\n"
 		"some default \"Run Actions\"\n\n"
 		"Simply replace the wildcard (*)\n"
