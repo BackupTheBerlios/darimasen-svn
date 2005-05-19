@@ -23,7 +23,9 @@ RDEPEND="!x11-misc/darimasen-svn"
 
 src_compile() {
 
+	elibtoolize
 	econf || die
+	elibtoolize
 	emake || die
 }
 

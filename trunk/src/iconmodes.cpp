@@ -871,6 +871,16 @@ void DaIconModes::MoveDialogue::onCancel(){
 
 void DaIconModes::MoveDialogue::onOk(){
   Glib::spawn_command_line_async((Glib::ustring)"mv \""  + label->get_text().c_str() + (Glib::ustring)"\" \"" + entry->get_text().c_str()+ "\"");
+/*
+  try
+  {
+    Gnome::Vfs::Transfer::transfer(label->get_text().c_str(), entry->get_text().c_str());  
+  }
+  catch(const Gnome::Vfs::exception& ex)
+  {
+    // if the operation was not successful, print the error
+    std::cout << "Error occurred: " << label->get_text() << ", " << ex.what() << std::endl;
+  }*/
 
   grandparent->updateView(
     label->get_text().substr(0, label->get_text().rfind(slash,label->get_text().length())+1),
@@ -923,10 +933,19 @@ void DaIconModes::DeleteDialogue::onCancel(){
 void DaIconModes::DeleteDialogue::onOk(){
   Glib::spawn_command_line_async((Glib::ustring)"rm \""  + label->get_text().c_str() + "\"");
 
+/*  try
+  {
+    Gnome::Vfs::Transfer::remove(label->get_text().c_str());  
+  }
+  catch(const Gnome::Vfs::exception& ex)
+  {
+    // if the operation was not successful, print the error
+    std::cout << "Error occurred: " << label->get_text() << ", " << ex.what() << std::endl;
+  }*/
+
   grandparent->updateView(
     label->get_text().substr(0, label->get_text().rfind(slash,label->get_text().length())+1),
     label->get_text().substr(0, label->get_text().rfind(slash,label->get_text().length())+1));
-   //std::cout << label->get_text().substr(0, label->get_text().rfind(slash,label->get_text().length())+1) ;
   hide();
   }
 
@@ -952,6 +971,15 @@ bool DaIconModes::addEntry(
 
   return true;
   }
+
+/**********************
+
+bool on_transfer_progress(const Gnome::Vfs::Transfer::ProgressInfo& info){
+//if (info->get_vfs_status() == Gnome::Vfs::OK)
+//  parent->set_message("OK!");
+
+
+    }
 
 /**********************/
 

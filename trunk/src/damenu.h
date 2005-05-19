@@ -37,7 +37,7 @@ private:
   bool * needsRebuild;
   bool SpecialMenuForPath(GdkEventButton* , int, Glib::ustring  , Glib::ustring);
   void selection_reset(guint, Glib::ustring);
-  void unlinkify(Glib::ustring);
+  void unlinkify(Glib::ustring,gint);
 
 public:
 

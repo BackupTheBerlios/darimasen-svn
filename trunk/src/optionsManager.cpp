@@ -17,7 +17,7 @@ optionsQuery::optionsQuery(Glib::ustring toParse){
     context.end_parse();
     }
   catch(const Glib::Error) {
-    std::cout<< "Error! Settings file " << toParse << " not found.\n";
+    //std::cout<< "Error! Settings file " << toParse << " not found.\n";
     }
   }
 

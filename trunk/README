@@ -1,15 +1,13 @@
-Darimasen File Manager - 0.0.7 [Feature Incomplete - Only for Experimental Use]
+Darimasen File Manager - 0.0.8 [Feature Incomplete - Only for Experimental Use]
 
 Readme.txt - 8 Apr. 2005
 
 --
 
-0.0.7 hs been released because:
+0.0.8 hs been released because:
 
-1. Now with tabs, it is at least as stable as 0.0.6
-2. Except for DnD, THe navigation system is believed to be complete.
+The code has reached a peak in functionality. 
 
-It has better stability and such. Pretty sure. It's faster at several points.
 
 --
 
@@ -42,6 +40,7 @@ Darimasen is a file manager with no folders. You won't see one. Period. There ar
 
 
 --
+
 
 
 http://darimasen.berlios.de

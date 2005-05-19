@@ -180,8 +180,8 @@ bool DarimasenMenu::DaMenuSelect(
       prompt.items().pop_back();
 
 
-    prompt.items().push_back(
-      Gtk::Menu_Helpers::MenuElem("Opening " + path + " from here consistently leads to errors"));
+    //prompt.items().push_back(
+    //  Gtk::Menu_Helpers::MenuElem("Opening " + path + " from here consistently leads to errors"));
 
     prompt.items().push_back(
       Gtk::Menu_Helpers::MenuElem("Open In new Tab",
@@ -208,9 +208,10 @@ bool DarimasenMenu::DaMenuSelect(
 
     prompt.items().push_back(
       Gtk::Menu_Helpers::MenuElem("Delete...",
-        sigc::bind<Glib::ustring>(
-          sigc::mem_fun(*this,&DarimasenMenu::unlinkify),path)));
+        sigc::bind<Glib::ustring,gint>(
+          sigc::mem_fun(*this,&DarimasenMenu::unlinkify),path,pos)));
 
+    /*
     prompt.items().push_back(
       Gtk::Menu_Helpers::SeparatorElem());
 
@@ -218,10 +219,10 @@ bool DarimasenMenu::DaMenuSelect(
       Gtk::Menu_Helpers::MenuElem("Add to location menu",
         sigc::bind<Glib::ustring>(
           sigc::mem_fun(*this,&DarimasenMenu::bookmark),path)));
+    */
+    prompt.signal_selection_done().connect_notify(
+      sigc::mem_fun(*MenuItemArray[pos],&Gtk::MenuItem::deselect));
 
-  //  prompt.signal_selection_done().connect_notify(sigc::mem_fun(prompt,&Gtk::Menu::hide));
-  //  prompt.signal_selection_done().connect_notify(sigc::mem_fun(*MenuArray[pos],&Gtk::Menu::hide));
-    prompt.signal_selection_done().connect_notify(sigc::mem_fun(*MenuItemArray[pos],&Gtk::MenuItem::deselect));
 	
     prompt.popup(event->button, event->time);
   return true;
@@ -232,6 +233,10 @@ bool DarimasenMenu::DaMenuSelect(
   //DaFileLister(); //5:45pm, 24 Dec 2004, it worked! // leave this comment    
   }
 
+/**********************/
+
+void DarimasenMenu::bookmark(Glib::ustring path){
+  }
 
 /**********************/
 
@@ -243,11 +248,11 @@ void DarimasenMenu::copy(Glib::ustring path){
    
   Gtk::RadioButton::Group _RadioBGroup_radiobutton4;
   Gtk::RadioButton * radiobutton4 = Gtk::manage(
-    new class Gtk::RadioButton(_RadioBGroup_radiobutton4, "Copy Directory to ... (cp .)"));
+    new class Gtk::RadioButton(_RadioBGroup_radiobutton4, "Copy Directory to ... (cp -R)"));
   Gtk::RadioButton * radiobutton5 = Gtk::manage(
     new class Gtk::RadioButton(_RadioBGroup_radiobutton4, "Copy files in directory to ... (cp *)"));
   Gtk::RadioButton * radiobutton6 = Gtk::manage(
-    new class Gtk::RadioButton(_RadioBGroup_radiobutton4, "Copy everything in directory to ... (cp -R *)"));
+    new class Gtk::RadioButton(_RadioBGroup_radiobutton4, "Copy everything in directory to ... (cp -R \*)"));
   Gtk::Entry * entry2 = Gtk::manage(new class Gtk::Entry());
   cancelbutton2->set_flags(Gtk::CAN_FOCUS);
   cancelbutton2->set_flags(Gtk::CAN_DEFAULT);
@@ -274,11 +279,22 @@ void DarimasenMenu::copy(Glib::ustring path){
 
   switch(copyDialogue.run()){
     case(Gtk::RESPONSE_OK):{
-      std::cout << path << "moved\n";
+      parent->set_message( path + "moved");
+  if(radiobutton4->get_active()){
+  Glib::spawn_command_line_async((Glib::ustring)"cp -R \""  + path.c_str() + (Glib::ustring)"\" \"" + entry2->get_text().c_str()+ "\"");
+}
+  if(radiobutton5->get_active()){
+  Glib::spawn_command_line_async((Glib::ustring)"cp \""  + path.c_str() + (Glib::ustring)"\" \"" + entry2->get_text().c_str()+ "\"*");
+}
+  if(radiobutton6->get_active()){
+  Glib::spawn_command_line_async((Glib::ustring)"cp -R \""  + path.c_str() + (Glib::ustring)"\" \"" + entry2->get_text().c_str()+ "\"*");
+
+
+}
       return;
       }
     default:{
-      std::cout << path << "not moved\n";
+      std::cout << path << "not copied\n";
       return;
       }
     }
@@ -294,11 +310,11 @@ void DarimasenMenu::move(Glib::ustring path){
    
   Gtk::RadioButton::Group _RadioBGroup_radiobutton1;
   Gtk::RadioButton * radiobutton1 = Gtk::manage(new class Gtk::RadioButton(
-    _RadioBGroup_radiobutton1, "Move " + path + " to ... (mv .)"));
+    _RadioBGroup_radiobutton1, "Move " + path + " to ... (mv -R )"));
   Gtk::RadioButton * radiobutton2 = Gtk::manage(new class Gtk::RadioButton(
     _RadioBGroup_radiobutton1, "Move files in directory to... (mv *)"));
   Gtk::RadioButton * radiobutton3 = Gtk::manage(new class Gtk::RadioButton(
-    _RadioBGroup_radiobutton1, "Move everything in directory to... (mv -R *)"));
+    _RadioBGroup_radiobutton1, "Move everything in directory to... (mv -R \*)"));
   Gtk::Entry * entry1 = Gtk::manage(new class Gtk::Entry());
   cancelbutton1->set_flags(Gtk::CAN_FOCUS);
   cancelbutton1->set_flags(Gtk::CAN_DEFAULT);
@@ -324,7 +340,20 @@ void DarimasenMenu::move(Glib::ustring path){
 
   switch(moveDialogue.run()){
     case(Gtk::RESPONSE_OK):{
-      std::cout << path << "moved\n";
+      parent->set_message( path + "moved");
+  if(radiobutton1->get_active()){
+  Glib::spawn_command_line_async((Glib::ustring)"mv -R \""  + path.c_str() + (Glib::ustring)"\" \"" + entry1->get_text().c_str()+ "\"");
+}
+  if(radiobutton2->get_active()){
+  Glib::spawn_command_line_async((Glib::ustring)"mv \""  + path.c_str() + (Glib::ustring)"\" \"" + entry1->get_text().c_str()+ "\"*");
+}
+  if(radiobutton3->get_active()){
+  Glib::spawn_command_line_async((Glib::ustring)"mv -R \""  + path.c_str() + (Glib::ustring)"\" \"" + entry1->get_text().c_str()+ "\"*");
+
+
+}
+      // rebuild this menu if needed
+      //check if any other menus effected, if so, set for rebuild
       return;
       }
     default:{
@@ -371,7 +400,13 @@ void DarimasenMenu::link(Glib::ustring path){
 
   switch(linkDialogue.run()){
     case(Gtk::RESPONSE_OK):{
-      std::cout << "link created " + path << "\n";
+
+
+  Glib::spawn_command_line_async((Glib::ustring)"ln -s \""  + label1->get_text().c_str() + (Glib::ustring)"\" \"" + entry3->get_text().c_str() + "\"");
+
+      parent->set_message( "link created " + path );
+
+      //check and see if link path is in any menus, set for rebuild if true.
       return;
       }
     default:{
@@ -384,7 +419,7 @@ void DarimasenMenu::link(Glib::ustring path){
 /**********************/
 
 
-void DarimasenMenu::unlinkify(Glib::ustring path){
+void DarimasenMenu::unlinkify(Glib::ustring path, gint menu){
   Gtk::Dialog unlinkifyDialogue;
   Gtk::Button * cancelbutton4 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-cancel")));
   Gtk::Button * okbutton4 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-ok")));
@@ -410,17 +445,19 @@ void DarimasenMenu::unlinkify(Glib::ustring path){
 
   switch(unlinkifyDialogue.run()){
     case(Gtk::RESPONSE_OK):{
-      std::cout << "Deleted " + path << "\n";
+
+      Glib::spawn_command_line_async((Glib::ustring)"rm -Rf \""  + path + "\"");
+      needsRebuild[menu] = true;
+      //check if any of the windows contain that path, do what? 
+      parent->set_message("Deleted " + path); 
       return;
       }
     default:{
-      std::cout << "No deletion " + path << "\n";
+      parent->set_message("nothing deleted");
       return;
       }
     }
   }
-
-    void DarimasenMenu::bookmark(Glib::ustring path){}
 
 /**********************/
 

@@ -279,7 +279,7 @@ void Darimasen::fBack(){
 /**********************/
 
 void Darimasen::fChangeIconMode(){
-  mode = (mode + 1) % 2; // increment, mod of possibilities.
+  mode = (mode + 1) % 3; // increment, mod of possibilities.
   for(int i = 0; i < history.size(); i++){
       ChangeCurrentPath(get_history(i),false,false);
     } 
@@ -558,6 +558,14 @@ void Darimasen::updateView(Glib::ustring sourceDir, Glib::ustring targetDir){
 
   for(int i = 0; i < history.size(); i++){
     if( get_history(i) == sourceDir || get_history(i) == targetDir ){
+
+/*
+if (!Gnome::Vfs::Uri::create(get_history(i))->uri_exists()){
+  Glib::ustring temp = get_history(i);
+  del_history(i);
+  set_history(i, temp.substr(0, temp.rfind(slash)) + slash);
+}*/
+
       ChangeCurrentPath(get_history(i),false,false);
       }
     }

@@ -227,6 +227,7 @@ private:
 
   bool addEntry(Glib::ustring, Glib::RefPtr<const Gnome::Vfs::FileInfo>, bool, bool);
   void on_size_allocate(Gtk::Allocation&);
+ // bool on_transfer_progress(const Gnome::Vfs::Transfer::ProgressInfo&);
   void redraw();
 
   class Darimasen * parent;
