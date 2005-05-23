@@ -1,0 +1,70 @@
+Darimasen 0.0.7 - 20050408
+
+  Sudirectory Navigation *MENU ALWAYS ONLY ONE LEVEL DEEP*
+  Tab support:
+    multiple directories from command line
+    open and close tabs
+    History per tab (back button)
+    Showing hidden files effects everything at once
+  Relocatable with BinReloc (autopackage.org)  
+  Icon Cacheing
+  Blew away useless directory tree junk
+  Stausbar actually shows messages
+  
+Darimasen 0.0.6 - 20050218
+  
+  Icon display bugs fixed
+  Window resize now effects icons (speeding up)
+  Gnome-VFSMM integration
+  Show Hidden files option
+  Linux-only build with autogen.sh
+  Directory tree navigation started
+  ROX-Compatible mime-based actions
+  Permissions dialogue
+  Gnome Icon hack
+
+
+Darimasen 0.0.5
+
+  Add auto-incriment build numbers
+  switch to ListView or other structure for file fiewing - Sidecons!
+  win32 icons that open/run files ( no management functionality yet )
+  standard file organization
+  Set up DaMenuElem to display subfolder# in a justified manner
+  Removed #ifdef WIN32 slash or backslash differences, now a global const
+  All Win32 drives on root menu
+  The file view becomes a class that returns a Gtk::Table& , and simple switch.
+
+
+Darimasen 0.0.4 - 20041228
+
+  switch everything back to stl-type menus.
+  Subdir Counting function (pass path, returns number)
+  SigC the rebuilding of menus, Changing of File listing
+  set window wider as needed.
+  go to parent Directory 
+  back button functionality (no popup menu)
+  Hide window for Tree on button
+
+
+Darimasen 0.0.3
+
+  check for sibling directory existance, add as submenus
+  Text list of files in directory
+  convert to #ifdef WIN32, #else , #endif from the $HOME test. (general cleanup)
+  make relative directory referenes work
+  Segragate all non-first-time-only code
+  add trailing slash to FullPath, remove any unneeded references.
+
+
+Darimasen 0.0.1 & 0.0.2
+
+  Dynamically Generate Menus from ustring array.
+  break full ustring OR char[] path into either ustring array
+  Reference $HOME variable (or equivelent), change to class vars
+  make it work depending on winEnv
+  Make splitting algorithim work for winEnv
+  have both full and shortened pwd generated
+  check for file existance
+  check for directory existance
+  Divide window into menu, textarea and status bar.

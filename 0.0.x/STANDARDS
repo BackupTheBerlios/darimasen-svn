@@ -1,0 +1,23 @@
+Recomended programming standards:
+ (or, things should be changed to comply with these if they don't already)
+
+Class constructors come first.
+Then private variables
+Then private functions, in alpebetical order
+Then public functions
+There should be no public variables
+  - all should have "get_" and "set_" properties instead.
+
+
+functions should be seperated by
+/**********************/
+so they can be easily distinguished in code.
+
+
+supplimental.* : functions not easily identified with an existing class.
+iconmodes.cpp.* : all file (non directory) handling.
+damenu.* ": all directory handling with the normal system. (not the tree)
+firsttime.* : prompts in the first run of darimasen. (currently if ROX has never been run)
+optionsManager.* : Parsing and maintaining options outside program session.
+main.* : command line parsing, systems checks, program init.
+darimasen.* : Managing GUI elements visable in main window.

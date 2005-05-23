@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:xml="http://www.w3.org/XML/1998/namespace"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:export-ydpi="92.000000"
+   inkscape:export-xdpi="92.000000"
+   inkscape:export-filename="/home/sudrien/darimasenInfo.png"
+   id="svg1275"
+   height="256.00000"
+   width="198.00000"
+   y="0.0000000"
+   x="0.0000000"
+   version="1.0"
+   sodipodi:version="0.32"
+   inkscape:version="0.41"
+   sodipodi:docname="darimasenInfo.svg"
+   sodipodi:docbase="/home/sudrien/trunk/pixmaps">
+  <metadata
+     id="metadata44">
+    <rdf:RDF
+       id="RDF46">
+      <cc:Work
+         rdf:about=""
+         id="Work48">
+        <dc:format
+           id="format50">image/svg+xml</dc:format>
+        <dc:type
+           id="type52"
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="938"
+     inkscape:window-height="619"
+     inkscape:zoom="1.4101562"
+     inkscape:cx="99.000000"
+     inkscape:cy="71.268698"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:current-layer="svg1275" />
+  <defs
+     id="defs3">
+    <linearGradient
+       id="linearGradient2946">
+      <stop
+         id="stop2948"
+         offset="0.0000000"
+         style="stop-color:#000000;stop-opacity:1.0000000;" />
+      <stop
+         id="stop2950"
+         offset="1.0000000"
+         style="stop-color:#000000;stop-opacity:0.0000000;" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient2049">
+      <stop
+         id="stop2051"
+         offset="0.0000000"
+         style="stop-color:#b8b8b8;stop-opacity:1.0000000;" />
+      <stop
+         id="stop2053"
+         offset="1.0000000"
+         style="stop-color:#ffffff;stop-opacity:1.0000000;" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient2439">
+      <stop
+         id="stop2441"
+         offset="0.0000000"
+         style="stop-color:#002200;stop-opacity:1.0000000;" />
+      <stop
+         id="stop2443"
+         offset="1.0000000"
+         style="stop-color:#508350;stop-opacity:1.0000000;" />
+    </linearGradient>
+    <linearGradient
+       gradientTransform="matrix(0.632356,0.000000,0.000000,0.632356,-13.67091,-184.4702)"
+       gradientUnits="userSpaceOnUse"
+       xlink:href="#linearGradient2439"
+       id="linearGradient3207"
+       y2="444.66751"
+       x2="129.66743"
+       y1="330.76971"
+       x1="129.06119" />
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       xlink:href="#linearGradient2049"
+       id="linearGradient2057"
+       y2="194.05247"
+       x2="141.06122"
+       y1="70.903793"
+       x1="29.854227" />
+    <linearGradient
+       gradientTransform="matrix(2.338344,0.000000,0.000000,2.337965,7.643680,6.181810)"
+       gradientUnits="userSpaceOnUse"
+       xlink:href="#linearGradient2946"
+       id="linearGradient1314"
+       y2="57.040970"
+       x2="51.379238"
+       y1="3.5595675"
+       x1="1.7733183" />
+    <linearGradient
+       gradientTransform="matrix(0.919753,0.000000,0.000000,0.919631,0.797430,0.826054)"
+       gradientUnits="userSpaceOnUse"
+       xlink:href="#linearGradient5234"
+       id="linearGradient5240"
+       y2="57.040970"
+       x2="51.379238"
+       y1="3.5595675"
+       x1="1.7733183" />
+    <linearGradient
+       gradientTransform="matrix(0.919753,0.000000,0.000000,0.919631,-57.10882,3.044804)"
+       gradientUnits="userSpaceOnUse"
+       xlink:href="#linearGradient2138"
+       id="linearGradient4473"
+       y2="57.040970"
+       x2="51.379238"
+       y1="3.5595675"
+       x1="1.7733183" />
+    <linearGradient
+       gradientTransform="matrix(0.919753,0.000000,0.000000,0.919631,-61.10882,1.044804)"
+       gradientUnits="userSpaceOnUse"
+       xlink:href="#linearGradient2138"
+       id="linearGradient4469"
+       y2="57.040970"
+       x2="51.379238"
+       y1="3.5595675"
+       x1="1.7733183" />
+    <linearGradient
+       gradientTransform="matrix(0.919753,0.000000,0.000000,0.919631,0.891177,1.044804)"
+       gradientUnits="userSpaceOnUse"
+       xlink:href="#linearGradient2138"
+       id="linearGradient3704"
+       y2="57.040970"
+       x2="51.379238"
+       y1="3.5595675"
+       x1="1.7733183" />
+    <linearGradient
+       id="linearGradient2138">
+      <stop
+         id="stop2140"
+         offset="0.0000000"
+         style="stop-color:#4f824f;stop-opacity:1.0000000;" />
+      <stop
+         id="stop2142"
+         offset="1.0000000"
+         style="stop-color:#003300;stop-opacity:1.0000000;" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5234">
+      <stop
+         id="stop5236"
+         offset="0.0000000"
+         style="stop-color:#ffffff;stop-opacity:1.0000000;" />
+      <stop
+         id="stop5238"
+         offset="1.0000000"
+         style="stop-color:#d9cce6;stop-opacity:1.0000000;" />
+    </linearGradient>
+    <linearGradient
+       gradientTransform="matrix(2.338344,0.000000,0.000000,2.337965,-103.6216,-56.88525)"
+       gradientUnits="userSpaceOnUse"
+       xlink:href="#linearGradient2138"
+       id="linearGradient2954"
+       y2="57.040970"
+       x2="51.379238"
+       y1="3.5595675"
+       x1="1.7733183" />
+    <linearGradient
+       gradientTransform="matrix(2.338344,0.000000,0.000000,2.337965,8.926461,6.554989)"
+       gradientUnits="userSpaceOnUse"
+       xlink:href="#linearGradient2138"
+       id="linearGradient3745"
+       y2="57.040970"
+       x2="51.379238"
+       y1="3.5595675"
+       x1="1.7733183" />
+  </defs>
+  <rect
+     id="rect1287"
+     style="fill:url(#linearGradient2057);fill-opacity:1.0000000;stroke:#000000;stroke-opacity:1.0000000"
+     y="-5.3400210e-15"
+     x="0.0000000"
+     ry="0.0000000"
+     rx="0.0000000"
+     height="256.00000"
+     width="198.00000" />
+  <text
+     xml:space="preserve"
+     id="text1291"
+     style="font-size:14.000000;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr-tb"
+     y="153.53935"
+     x="86.210068"><tspan
+       id="tspan1295"
+       y="153.53935"
+       x="86.210068">Version 0.0.8</tspan></text>
+  <text
+     xml:space="preserve"
+     id="text1297"
+     style="font-size:12.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr-tb"
+     y="166.97377"
+     x="51.608505"><tspan
+       id="tspan2602"
+       y="166.97377"
+       x="51.608505">&quot;It's not like RPN at all&quot;</tspan></text>
+  <text
+     xml:space="preserve"
+     id="text1311"
+     style="font-size:10.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:end;writing-mode:lr-tb"
+     y="193.84258"
+     x="189.8419"><tspan
+       id="tspan1317"
+       y="193.84258"
+       x="189.8419">© 2004 -2005 by Sudrien</tspan><tspan
+       id="tspan1319"
+       y="205.84258"
+       x="189.8419">under the terms of the</tspan><tspan
+       id="tspan1321"
+       y="217.84258"
+       x="189.8419">GNU General Public License</tspan></text>
+  <text
+     xml:space="preserve"
+     id="text1323"
+     style="font-size:12.000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr-tb"
+     y="249.07288"
+     x="26.729599"><tspan
+       id="tspan1325"
+       y="249.07288"
+       x="26.729599">http:\\darimasen.berlios.de</tspan></text>
+  <path
+     id="path2952"
+     style="fill:#ffffff;fill-opacity:0.46012267;stroke:none;stroke-width:2.9875000;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000"
+     d="M 73.979321,0.87399854 C 48.651428,4.9256105 22.056398,13.143035 4.2605713,32.561499 C 0.025701298,39.482807 8.3290473,47.851155 15.393284,43.941935 C 37.149324,38.770287 59.020458,32.572032 81.541821,32.436499 C 74.914228,41.759046 62.179178,40.478535 52.323071,38.748999 C 44.390074,38.440534 43.726196,50.189559 49.795424,53.503005 C 60.373613,66.025578 80.225408,69.783047 94.448071,61.405249 C 104.68209,65.660260 116.40841,66.490970 126.47630,61.285620 C 134.05663,56.348334 130.00106,61.827720 126.59945,66.641726 C 121.67569,72.740212 114.66466,80.317233 106.03512,77.054398 C 91.755803,75.107501 77.075900,77.397358 63.638633,82.264690 C 53.311577,82.911257 46.797019,72.919272 39.679035,66.923958 C 33.368974,61.205651 29.730230,52.368202 23.091091,47.470228 C 13.582074,43.587084 5.7700463,56.994804 11.442215,64.575823 C 15.845780,80.482041 23.637736,95.475342 34.729321,107.74900 C 29.190878,119.67433 20.761653,131.24849 20.291821,144.78025 C 20.321631,150.74117 26.899712,155.39378 31.729321,150.81150 C 45.004387,135.63377 58.596875,118.18805 79.079872,112.74903 C 98.193909,108.38542 118.68435,113.25205 135.72932,122.37400 C 140.10470,125.42272 145.38974,131.68198 151.01057,129.59275 C 159.57061,122.88790 153.28409,111.51302 149.09400,104.15835 C 146.99125,99.676215 138.80398,95.410298 144.68475,90.422830 C 153.92186,76.690290 156.73263,58.424786 150.32307,42.936499 C 145.00526,43.118680 150.03913,37.887052 149.13557,35.092749 C 149.69772,18.642556 133.29835,8.5465045 119.28688,4.7413995 C 104.59207,0.53996154 89.167356,-0.30058746 73.979321,0.87399854 z M 99.448071,33.655249 C 108.63569,36.473761 85.405959,31.932987 97.138608,33.379492 C 97.908429,33.471411 98.678250,33.563330 99.448071,33.655249 z " />
+  <path
+     id="path3743"
+     style="fill:url(#linearGradient3745);fill-opacity:1.0000000;stroke:#003300;stroke-width:2.9915888;stroke-miterlimit:4.0000000;stroke-opacity:1.0000000"
+     d="M 26.059971,144.64698 C 25.190091,140.31680 32.904721,121.33374 41.740251,108.61696 C 42.371521,107.70838 42.097591,106.99995 40.373021,105.08124 C 30.232611,93.799236 27.034411,89.028919 22.447351,78.344156 C 19.565541,71.631483 16.529581,62.303402 15.741001,57.738837 C 15.359201,55.528842 15.561741,55.036857 17.415021,53.672740 C 19.813461,51.907344 21.417771,52.627169 22.254671,54.135097 C 23.593721,56.800052 30.454041,66.321562 34.549981,70.783311 C 38.716901,75.322434 51.244881,85.522463 54.988154,87.423675 C 59.267994,89.597440 65.050954,88.708771 70.950254,86.449806 C 83.467394,81.656657 94.928884,80.940093 106.98081,83.142190 C 111.72817,84.009602 113.06426,84.587323 115.29115,83.990318 C 119.30811,82.913466 128.48099,74.823152 133.01974,68.354075 C 136.92249,62.791439 141.75061,52.420605 141.75061,49.600040 C 141.75061,47.401700 144.10080,46.075924 145.51027,47.479146 C 146.94011,48.902664 148.43609,61.058495 147.83373,66.358969 C 146.98885,73.793644 142.27593,84.483066 136.84267,91.287884 C 135.63547,92.799850 133.54629,94.459299 138.40732,100.03662 C 141.63056,103.56955 144.25763,107.24442 145.58549,109.89108 C 149.52168,117.73666 150.62260,123.32213 148.37774,124.05754 C 147.92075,124.20727 145.44311,122.55302 142.87190,120.38143 C 134.45848,113.27567 132.43842,112.36613 115.11479,107.88364 C 90.981044,101.63902 71.483284,104.98127 54.790904,118.22414 C 48.307431,123.36780 35.485151,136.00008 31.442771,142.01531 C 29.678521,144.64058 27.842451,146.78854 27.362601,146.78854 C 26.882781,146.78854 26.296571,145.82484 26.059971,144.64698 z M 68.682654,58.854531 C 66.324214,58.173574 62.369434,56.531024 60.873954,55.557944 C 57.907034,53.697343 51.543901,47.983983 51.543901,45.999745 C 51.543901,44.051455 51.580231,44.046765 56.096094,45.410642 C 60.802224,46.831981 65.708254,46.719641 72.416174,45.036981 C 79.085004,43.364107 82.429934,41.415172 84.535224,38.649387 C 85.368084,37.307743 86.008474,35.856512 86.319954,35.856512 C 86.631414,35.856512 88.566524,37.323778 90.837134,38.685023 C 93.942284,40.323576 95.777994,40.805031 99.446644,40.796248 C 105.49686,40.781792 113.11256,38.005597 115.63170,34.896260 C 116.30666,34.063138 116.86602,33.184114 116.87471,32.942848 C 116.90460,32.112550 105.86968,28.587477 99.133264,27.275437 C 84.397534,24.405378 56.537634,26.964217 33.076391,33.342572 C 29.365131,34.351552 24.239841,35.638150 21.686861,36.201694 C 19.133891,36.765213 15.652781,37.715341 13.951091,38.313085 C 10.586381,39.494978 8.9265813,38.915663 8.9265813,36.559368 C 9.2613413,33.999813 17.417681,28.767810 19.319441,27.018160 C 28.452851,18.615241 55.688114,8.6271635 74.273164,6.8648295 C 95.117904,4.8881795 113.07637,7.2729555 127.18971,13.891833 C 136.31817,18.172893 142.20081,24.857468 143.47678,32.399168 C 144.03872,35.720574 141.69456,41.912469 138.44376,45.693503 C 135.77179,48.801261 127.86172,54.567369 123.99340,56.227175 C 120.58404,57.690038 114.23026,59.286996 109.00951,59.331869 C 106.13572,59.365208 101.08514,57.836650 98.485964,56.348801 L 94.066954,53.505307 L 91.278334,56.235192 C 89.744584,57.542230 87.251584,58.627411 85.738344,59.078781 C 81.820464,60.247416 73.711554,60.306553 68.682654,58.854531 z " />
+  <text
+     xml:space="preserve"
+     id="text1418"
+     style="font-size:20.000000;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#000000;fill-opacity:1.0000000;stroke:none;stroke-width:1.0000000px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1.0000000;font-family:Bitstream Vera Sans;text-anchor:start;writing-mode:lr-tb"
+     y="139.3586"
+     x="69.915146"><tspan
+       id="tspan1420"
+       style="font-family:Bitstream Vera Sans"
+       y="139.3586"
+       x="69.915146">Darimasen</tspan></text>
+</svg>

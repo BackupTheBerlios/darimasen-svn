@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Darimasen file manager
+Name[ja]=堕リマセン　ファイルマネージャ
+Comment=Folders are not files!
+Icon=darimasen.svg
+Exec=darimasen
+Type=Application
+Categories=Application;System; 

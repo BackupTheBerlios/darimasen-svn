@@ -1,0 +1,51 @@
+Darimasen File Manager - 0.0.8 [Feature Incomplete - Only for Experimental Use]
+
+Readme.txt - 8 Apr. 2005
+
+--
+
+0.0.8 hs been released because:
+
+The code has reached a peak in functionality. 
+
+
+--
+
+
+
+History (in a generic sense)
+
+Once upon a time there was a company. It made a Graphical User Interface (GUI), and it needed a method to sort through files. There had been file managers before, though perhaps not under that name. They helped you navigate through directories.
+
+But most everything in a GUI is represented as an icon. So what Icon do you give a directory that makes sense? They called them folders, which gave both an understandable icon and a person new to computers a way to understand files' organization.
+
+And then Microsoft copied the idea, and it was all over.
+
+Or was it?
+
+
+--
+
+
+History (in a specific sense)
+
+One day a computer science student, known as Sudrien, saw screenshots of a File Manafger called Evidence, and tried to compile it from CVS. It didn't look nearly as good as the screenshots, and clicking on the directory names in the path did very little, unlike expected.
+
+So Sudrien made a post on the Gentoo Forums - and there seemed to be nothing like the idea in Sudrien's head to be had. You can guess where this is going.
+
+Including the part where Sudrien is refered to in the third person.
+
+Darimasen is a file manager with no folders. You won't see one. Period. There are directories - menus of directories. and you can get anywhere you want with them.
+
+
+
+--
+
+
+
+http://darimasen.berlios.de
+
+
+Any suggestions can be sent to me at fusemail.com
+
+- Sudrien

@@ -1,0 +1,69 @@
+Starting over
+
+by Sudrien
+
+
+
+Darimasen is my first real project, my first useful project beyond 
+all the examples and tests of my formal education. I deliberately
+choose somthing with high complexity: there are not that many file
+managers compared with other genres of programming, and the menu system
+of navigation is possible the first of its kind.
+
+And that is where all the difficulties come in.
+
+One can design for a standard navigation FM, because it is standard. There
+are expected actions, responces, etc. Tabs are not too much of an extension;
+keep multiple instances available of everything, make simple consistancy checks
+when major operations happen (copy, delete, and so on).
+
+But the Darimasen Menu system can allow you to do ANY operation on ANY
+file in ANY location. The checks required to do this properly and consistantly...
+
+...requires everything to be self-aware.
+
+
+0.0.8 is proof that the Darimasen Menu System can work. Efficiently, even.
+
+Now comes the checking.
+
+If a tab is no longer needed, it goes.
+If a file is gone, its icon drops from the face of the earth.
+
+
+
+
+Very little doesn't need to be redesigned and rewritten. I might even switch to C#.
+
+
+
+
+Up to this point, I was making a system.
+After this, I'm making a File manager.
+
+
+-Sudrien.
+
+
+
+----------
+
+
+With that said, Here is the known future of the Darimasen project.
+
+The current SVN repository will become "Darimasen-0.0.x"; there will be no branch,
+due to the fact that everything will be starting again.
+
+The release of 0.0.9 is possible; it will be a buxfix release, with no added features
+currently expected. 0.0.10 will follow, if need be.
+
+There will be no version 0.1.0 - that would send the wrong signal, as far as I'm
+ concerned. 0.1.x will come next - it will contain rich descriptions of each of
+the planned components, a plain text file accompanying every source file. Every 25 commits
+there will be a release, format 0.1.date. Care will be taken that it can be compilable,
+using either g++ or mono ( want garbage collection - I really do ). It will continue to use
+Gtk+-2.6-wrapped widgets. As I haven't downloaded mono yet, it will probably be a while. 
+
+
+
+
