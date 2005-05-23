@@ -3,7 +3,7 @@
 # $Header: $
 
 
-ESVN_REPO_URI="svn://svn.berlios.de/darimasen/trunk"
+ESVN_REPO_URI="svn://svn.berlios.de/darimasen/0.0.x"
 ESVN_PROJECT="darimasen"
 ESVN_BOOTSTRAP="autogen.sh"
 inherit subversion
