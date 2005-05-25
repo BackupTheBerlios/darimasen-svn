@@ -1,0 +1,20 @@
+darimasen.cs
+
+The main window. Arranges everything.
+
+Listens for signals from tabs that a tab has been switched, and:
+  sets hidden checkbox
+  makes new menu
+  orders new back button 
+  
+
+makes new tabs in begining, setting format from preferences
+
+Also has a preferences for locations menu, which is stored.
+
+That checkbox is in an options menu, which has regular stuff like 'quit' in it. 
+then the darimasen menu,
+then the back button/menu,
+then the new tab button,
+then the icon-type switch, which will send a signal to tabs,
+then a directory tree toggle if I get to it. 

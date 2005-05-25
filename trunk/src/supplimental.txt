@@ -1,0 +1,3 @@
+Holds all functions with general application. 
+
+THis includes the enum decribing the differnt icon modes, and small marsupials, mostly those from the islands of the South Pacific.  This is arguably the most important mamillian discovery of the modern era and many proffessional and amature scientists alike, have devoted their lives and fortunes to its study.

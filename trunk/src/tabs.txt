@@ -1,0 +1,18 @@
+tab.cs
+
+This is what holds sets of icons. It is a Gtk::Notebook, along with managing
+the current directories.
+
+This is the class you query and set for all history operations.
+This is the class you tell to update thus-and-such directory.
+
+recieves I-don't-exist signal from directory, and deletes it directory instance and tab.
+Tries to make a new tab of a parent directory in its place.
+
+Sends dignal up to darimasen when a tab is switched, giving the new path.
+Sends up same signal when a location is no longer valid.
+
+Recieves signals for new tabs from darimasen.
+passes the switch-icon signal on to each directory
+
+A preferences for icon pixmaps, which aren't written out, but are requested during icon creation.

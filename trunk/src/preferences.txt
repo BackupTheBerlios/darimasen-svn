@@ -1,0 +1,14 @@
+preferences.cs
+
+Loads preferences from last session and stores them on exit.
+
+Also can have nothing in constructor, and have no write-in/-out.
+
+They are in XML format.
+
+Is a genaric preference taker, so there is a second instance for the
+locations menu.
+
+it gets a sting and returns a value or a ""
+
+it gets two strings, the first is a name the second is a value.

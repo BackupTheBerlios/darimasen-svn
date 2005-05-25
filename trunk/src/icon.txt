@@ -1,0 +1,34 @@
+icon.cs
+
+An icon holds all the information of a file/pipe/socket/anything but a directory.
+
+These include:
+
+A name
+A mime-type
+A path
+Permissions
+owner
+group
+type
+
+... most of which can be accomplished by having a Gnome::Vfs::FileInfo member.
+
+An icon pixmap, which can be gotten from a preferences in the tabs. 
+
+One function of an icon is to give its own renditions of itself when prompted;
+ This can be a eventbox (Sidecon format, list format) or specific struct (detail view).
+
+Another function it to keep track of what it should do when called for execution;
+though this can change, only one thing can be executed at a time (with a slight delay)
+to prevent certain errors from hapening, unlike many of the file operations.
+
+An icon should regularly check if the file it is based on still exists. If it doesn't,
+a signal get sent to the directory to discard it.
+
+An icon should be able to catch signals on the deletion of non-existance of a parent
+directory (and therefore itself)
+
+Last an icon should be able to proform functions on its own file; deleting, duplicating,
+ creating a link of, setting permissions; things that can be part of a recursive operation.
+

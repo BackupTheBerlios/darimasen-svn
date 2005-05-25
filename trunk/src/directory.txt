@@ -1,0 +1,15 @@
+directory.cs
+
+Holds all the icon in a directory.
+Monitors for new icons in the directory and adds them to the list.
+Gets signals from removes idons and deletes them.
+
+Decides when and where to show icons - wrapping, hidden files.
+
+Checks periodically for its own existance, sends signal to
+tabs if it does not exist. 
+
+makes icon list in begining, in the format of icon specified in preferences.
+
+recieves the mode-switch signal from tabs, deletes current table and buerries icon list for
+new mode.
