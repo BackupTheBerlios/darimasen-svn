@@ -13,7 +13,7 @@ icon::icon(
   icon(parent, result);
   }
 
-/* ~_~; */
+/* ~_~; 
 
 icon::icon(
     const class directory& dir,
@@ -21,6 +21,18 @@ icon::icon(
 
   parent = &dir;
   file_info = file;
+
+
+
+
+  }
+
+/* ~_~; */
+
+icon::icon(){
+    add(icon_pixmap);
+    //add(file_info);
+    add(file_name);
   }
 
 /* ~_~; */

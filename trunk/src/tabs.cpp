@@ -102,8 +102,8 @@ void tabs::add_tab(gint pos){
 
  // MainEventBox->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("#ffffff"));
 
-  //directory * dir = Gtk::manage(new class directory(*this,pos))
-  directory * dir = Gtk::manage(new class directory());
+  directory * dir = Gtk::manage(new class directory(*this,pos));
+  //directory * dir = Gtk::manage(new class directory());
   insert_page( *dir, *arrangement, pos);
 
 
@@ -122,25 +122,26 @@ Glib::RefPtr<Gdk::Pixbuf> tabs::get_icon(Glib::ustring mime){
     }
    // pic doesn't exist.
 
-    Glib::ustring ico;
+    Glib::ustring ico = "/usr/share/icons/gnome/48x48/mimetypes/gnome-mime-";
+Glib::ustring t;
   try{
-    ico = "/usr/share/icons/gnome/48x48/mimetypes/gnome-mime-";
-    ico += mime.replace(mime.find("/"), 1, "-");
-    ico += ".png";
+    t = mime.replace(mime.find("/"), 1, "-");
+    t += ".png";
 
     Glib::file_get_contents(ico);
     }
   catch(const Glib::Error) {
     try{
-      ico = "/usr/share/icons/gnome/48x48/mimetypes/gnome-mime-";
-      ico += mime.substr(0,mime.find("-"));
-      ico += ".png";
+      t = mime.substr(0,mime.find("-"));
+      t += ".png";
       Glib::file_get_contents(ico);
       }
     catch(const Glib::Error) {
      ico = "/usr/share/icons/gnome/48x48/filesystems/gnome-fs-loading-icon.png";
+     t = "";
      }
     }
+ico += t;
 
   mimeList.push_back(mime);
   Glib::RefPtr<Gdk::Pixbuf> xe = Gdk::Pixbuf::create_from_file(ico);

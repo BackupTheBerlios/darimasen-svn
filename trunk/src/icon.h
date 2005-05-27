@@ -10,10 +10,11 @@
 
 /* ~_~; */
 
-class icon{
+class icon : public Gtk::TreeModel::ColumnRecord{
   public:
     //icon(const class directory&, const Glib::ustring&);
-    icon(const class directory&, Glib::RefPtr<const Gnome::Vfs::FileInfo>);
+    //icon(const class directory&, Glib::RefPtr<const Gnome::Vfs::FileInfo>);
+    icon();
     ~icon();
     
     gint run() const;
@@ -31,10 +32,17 @@ class icon{
     gint set_permissions() const;
 
 
+    Gtk::TreeModelColumn< Glib::RefPtr<Gdk::Pixbuf> > icon_pixmap;
+    //Gtk::TreeModelColumn< Glib::RefPtr<Gnome::Vfs::FileInfo> > file_info;
+    Gtk::TreeModelColumn< Glib::ustring > file_name;
+
   private:  
 
-    Glib::RefPtr<const Gnome::Vfs::FileInfo> file_info;
-    const class directory * parent;
+    //Glib::RefPtr<const Gnome::Vfs::FileInfo> file_info;
+    //const class directory * parent;
+
+
+    
 
   };
 
