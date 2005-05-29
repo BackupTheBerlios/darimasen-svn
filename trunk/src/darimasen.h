@@ -7,6 +7,7 @@
 #include <gtkmm.h>
 #include <vector>
 #include "tabs.h"
+#include "menu.h"
 
 class darimasen_window : public Gtk::Window {
   public:

@@ -33,16 +33,14 @@ class icon : public Gtk::TreeModel::ColumnRecord{
 
 
     Gtk::TreeModelColumn< Glib::RefPtr<Gdk::Pixbuf> > icon_pixmap;
-    //Gtk::TreeModelColumn< Glib::RefPtr<Gnome::Vfs::FileInfo> > file_info;
-    Gtk::TreeModelColumn< Glib::ustring > file_name;
+    Gtk::TreeModelColumn< Glib::ustring > file_name; 
+    Gtk::TreeModelColumn< Glib::ustring > file_mime;
+    Gtk::TreeModelColumn< Glib::ustring > file_size;
+    Gtk::TreeModelColumn< guint > file_permissions;
+    Gtk::TreeModelColumn< guint > file_owner;
+    Gtk::TreeModelColumn< guint > file_group;
+    Gtk::TreeModelColumn< bool > file_hidden;
 
-  private:  
-
-    //Glib::RefPtr<const Gnome::Vfs::FileInfo> file_info;
-    //const class directory * parent;
-
-
-    
 
   };
 

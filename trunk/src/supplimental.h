@@ -7,6 +7,6 @@
 #include <libgnomevfsmm.h>
 
 Glib::ustring get_choices_dir();
-
+Glib::ustring int2ustr(gint);
 
 #endif //SUPPLIMENTAL_H

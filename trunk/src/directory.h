@@ -22,17 +22,16 @@ class directory : public Gtk::EventBox {
   class icon icon_list;
   Gtk::ScrolledWindow scroller;
 
-  Gtk::TreeView tree_view;
+  Gtk::IconView tree_view;
   Glib::RefPtr< Gtk::ListStore > tree_model;
 
-  
-  std::vector< Glib::RefPtr<const Gnome::Vfs::FileInfo > > file_list;
-
+  Glib::RefPtr< Gtk::TreeModelFilter > tree_model_filtered;
 
   bool add_file(Glib::ustring,Glib::RefPtr<const Gnome::Vfs::FileInfo>, bool, bool);
-  int sort_list_func(const Gtk::TreeModel::iterator&, const Gtk::TreeModel::iterator&);
+  void selection(const Gtk::TreeModel::Path&);
+  bool on_press(GdkEventButton*);
 
-//  void render();
+
   };
 
 

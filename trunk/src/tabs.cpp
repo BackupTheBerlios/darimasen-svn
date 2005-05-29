@@ -7,6 +7,8 @@
 
 tabs::tabs(const std::vector<Glib::ustring>& input){
 
+  set_tab_pos(Gtk::POS_BOTTOM);
+
   // begin the history  
   for(gint i = 0; i < input.size(); i++){
     set_history(i, input[i]);
@@ -53,60 +55,14 @@ void tabs::add_tab(gint pos){
   closeButton->set_relief(Gtk::RELIEF_NONE); 
   closeButton->show();
 
-
-
-
   tabNum->show();
   arrangement->show();
 
   arrangement->pack_start(*tabNum);
   arrangement->pack_end(*closeButton);
 
- // Gtk::EventBox * MainEventBox = new class Gtk::EventBox;
-
-
- // MainEventBox->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("#ffffff"));
- // MainEventBox->show();
-
-  //DaIconModes * foo;
-  //foo = new class DaIconModes(pos, *this);
-
-
-  // pos can't be the thing passed here, it changes... (segfault: 3 tabs, close 2nd then 3rd)
-  //closeButton->signal_clicked().connect(
-  //  sigc::bind<DaIconModes*>(sigc::mem_fun(*this, &Darimasen::removeTab), foo) );
-
-
-/*
-  if ( IconModeList.size() == pos ){
-  //  IconModeList.push_badirectory * dir = Gtk::manage(new class directory(*this,pos))ck(foo);
-  //  EventBoxList.push_back(MainEventBox);
-    }
-  else {
-    delete IconModeList[pos];
-    IconModeList[pos] = foo;
-    delete EventBoxList[pos];
-    EventBoxList[pos] = MainEventBox;
-    }*/
-
- // Gtk::ScrolledWindow * MainScroller = new Gtk::ScrolledWindow;
- // MainScroller->show();
- // MainScroller->set_shadow_type(Gtk::SHADOW_NONE);
-  //MainScroller->add(*MainEventBox);
-  //MainEventBox->add(*foo);
-  //MainScroller->set_policy(Gtk::POLICY_ALWAYS, Gtk::POLICY_AUTOMATIC);
-  //foo->show();
-
- // Gtk::EventBox * MainEventBox = new class Gtk::EventBox;
-
-
- // MainEventBox->modify_bg(Gtk::STATE_NORMAL, Gdk::Color("#ffffff"));
-
   directory * dir = Gtk::manage(new class directory(*this,pos));
-  //directory * dir = Gtk::manage(new class directory());
   insert_page( *dir, *arrangement, pos);
-
-
 
   }
 
@@ -128,13 +84,13 @@ Glib::ustring t;
     t = mime.replace(mime.find("/"), 1, "-");
     t += ".png";
 
-    Glib::file_get_contents(ico);
+    Glib::file_get_contents(ico + t);
     }
   catch(const Glib::Error) {
     try{
       t = mime.substr(0,mime.find("-"));
       t += ".png";
-      Glib::file_get_contents(ico);
+      Glib::file_get_contents(ico + t);
       }
     catch(const Glib::Error) {
      ico = "/usr/share/icons/gnome/48x48/filesystems/gnome-fs-loading-icon.png";
