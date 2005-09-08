@@ -21,7 +21,8 @@ directory::directory(class tabs & ancestor, gint pos){
 
 
   tree_view.set_model(tree_model_filtered);
-
+tree_view.set_item_width(240);
+tree_view.set_orientation(Gtk::ORIENTATION_HORIZONTAL);
 
   tree_view.set_pixbuf_column (icon_list.icon_pixmap);
   tree_view.set_text_column (icon_list.file_name);

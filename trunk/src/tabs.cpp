@@ -5,9 +5,9 @@
 
 /**********************/
 
-tabs::tabs(const std::vector<Glib::ustring>& input){
+tabs::tabs(class darimasen_window& ancestor, const std::vector<Glib::ustring>& input){
 
-  set_tab_pos(Gtk::POS_BOTTOM);
+  //set_tab_pos(Gtk::POS_BOTTOM);
 
   // begin the history  
   for(gint i = 0; i < input.size(); i++){

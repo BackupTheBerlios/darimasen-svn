@@ -12,8 +12,9 @@ darimasen_window::darimasen_window(std::vector<Glib::ustring> paths){
   add(*vert);
 
 
-  darimasen_menu * da_menu = Gtk::manage(new class darimasen_menu());
-  tabs * tabber = Gtk::manage(new class tabs(paths));
+
+  tabber = Gtk::manage(new class tabs(*this,paths));
+  da_menu = Gtk::manage(new class darimasen_menu(*this));
 
   vert->pack_start(*da_menu, Gtk::PACK_SHRINK, 0);
   vert->pack_start(*tabber);

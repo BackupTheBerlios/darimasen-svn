@@ -6,11 +6,14 @@
 #include <glibmm.h>
 #include <gtkmm.h>
 #include <libgnomevfsmm.h>
+#include <iostream>
+#include "darimasen.h"
 
-class darimasen_menu : public Gtk::MenuBar{
+class darimasen_menu : public Gtk::Toolbar{
   public:
-    darimasen_menu();
+    darimasen_menu(class darimasen_window&);
 
-
+  private:
+    class darimasen_window * parent;
 };
 #endif

@@ -3,7 +3,7 @@ Is given a path to build off of.
 It puts this into an array of strings, starting with root/home and ending
 with the current directory.
 
-Each memeber of the array gets a menu, showing the sibling directories and 
+Each member of the array gets a menu, showing the sibling directories and 
 how many subdirectories each of them have. The directory itself is at the top of
  the list, and not present in its normal space below.
 
@@ -12,3 +12,8 @@ The first menu is always ~/ or / ,and holds home, root, and the location menu.
 
 THe last menu is in the form #>, where the # is the number of subdirectories
  of the current dir, and the menu has those subdirectories and their counts. 
+
+
+The difference between this and the previous version is that submenus will be build only in an on-demand basis. THe whole file system will not need to be scanned to get a menu; only the current folder, to count the number of subdirectories. 
+
+Strictly speaking, this is not just the menu to manage, but the whole top toolbar. 

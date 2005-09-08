@@ -10,7 +10,7 @@
 
 class tabs : public Gtk::Notebook {
   public:
-    tabs(const std::vector<Glib::ustring>&);
+    tabs(class darimasen_window&, const std::vector<Glib::ustring>&);
     ~tabs();
 
 

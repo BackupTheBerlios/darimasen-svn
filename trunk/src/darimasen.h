@@ -13,8 +13,10 @@ class darimasen_window : public Gtk::Window {
   public:
     darimasen_window(std::vector<Glib::ustring> );
     ~darimasen_window();
-
-
+  private:
+  public:
+    class tabs * tabber;
+    class darimasen_menu * da_menu;
   };
 
 #endif
