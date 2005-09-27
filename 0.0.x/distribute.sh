@@ -1,9 +1,9 @@
 #!/bin/sh
 
 cd ..
-mkdir darimasen-0.0.8
-cp -R trunk/* darimasen-0.0.8/
-cd darimasen-0.0.8/
+mkdir darimasen-0.0.8a
+cp -R trunk/* darimasen-0.0.8a/
+cd darimasen-0.0.8a/
 
 rm -Rf .svn/
 rm -Rf src/.svn/
@@ -26,4 +26,4 @@ rm distribute.sh
 
 cd ..
 
-tar -cjvf darimasen-0.0.8.tar.bz2 darimasen-0.0.8/
+tar -cjvf darimasen-0.0.8a.tar.bz2 darimasen-0.0.8a/
