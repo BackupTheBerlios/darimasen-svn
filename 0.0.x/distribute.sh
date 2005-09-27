@@ -2,7 +2,7 @@
 
 cd ..
 mkdir darimasen-0.0.8a
-cp -R trunk/* darimasen-0.0.8a/
+cp -R 0.0.x/* darimasen-0.0.8a/
 cd darimasen-0.0.8a/
 
 rm -Rf .svn/
