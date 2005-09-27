@@ -22,6 +22,6 @@ noinst_HEADERS = \
   supplimental.h
 
 
-AM_CXXFLAGS = -I../.. @PKG_CFLAGS@
+AM_CXXFLAGS = -I../.. @GTKMM_CFLAGS@
 
-darimasen_LDADD = -lpthread @LIBS@ @PKG_LIBS@ 
+darimasen_LDADD = -lpthread @LIBS@ @GTKMM_LIBS@ 

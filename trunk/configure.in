@@ -16,9 +16,9 @@ AM_PROG_LIBTOOL
 
 AC_LANG_CPLUSPLUS
 
-PKG_CHECK_MODULES([PKG], [sigc++-2.0 >= 2.0 gtkmm-2.4 >= 2.6.0 gnome-vfsmm-2.6 >= 2.5.0])
-AC_SUBST([PKG_CFLAGS])
-AC_SUBST([PKG_LIBS])
+PKG_CHECK_MODULES(GTKMM, [sigc++-2.0 >= 2.0 gtkmm-2.4 >= 2.6.0 gnome-vfsmm-2.6 >= 2.5.0])
+AC_SUBST([GTKMM_CFLAGS])
+AC_SUBST([GTKMM_LIBS])
 
 
 
