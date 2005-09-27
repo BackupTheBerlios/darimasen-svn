@@ -21,7 +21,7 @@ rm autom4te.cache/ -Rf
 rm aclocal.m4
 rm autogen.sh
 rm config.log
-rm darimasen-svn-0.1.ebuild
+rm darimasen-svn-0.1-r2.ebuild
 rm distribute.sh
 
 cd ..
